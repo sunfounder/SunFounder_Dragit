@@ -1,0 +1,3 @@
+[submodule "Dragit/static/snap"]
+	path = Dragit/static/snap
+	url = https://github.com/jmoenig/Snap--Build-Your-Own-Blocks.git
