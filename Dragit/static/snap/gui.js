@@ -196,8 +196,9 @@ IDE_Morph.prototype.scriptsTexture = function () {
     return pic;
 };
 
-IDE_Morph.prototype.setDefaultDesign();
-
+// Change the default design to flat style!
+//IDE_Morph.prototype.setDefaultDesign();
+IDE_Morph.prototype.setFlatDesign();
 // IDE_Morph instance creation:
 
 function IDE_Morph(isAutoFill) {
@@ -226,7 +227,7 @@ IDE_Morph.prototype.init = function (isAutoFill) {
     this.projectName = '';
     this.projectNotes = '';
 
-    this.logoURL = this.resourceURL('snap_logo_sm.png');
+    this.logoURL = this.resourceURL('dragit_logo_sm.png');
     this.logo = null;
     this.controlBar = null;
     this.categories = null;
@@ -2212,17 +2213,17 @@ IDE_Morph.prototype.snapMenu = function () {
         }
     );
     menu.addItem(
-        'Snap! website',
+        'SunFounder website',
         function () {
-            window.open('http://snap.berkeley.edu/', 'SnapWebsite');
+            window.open('https://www.sunfounder.com/', 'SunFounderWebsite');
         }
     );
     menu.addItem(
         'Download source',
         function () {
             window.open(
-                'http://snap.berkeley.edu/snapsource/snap.zip',
-                'SnapSource'
+                'https://github.com/sunfounder/SunFounder_Dragit',
+                'DragitSource'
             );
         }
     );
@@ -2951,7 +2952,9 @@ IDE_Morph.prototype.resourceURL = function () {
     // Take in variadic inputs that represent an a nested folder structure.
     // Method can be easily overridden if running in a custom location.
     // Default Snap! simply returns a path (relative to snap.html)
-    var args = Array.prototype.slice.call(arguments, 0);
+    var args = ['static', 'snap'];
+    args = args.concat(Array.prototype.slice.call(arguments, 0));
+
     return args.join('/');
 };
 
