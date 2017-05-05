@@ -1,7 +1,7 @@
-"""Dragit URL Configuration
+"""picar_v_snap URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/1.10/topics/http/urls/
+    https://docs.djangoproject.com/en/1.11/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -15,9 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-import views
+from picar_v import views as picar_v_views
+import settings, views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.home),
+    url(r'^SnapCloud$', views.SnapCloud),
+    url(r'^SnapCloudSignUp/$', views.SnapCloud),
+    url(r'^run/picar-v/$', picar_v_views.run),
 ]

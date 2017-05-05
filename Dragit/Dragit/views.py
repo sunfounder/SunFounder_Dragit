@@ -17,5 +17,5 @@ def SnapCloud(request):
             print("Get Email: %s"%email)
 	if request.POST:
 		print request.POST
-    
+
     return HttpResponse('OK')

@@ -163,7 +163,6 @@ SpriteMorph.prototype.bubbleMaxTextWidth = 130;
 
 SpriteMorph.prototype.initBlocks = function () {
     SpriteMorph.prototype.blocks = {
-
         // Motion
         forward: {
             only: SpriteMorph,
@@ -2199,6 +2198,9 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         button.showHelp = BlockMorph.prototype.showHelp;
         blocks.push(button);
     }
+    // SunFounder categories
+    else
+        this.loadSunFounderCategories(blocks, block, watcherToggle, cat)
     return blocks;
 };
 
@@ -4034,6 +4036,10 @@ SpriteMorph.prototype.faceToXY = function (x, y) {
 
 SpriteMorph.prototype.turn = function (degrees) {
     this.setHeading(this.heading + (+degrees || 0));
+};
+
+SpriteMorph.prototype.turnLeft = function (degrees) {
+    this.setHeading(this.heading - (+degrees || 0));
 };
 
 SpriteMorph.prototype.turnLeft = function (degrees) {
