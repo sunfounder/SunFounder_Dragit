@@ -2,6 +2,10 @@
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 
+from sensor_modules.SunFounder_Ultrasonic_Avoidance.Ultrasonic_Avoidance import Ultrasonic_Avoidance
+from sensor_modules.SunFounder_Light_Follower.Light_Follower import Light_Follower
+from sensor_modules.SunFounder_Line_Follower.Line_Follower import Line_Follower
+
 from picar.SunFounder_PCA9685.Servo import Servo
 from picar.SunFounder_PCA9685.PCA9685 import PWM
 from picar.SunFounder_TB6612.TB6612 import Motor
@@ -12,29 +16,27 @@ from picar import ADC
 import picar
 import time
 import RPi.GPIO as GPIO
-import ball_tracker
 import sys
 
 Motor_A = 17
 Motor_B = 27
 
-blob_x = 0
-blob_y = 0
-blob_r = 0
-
 adc  = ADC(0x48)
-fw   = front_wheels.Front_Wheels(debug=True, db='config')
-bw   = back_wheels.Back_Wheels(db='config')
 pan  = Servo(1)
 tilt = Servo(2)
 left_wheel  = Motor(Motor_A)
 right_wheel = Motor(Motor_B)
 
-db   = filedb.fileDB(db='config')
+lf = Line_Follower()
+lt = Light_Follower()
+lt.analog_function = adc.read
+fw = front_wheels.Front_Wheels(debug=True, db='config')
+bw = back_wheels.Back_Wheels(db='config')
+
+db = filedb.fileDB(db='config')
 turning_offset = int(fw.db.get('turning_offset', default_value=0))
 pan_offset     = int(fw.db.get('pan_offset',     default_value=0))
 tilt_offset    = int(fw.db.get('tilt_offset',    default_value=0))
-
 
 fw.turning_max = 45
 picar.setup()
@@ -57,7 +59,7 @@ def rw_run(motor_channel, direction, speed):
         elif direction == "backward":
             bw.backward()
         bw.speed = speed
-        msg = "[PiCar-V] Set Rear wheels %s at speed %d"%(direction, speed)
+        msg = "[PiCar-S] Set Rear wheels %s at speed %d"%(direction, speed)
         print(msg)
     # left motor
     elif motor_channel == "left":
@@ -74,7 +76,7 @@ def rw_run(motor_channel, direction, speed):
             bw.right_wheel.forward()
         bw.right_wheel.speed = speed
 
-    print("[PiCar-V] Set Motor %s %s at %d speed"%(motor_channel, direction, speed))
+    print("[PiCar-S] Set Motor %s %s at %d speed"%(motor_channel, direction, speed))
 
 def fw_turn(angle):
     if angle == 'left':
@@ -86,27 +88,8 @@ def fw_turn(angle):
     else:
         angle = int(angle)+90
         fw.turn(angle)
-    msg = "[PiCar-V] Front wheels turn %s "%(angle)
+    msg = "[PiCar-S] Front wheels turn %s "%(angle)
     print(msg)
-
-def cam_turn(angle):
-    fix_angle = 30
-    pan_angle = 0
-    tilt_angle = 0
-    if angle == 'up':
-        tilt_angle = fix_angle
-    elif angle == 'down':
-        tilt_angle = -fix_angle
-    elif angle == 'left':
-        pan_angle = fix_angle
-    elif angle == 'right':
-        pan_angle = -fix_angle
-    elif angle == 'center':
-        pass
-    else:
-        print("angle not define: %s" % angle)
-    pan.write(pan_angle+90)
-    tilt.write(tilt_angle+90)
 
 def pan_turn(angle):
     angle = int(angle)+90
@@ -114,7 +97,8 @@ def pan_turn(angle):
         angle = -90
     elif angle > 180:
         angle = 180
-    msg = "[PiCar-V] Pan servo turn %s "%(angle)
+    pan.write(angle)
+    msg = "[PiCar-S] Pan servo turn %s "%(angle)
     print(msg)
 
 def tilt_turn(angle):
@@ -124,7 +108,7 @@ def tilt_turn(angle):
     elif angle > 180:
         angle = 180
     tilt.write(angle)
-    msg = "[PiCar-V] Tilt servo turn %s "%(angle)
+    msg = "[PiCar-S] Tilt servo turn %s "%(angle)
     print(msg)
 
 def pwm_output(channel, value):
@@ -136,7 +120,7 @@ def pwm_output(channel, value):
         value = 4095
     pwm = PWM(channel)
     pwm.write(value)
-    msg = "[PiCar-V] PWM chn: %s value: %s "%(channel, value)
+    msg = "[PiCar-S] PWM chn: %s value: %s "%(channel, value)
     print(msg)
 
 def servo_turn(servo_channel, angle):
@@ -147,7 +131,7 @@ def servo_turn(servo_channel, angle):
         angle = 180
     servo = Servo(int(servo_channel))
     servo.write(angle)
-    print("[PiCar-V] Set Servo %s to %d degree"%(servo_channel, angle))
+    print("[PiCar-S] Set Servo %s to %d degree"%(servo_channel, angle))
 
 def get_analog(analog_channel):
     if analog_channel == "0":
@@ -160,7 +144,7 @@ def get_analog(analog_channel):
         value = adc.A3
     elif analog_channel == "4":
         value = adc.A4
-    print("[PiCar-V] Get Analog channel %s: %d"%(analog_channel,value))
+    print("[PiCar-S] Get Analog channel %s: %d"%(analog_channel,value))
     return value
 
 def get_digital(digital_channel):
@@ -186,7 +170,7 @@ def cali_front_wheels(offset):
     elif value > 1024:
         value = 1024
     fw.turning_offset = value
-    print("[PiCar-V] Calibrate Front wheels %s"%(value))
+    print("[PiCar-S] Calibrate Front wheels %s"%(value))
 
 def cali_left_wheel(offset):
     if int(offset) < 0:
@@ -195,7 +179,7 @@ def cali_left_wheel(offset):
         value = 0
     db.set('forward_A', value)
     bw.left_wheel.offset = value
-    print("[PiCar-V] Calibrate left wheel %s"%(value))
+    print("[PiCar-S] Calibrate left wheel %s"%(value))
     time.sleep(0.1)
 
 def cali_right_wheel(offset):
@@ -205,7 +189,7 @@ def cali_right_wheel(offset):
         value = 0
     db.set('forward_A', value)
     bw.left_wheel.offset = value
-    print("[PiCar-V] Calibrate right wheel %s"%(value))
+    print("[PiCar-S] Calibrate right wheel %s"%(value))
     time.sleep(0.1)
 
 def cali_pan_servo(offset):
@@ -219,7 +203,7 @@ def cali_pan_servo(offset):
     pan.write(90)
 
     db.set('pan_offset', value)
-    print("[PiCar-V] Calibrate Pan %s"%(value))
+    print("[PiCar-S] Calibrate Pan %s"%(value))
 
 def cali_tilt_servo(offset):
     value = int(offset)
@@ -232,39 +216,47 @@ def cali_tilt_servo(offset):
     tilt.write(90)
 
     db.set('tilt_offset', value)
-    print("[PiCar-V] Calibrate Tilt %s"%(value))
+    print("[PiCar-S] Calibrate Tilt %s"%(value))
 
-def find_blob():
-    print("Find red blob begin")
-    (blob_x, blob_y), blob_r = ball_tracker.find_blob()
-    if  blob_r == -1:
-        blob_x = (ball_tracker.SCREEN_WIDTH/2)
-        blob_y = (ball_tracker.SCREEN_HIGHT/2)
-    blob_x = -((ball_tracker.SCREEN_WIDTH/2) - blob_x)
-    blob_y = (ball_tracker.SCREEN_HIGHT/2) - blob_y
-    print("x: %s, y: %s, r: %s"%(blob_x, blob_y, blob_r))
-    print("[PiCar-V] Find red blob")
+def ultra_get_distance(channel):
+    print("Get Ultrasonic sensor distance ")
+    ua = Ultrasonic_Avoidance(int(channel))
+    result = ua.get_distance()
+    print("[PiCar-S] Get Ultrasonic sensor channel: %s, distance: %s"%(channel, result))
+    return result
 
-def get_blob(state):
-    if state == "x":
-        value = blob_x
-    elif state == "y":
-        value = blob_y
-    elif state == "r":
-        value = blob_r
-    print("[PiCar-V] Blob %s: %d"%(state, value))
+def light_analog_index(channel):
+    result = lt.read_analogs()
+    if channel != None:
+        value = result[int(channel)]
+        print("[PiCar-S] Light_Follower channel:%s, value:%s"%(channel, value))
+    else:
+        value = str(result).replace("'", '').strip('[]').replace(' ','')
+        print("[PiCar-S] Light_Follower value:%s"%(value))
+    return value
+
+def line_analog_index(channel):
+    result = lf.read_analogs()
+    if channel != None:
+        value = result[int(channel)-1]
+        print("[PiCar-S] Light_Follower channel:%s, value:%s"%(channel, value))
+    else:
+        value = str(result).replace("'", '').strip('[]').replace(' ','')
+        print("[PiCar-S] Light_Follower value:%s"%(value))
     return value
 
 # Stop
 def rw_stop():
     bw.stop()
-    msg = "[PiCar-V] Stop"
+    msg = "[PiCar-S] Stop"
     print(msg)
 
 def run(request):
     debug = ''
     action = None
-    value = None
+    value0 = None
+    value1 = None
+    value2 = None
     result = None
     if 'action' in request.GET:
         action = request.GET['action']
@@ -298,10 +290,6 @@ def run(request):
         fw_turn(value)
 
     # ================ Pan & Tilt=================
-    elif action == "cam_turn":
-        value = value0
-        cam_turn(value)
-
     elif action == "pan_turn":
         value = value0
         pan_turn(value)
@@ -356,14 +344,20 @@ def run(request):
     elif action == "get_offset_fw":
         result = turning_offset
 
-    # ================ Ball track =================
-    elif action == "find_blob":
-        find_blob()
+    # ================ Ultrasonic avoide =================
+    elif action == "ultra_distance":
+        channel = value0
+        result = ultra_get_distance(channel)
 
-    elif action == "get_blob":
-        state = value0
-        get_blob(state)
+    # ================ Light Follower =================
+    elif action == "light_follower_analog":
+        channel = value0
+        result = light_analog_index(channel)
 
+    # ================ Line Follower =================
+    elif action == "line_follower_analog":
+        channel = value0
+        result = line_analog_index(channel)
 
 
     return HttpResponse(result)

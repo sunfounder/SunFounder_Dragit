@@ -17,6 +17,7 @@ from django.conf.urls import url
 from django.contrib import admin
 from picar_v import views as picar_v_views
 from raspberry_pi import views as raspberry_pi_views
+from picar_s import views as picar_s_views
 import settings, views
 
 urlpatterns = [
@@ -26,4 +27,5 @@ urlpatterns = [
     url(r'^SnapCloudSignUp/$', views.SnapCloud),
     url(r'^run/picar-v/$', picar_v_views.run),
     url(r'^run/raspberry_pi/$', raspberry_pi_views.run),
+    url(r'^run/picar-s/$', picar_s_views.run),
 ]

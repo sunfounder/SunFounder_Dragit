@@ -3,6 +3,9 @@ SpriteMorph.prototype.loadSunFounderCategories = function(blocks, block, watcher
   if (cat === 'PiCar_V') {
     this.loadPiCarVCategories(blocks, block, watcherToggle);
   }
+  if (cat === 'PiCar_S') {
+    this.loadPiCarSCategories(blocks, block, watcherToggle);
+  }
   if (cat === 'RaspberryPi') {
     this.loadRaspberryPiCategories(blocks, block, watcherToggle);
   }
@@ -43,7 +46,22 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       );
       break;
 
-    case '%sf_io_state_dir':
+    case '%sf_cam_dir':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          'up' : ['up'],
+          'down' : ['down'],
+          'left' : ['left'],
+          'center' : ['center'],
+          'right' : ['right']
+        },
+        true // read-only
+      );
+      break;
+
+    case '%sf_io_state':
       part = new InputSlotMorph(
         null, // text
         false, // numeric?
@@ -80,7 +98,7 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       );
       break;
 
-    case '%sf_pwmchn_dir':
+    case '%sf_pwm_chn':
       part = new InputSlotMorph(
         null, // text
         false, // numeric?
@@ -106,21 +124,21 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       );
       break;
 
-    case '%sf_Achn_dir':
+    case '%sf_Achn':
       part = new InputSlotMorph(
         null, // text
         false, // numeric?
         {
-          'A0' : ['A0'],
-          'A1' : ['A1'],
-          'A2' : ['A2'],
-          'A3' : ['A3']
+          '0' : 0,
+          '1' : 1,
+          '2' : 2,
+          '3' : 3
         },
         false // read-only
       );
       break;
 
-    case '%sf_Dchn_dir':
+    case '%sf_Dchn':
       part = new InputSlotMorph(
         null, // text
         false, // numeric?
@@ -138,18 +156,31 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       );
       break;
 
-    case '%sf_cali_dir':
+    case '%sf_picarv_cali':
       part = new InputSlotMorph(
         null, // text
         false, // numeric?
         {
           "front wheel" : ["front wheel"],
-          "left wheel"  : ["left wheel"],
+          "left wheel" : ["left wheel"],
           "right wheel" : ["right wheel"],
-          "pan"         : ["pan"],
-          "tilt"        : ["tilt"]
+          "pan" : ["pan"],
+          "tilt" : ["tilt"]
         },
-        false // read-only
+        true // read-only
+      );
+      break;
+
+    case '%sf_picars_cali':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "front wheel" : ["front wheel"],
+          "left wheel" : ["left wheel"],
+          "right wheel" : ["right wheel"]
+        },
+        true // read-only
       );
       break;
 
@@ -185,27 +216,68 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         null, // text
         false, // numeric?
         {
-          "0"  : 17,
-          "1"  : 18,
-          "2"  : 22,
-          "3"  : 27,
-          "4"  : 23,
-          "5"  : 24,
-          "6"  : 25,
-          "7"  : 4,
-          "21" : 5,
-          "22" : 6,
-          "23" : 13,
-          "24" : 19,
-          "25" : 26,
-          "26" : 12,
-          "27" : 16,
-          "28" : 20,
-          "29" : 21,
+          "0 (BCM 17)"  : 17,
+          "1 (BCM 18)"  : 18,
+          "2 (BCM 22)"  : 22,
+          "3 (BCM 27)"  : 27,
+          "4 (BCM 23)"  : 23,
+          "5 (BCM 24)"  : 24,
+          "6 (BCM 25)"  : 25,
+          "7 (BCM 4)"  : 4,
+          "21 (BCM 5)"  : 5,
+          "22 (BCM 6)"  : 6,
+          "23 (BCM 13)"  : 13,
+          "24 (BCM 19)"  : 19,
+          "25 (BCM 26)"  : 26,
+          "26 (BCM 12)"  : 12,
+          "27 (BCM 16)"  : 16,
+          "28 (BCM 20)"  : 20,
+          "29 (BCM 21)"  : 21,
         },
         false // read-only
       );
       break;
+
+    case '%rpi_busnum':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "0"  : 0,
+          "1"  : 1
+        },
+        true // read-only
+      );
+      break;
+
+    case '%lf_index_chn':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "1"  : 1,
+          "2"  : 2,
+          "3"  : 3,
+          "4"  : 4,
+          "5"  : 5,
+        },
+        false // read-only
+      );
+      break;
+
+    case '%lt_index_chn':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "0"  : 0,
+          "1"  : 1,
+          "2"  : 2,
+        },
+        false // read-only
+      );
+      break;
+
     default:
       nop();
   }

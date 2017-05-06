@@ -56,7 +56,39 @@ def disk_total():
 def disk_used():
     disk_used = float(disk_space()[1][:-1])
     return disk_used
-                  
+
+def get_i2c_address(busnum):
+    cmd = "ls /dev/i2c-%d" % busnum
+    output = commands.getoutput(cmd)
+    print 'Commands "%s" output:' % cmd
+    print output
+    if '/dev/i2c-%d' % busnum in output.split(' '):
+        print "I2C device setup OK"
+    else:
+        print "Seems like I2C have not been set, Use 'sudo raspi-config' to set I2C"
+        return 'null'
+    cmd = "i2cdetect -y %s" % busnum
+    output = commands.getoutput(cmd)
+    print "i2cdetect output:"
+    print output
+    outputs = output.split('\n')[1:]
+    addresses = []
+    for tmp_addresses in outputs:
+        tmp_addresses = tmp_addresses.split(':')[1]
+        tmp_addresses = tmp_addresses.strip().split(' ')
+        for address in tmp_addresses:
+            if address != '--':
+                addresses.append(address)
+    print "Conneceted i2c device:"
+    address = []
+    if addresses == []:
+        print "No I2C devices connected"
+        return "No I2C devices connected"
+    else:
+        for a in addresses:
+            address.append("0x%s" % a)
+    return str(address).replace("'", '').strip('[]').replace(' ','')
+
 def run(request):
     print "Raspberry Pi run function start."
     debug = ''
@@ -95,19 +127,30 @@ def run(request):
         else:
             print "direction error"
     elif action == "cpu_temperature":
+        # Get CPU Temperature in Celcius
         result = cpu_temperature()
     elif action == "gpu_temperature":
+        # Get GPU Temperature in Celcius
         result = gpu_temperature()
     elif action == "ram_total":
+        # Get Ram Total
         result = ram_total()
     elif action == "ram_used":
+        # Get Ram Used
         result = ram_used()
     elif action == "disk_total":
+        # Get Disk Total
         result = disk_total()
     elif action == "disk_used":
+        # Get Disk Used
         result = disk_used()
     elif action == "cpu_usage":
+        # Get CPU Usage
         result = cpu_usage()
+    elif action == "i2cdetect":
+        busnum = int(value0)
+        result = get_i2c_address(busnum)
     else:
         print "action undefined"
+    print("result: %s"%result)
     return HttpResponse(result)

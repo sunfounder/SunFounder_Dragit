@@ -4,28 +4,24 @@ modules.cloud = "2017-May-05"
 
 SpriteMorph.prototype.loadPiCarVCategories = function(blocks, block, watcherToggle){
     blocks.push(block('picar_v_rw_run'));
-    //blocks.push(block('picar_v_rw_stop'));
+    blocks.push(block('picar_v_rw_stop'));
     blocks.push(block('picar_v_fw_turn'));
+    blocks.push(block('picar_v_cam_turn'));
     blocks.push(block('picar_v_pan_turn'));
     blocks.push(block('picar_v_tilt_turn'));
     blocks.push('=');
     blocks.push(block('picar_v_servo_turn'));
     blocks.push(block('picar_v_pwm_output'));
-    //blocks.push(watcherToggle('picar_v_get_analog'));
-    blocks.push(block('picar_v_get_analog'));
-    blocks.push(block('picar_v_get_digital'));
     blocks.push(block('picar_v_set_digital'));
+    blocks.push(block('picar_v_get_digital'));
+    blocks.push(block('picar_v_get_analog'));
     blocks.push(block('picar_v_calibrate'));
-    blocks.push('=');
-    blocks.push(block('picar_v_find_blob'));
-    blocks.push(block('picar_v_get_blob'));
-
 }
 
 // PiCar-V
 SpriteMorph.prototype.categories.push('PiCar_V')   // Add categories
 
-SpriteMorph.prototype.blockColor.PiCar_V = new Color(188, 19, 57)    // Define category colors
+SpriteMorph.prototype.blockColor.PiCar_V = new Color(211, 47, 47)    // Define category colors rgb(211, 47, 47)
 /*
 type:   command
         reporter
@@ -35,91 +31,103 @@ type:   command
  */
 
 SpriteMorph.prototype.blocks.picar_v_rw_run = {    // Define blocks
-    type: 'command',
+    type    : 'command',
     category: 'PiCar_V',
-    spec: '[PiCar-V]  Rear wheel %br    channel: %sf_motor_dir %br    direction: %sf_rw_dir %br    speed: %n',
-    defaults: ['both', 'forward', 0]
+    //spec: 'rear wheel %br    channel: %sf_motor_dir %br    direction: %sf_rw_dir %br    speed: %n',
+    spec    : 'move %sf_rw_dir at %n',
+    defaults: ['forward', 0]
   }
 
 SpriteMorph.prototype.blocks.picar_v_rw_stop = {
-    type: 'command',
+    type    : 'command',
     category: 'PiCar_V',
-    spec: '[PiCar-V]  Rear wheels %br    Stop'
+    spec    : 'stop'
+  }
+
+SpriteMorph.prototype.blocks.picar_v_cam_turn = {
+    type    : 'command',
+    category: 'PiCar_V',
+    //spec: '[PiCar-V]  Pan servo %br    angle: %n',
+    spec    : 'camera turn %sf_cam_dir',
+    defaults: ['center']
   }
 
 SpriteMorph.prototype.blocks.picar_v_fw_turn = {
-    type: 'command',
+    type    : 'command',
     category: 'PiCar_V',
-    spec: '[PiCar-V]  Front wheels %br    turn: %sf_fw_dir',
+    //spec: '[PiCar-V]  Front wheels %br    turn: %sf_fw_dir',
+    spec    : 'turn %sf_fw_dir',
     defaults: ['straight']
   }
 
 SpriteMorph.prototype.blocks.picar_v_pan_turn = {
-    type: 'command',
+    type    : 'command',
     category: 'PiCar_V',
-    spec: '[PiCar-V]  Pan servo %br    angle: %n',
+    //spec: '[PiCar-V]  Pan servo %br    angle: %n',
+    spec    : 'pan servo turn: %n',
     defaults: [0]
   }
 
 SpriteMorph.prototype.blocks.picar_v_tilt_turn = {
-    type: 'command',
+    type    : 'command',
     category: 'PiCar_V',
-    spec: '[PiCar-V]  Tilt servo %br    angle: %n',
+    //spec: '[PiCar-V]  Tilt servo %br    angle: %n',
+    spec    : 'tilt servo turn: %n',
     defaults: [0]
   }
 
 SpriteMorph.prototype.blocks.picar_v_pwm_output = {
-    type: 'command',
+    type    : 'command',
     category: 'PiCar_V',
-    spec: '[PiCar-V]  PWM %br    channel: %sf_pwmchn_dir %br    value: %n',
+    spec    : 'set PWM %sf_pwm_chn to %n',
     defaults: ['0', 0]
   }
 
 SpriteMorph.prototype.blocks.picar_v_servo_turn = {
-    type: 'command',
+    type    : 'command',
     category: 'PiCar_V',
-    spec: '[PiCar-V]  Servo %br    channel: %sf_pwmchn_dir %br    value: %n',
+    spec    : 'set servo %sf_pwm_chn to %n',
     defaults: ['0', 90]
   }
 
 SpriteMorph.prototype.blocks.picar_v_get_analog = {
-    type: 'reporter',
+    type    : 'reporter',
     category: 'PiCar_V',
-    spec: '[PiCar-V]  Analog %br    channel: %sf_Achn_dir',
-    defaults: ['A0']
+    spec    : 'analog %sf_Achn',
+    defaults: ['0']
   }
 
 SpriteMorph.prototype.blocks.picar_v_get_digital = {
-    type: 'reporter',
+    type    : 'reporter',
     category: 'PiCar_V',
-    spec: '[PiCar-V]  Digital %br    channel: %sf_Dchn_dir',
+    spec    : 'digital %sf_Dchn',
     defaults: ['B20']
   }
 
 SpriteMorph.prototype.blocks.picar_v_set_digital = {
-    type: 'command',
+    type    : 'command',
     category: 'PiCar_V',
-    spec: '[PiCar-V]  Set Digital %br    channel: %sf_Dchn_dir %br    state: %sf_io_state_dir',
+    spec    : 'set digital %sf_Dchn to %sf_io_state',
     defaults: ['B20','HIGH']
   }
 
 SpriteMorph.prototype.blocks.picar_v_calibrate = {
-    type: 'command',
+    type    : 'command',
     category: 'PiCar_V',
-    spec: '[PiCar-V]  Calibrate %br    member: %sf_cali_dir %br    offset: %n',
+    spec    : 'set %sf_picarv_cali offset to %n',
     defaults: ["front wheel", 0]
   }
 
 SpriteMorph.prototype.blocks.picar_v_find_blob = {
-    type: 'command',
+    type    : 'command',
     category: 'PiCar_V',
-    spec: '[PiCar-V]  Find red blob'
+    spec    : 'find red blob'
   }
 
 SpriteMorph.prototype.blocks.picar_v_get_blob = {
-    type: 'reporter',
+    type    : 'reporter',
     category: 'PiCar_V',
-    spec: '[PiCar-V]  Blob %sf_blob_dir',
+    spec    : 'blob %sf_blob_dir',
     defaults: ["x"]
   }
 
@@ -128,9 +136,9 @@ SpriteMorph.prototype.blocks.picar_v_get_blob = {
 // SunFounder process
 
 
-SpriteMorph.prototype.picar_v_rw_run = function (motor_channel, direction, speed) { // Define process
+SpriteMorph.prototype.picar_v_rw_run = function (direction, speed) { // Define process
   //reportURL('192.168.0.102:8000/run/picar-v/?action=pwmchannel&value=' + value)
-  requests('picar-v', 'rw_run', motor_channel, direction, speed)
+  requests('picar-v', 'rw_run', 'both', direction, speed)
 };
 
 SpriteMorph.prototype.picar_v_rw_stop = function () {
@@ -140,6 +148,11 @@ SpriteMorph.prototype.picar_v_rw_stop = function () {
 SpriteMorph.prototype.picar_v_fw_turn = function (value) {
   //reportURL('192.168.0.102:8000/run/picar-v/?action=fw_turn&value=' + value)
   requests('picar-v', 'fw_turn', value)
+};
+
+SpriteMorph.prototype.picar_v_cam_turn = function (value) {
+  //reportURL('192.168.0.102:8000/run/picar-v/?action=fw_turn&value=' + value)
+  requests('picar-v', 'cam_turn', value)
 };
 
 SpriteMorph.prototype.picar_v_pan_turn = function (value) {
@@ -178,7 +191,7 @@ SpriteMorph.prototype.picar_v_set_digital = function (digital_channel, value) {
 };
 
 SpriteMorph.prototype.picar_v_calibrate = function (member, offset) {
-  //reportURL('192.168.0.102:8000/run/picar-v/?action=set_digital&value=' + value)
+  //reportURL('192.168.0.102:8000/run/picar-s/?action=set_digital&value=' + value)
   requests('picar-v', 'calibrate', member, offset)
 };
 

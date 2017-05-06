@@ -129,6 +129,7 @@ SpriteMorph.prototype.categories =
     ];
 
 SpriteMorph.prototype.blockColor = {
+    /*
     motion : new Color(74, 108, 212),
     looks : new Color(143, 86, 227),
     sound : new Color(207, 74, 217),
@@ -138,7 +139,18 @@ SpriteMorph.prototype.blockColor = {
     operators : new Color(98, 194, 19),
     variables : new Color(243, 118, 29),
     lists : new Color(217, 77, 17),
-    other: new Color(150, 150, 150)
+    other: new Color(150, 150, 150)*/
+
+    motion : new Color(21, 101, 192),    //rgb(21, 101, 192)  Blue 800
+    looks : new Color(103, 58, 183),     //rgb(103, 58, 183)  Deep Purple 500
+    sound : new Color(213, 0, 249),      //rgb(213, 0, 249)   Purple A400
+    pen : new Color(0, 121, 107),        //rgb(0, 121, 107)  Teal 700
+    control : new Color(249, 168, 37),   //rgb(249, 168, 37) Yellow 800
+    sensing : new Color(3, 169, 244),    //rgb(3, 169, 244)  Light Blue 500
+    operators : new Color(104, 159, 56), //rgb(104, 159, 56) Light Green 700
+    variables : new Color(245, 124, 0),  //rgb(245, 124, 0)  Orange 700
+    lists : new Color(221, 44, 0),       //rgb(221, 44, 0)   Deep Orange A700
+    other: new Color(97, 97, 97)         //rgb(97, 97, 97)   Grey 700
 };
 
 SpriteMorph.prototype.paletteColor = new Color(55, 55, 55);

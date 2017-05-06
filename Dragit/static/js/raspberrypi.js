@@ -5,6 +5,9 @@ modules.cloud = "2017-May-05"
 SpriteMorph.prototype.loadRaspberryPiCategories = function(blocks, block, watcherToggle){
     blocks.push(block('rpi_gpio_set'));
     blocks.push(block('rpi_gpio_get'));
+    blocks.push(block('rpi_gpio_get_tf'));  //predicate
+    blocks.push('=');
+    blocks.push(block('rpi_i2cdetect'));
     blocks.push('=');
     blocks.push(block('cpu_temperature'));
     blocks.push(block('gpu_temperature'));
@@ -18,7 +21,7 @@ SpriteMorph.prototype.loadRaspberryPiCategories = function(blocks, block, watche
 // PiCar-V
 SpriteMorph.prototype.categories.push('RaspberryPi')   // Add categories
 
-SpriteMorph.prototype.blockColor.RaspberryPi = new Color(51, 204, 51)    // Define category colors
+SpriteMorph.prototype.blockColor.RaspberryPi = new Color(56, 142, 60)    // Green 700 rgb(56, 142, 60)
 
 /*
 type:   command
@@ -31,15 +34,29 @@ type:   command
 SpriteMorph.prototype.blocks.rpi_gpio_set = {    // Define blocks
     type: 'command',
     category: 'RaspberryPi',
-    spec: 'GPIO %rpi_io_chn %sf_io_state_dir',
-    defaults: ['0', 'LOW']
+    spec: 'gpio %rpi_io_chn %sf_io_state',
+    defaults: ['17', 'LOW']
   }
 
 SpriteMorph.prototype.blocks.rpi_gpio_get = {    // Define blocks
     type: 'reporter',
     category: 'RaspberryPi',
-    spec: 'GPIO %rpi_io_chn',
-    defaults: ['0']
+    spec: 'gpio %rpi_io_chn',
+    defaults: ['17']
+  }
+
+SpriteMorph.prototype.blocks.rpi_gpio_get_tf = {    // Define blocks
+    type: 'predicate',
+    category: 'RaspberryPi',
+    spec: 'gpio %rpi_io_chn',
+    defaults: ['17']
+  }
+
+SpriteMorph.prototype.blocks.rpi_i2cdetect = {    // Define blocks
+    type: 'reporter',
+    category: 'RaspberryPi',
+    spec: 'connected i2c at %rpi_busnum',
+    defaults: ['1']
   }
 
 SpriteMorph.prototype.blocks.cpu_temperature = {    // Define blocks
@@ -87,46 +104,66 @@ SpriteMorph.prototype.blocks.disk_used = {    // Define blocks
 
 
 SpriteMorph.prototype.rpi_gpio_set = function (channel, status) { // Define process
-  //reportURL('192.168.0.102:8000/run/picar-v/?action=pwmchannel&value=' + value)
+  // '192.168.0.102:8000/run/raspberry_pi/?action=gpio&value0=output&value1=channel&
   requests('raspberry_pi', 'gpio', 'output', channel, status)
 };
 
 SpriteMorph.prototype.rpi_gpio_get = function (channel) { // Define process
-  //reportURL('192.168.0.102:8000/run/picar-v/?action=pwmchannel&value=' + value)
+  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=gpio&value=' + value)
   return requests('raspberry_pi', 'gpio', 'input', channel)
 };
 
+SpriteMorph.prototype.rpi_gpio_get_tf = function (channel) { // Define process
+  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=gpio&value=' + value)
+  result = requests('raspberry_pi', 'gpio', 'input', channel);
+  if (result == 1)
+    result = true;
+  else
+    result = false;
+  return result
+};
+
+SpriteMorph.prototype.rpi_i2cdetect = function (busnum) { // Define process
+  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=pwmchannel&value=' + value)
+  var result = new List()
+  raw_result = requests('raspberry_pi', 'i2cdetect', busnum).split(',');
+  for (i=0; i<raw_result.length; i++){
+    result.add(raw_result[i])
+  }
+  return result
+};
+
 SpriteMorph.prototype.cpu_temperature = function () { // Define process
-  //reportURL('192.168.0.102:8000/run/picar-v/?action=pwmchannel&value=' + value)
+  // 192.168.0.102:8000/run/raspberry_pi/?action=cpu_temperature
   return requests('raspberry_pi', 'cpu_temperature')
 };
 
 SpriteMorph.prototype.gpu_temperature = function () { // Define process
-  //reportURL('192.168.0.102:8000/run/picar-v/?action=pwmchannel&value=' + value)
+  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=pwmchannel&value=' + value)
   return requests('raspberry_pi', 'gpu_temperature')
 };
 
 SpriteMorph.prototype.cpu_usage = function () { // Define process
-  //reportURL('192.168.0.102:8000/run/picar-v/?action=pwmchannel&value=' + value)
+  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=pwmchannel&value=' + value)
   return requests('raspberry_pi', 'cpu_usage')
 };
 
 SpriteMorph.prototype.ram_total = function () { // Define process
-  //reportURL('192.168.0.102:8000/run/picar-v/?action=pwmchannel&value=' + value)
+  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=pwmchannel&value=' + value)
   return requests('raspberry_pi', 'ram_total')
 };
 
 SpriteMorph.prototype.ram_used = function () { // Define process
-  //reportURL('192.168.0.102:8000/run/picar-v/?action=pwmchannel&value=' + value)
+  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=pwmchannel&value=' + value)
   return requests('raspberry_pi', 'ram_used')
 };
 
 SpriteMorph.prototype.disk_total = function () { // Define process
-  //reportURL('192.168.0.102:8000/run/picar-v/?action=pwmchannel&value=' + value)
+  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=pwmchannel&value=' + value)
   return requests('raspberry_pi', 'disk_total')
 };
 
 SpriteMorph.prototype.disk_used = function () { // Define process
-  //reportURL('192.168.0.102:8000/run/picar-v/?action=pwmchannel&value=' + value)
+  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=pwmchannel&value=' + value)
   return requests('raspberry_pi', 'disk_used')
 };

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Dragit.picar_v',
     'Dragit.raspberry_pi',
+    'Dragit.picar_s',
 ]
 
 MIDDLEWARE = [
