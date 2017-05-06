@@ -311,16 +311,6 @@ def run(request):
         analog_channel = value0
         result = get_analog(analog_channel)
 
-    # ================ Digital Ports =================
-    elif action == "get_digital":
-        digital_channel = value0
-        result = get_digital(digital_channel)
-
-    elif action == "set_digital":
-        digital_channel = value0
-        IO_state = value1
-        set_digital(digital_channel, IO_state)
-
     # ================ Calibrate =================
     elif action == "calibrate":
         member = value0

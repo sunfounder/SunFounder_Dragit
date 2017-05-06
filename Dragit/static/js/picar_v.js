@@ -169,12 +169,12 @@ SpriteMorph.prototype.picar_v_get_analog = function (analog_channel) {
 
 SpriteMorph.prototype.picar_v_get_digital = function (digital_channel) {
   //reportURL('192.168.0.102:8000/run/picar-v/?action=get_digital&value=' + value)
-  return requests('picar-v', 'get_digital', digital_channel)
+  return requests('raspberry_pi', 'gpio', 'input', digital_channel)
 };
 
 SpriteMorph.prototype.picar_v_set_digital = function (digital_channel, value) {
   //reportURL('192.168.0.102:8000/run/picar-v/?action=set_digital&value=' + value)
-  requests('picar-v', 'set_digital', digital_channel, value)
+  requests('raspberry_pi', 'gpio', 'output', digital_channel, value)
 };
 
 SpriteMorph.prototype.picar_v_calibrate = function (member, offset) {

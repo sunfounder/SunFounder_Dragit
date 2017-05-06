@@ -8,3 +8,5 @@ live-tree.xml	Live Tree
 swimmer.xml	Swimmer
 tree.xml	Tree
 vee.xml	Vee
+pan_rotate.xml PiCar V Pan Sweep
+picar_v.xml PiCar V Keyboard Control

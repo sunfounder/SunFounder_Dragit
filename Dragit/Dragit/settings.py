@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Dragit.picar_v'
+    'Dragit.picar_v',
+    'Dragit.raspberry_pi',
 ]
 
 MIDDLEWARE = [

@@ -3,6 +3,9 @@ SpriteMorph.prototype.loadSunFounderCategories = function(blocks, block, watcher
   if (cat === 'PiCar_V') {
     this.loadPiCarVCategories(blocks, block, watcherToggle);
   }
+  if (cat === 'RaspberryPi') {
+    this.loadRaspberryPiCategories(blocks, block, watcherToggle);
+  }
 }
 
 function requests(device, action, value0=null, value1=null, value2=null){
@@ -46,7 +49,7 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         false, // numeric?
         {
           'HIGH' : ['HIGH'],
-          'LOW' : ['LOW']
+          'LOW'  : ['LOW']
         },
         false // read-only
       );
@@ -150,6 +153,59 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       );
       break;
 
+    case '%rpi_bcm_chn':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "17" : 17,
+          "18" : 18,
+          "22" : 22,
+          "27" : 27,
+          "23" : 23,
+          "24" : 24,
+          "25" : 25,
+          "4"  : 4,
+          "5"  : 5,
+          "6"  : 6,
+          "13" : 13,
+          "19" : 19,
+          "26" : 26,
+          "12" : 12,
+          "16" : 16,
+          "20" : 20,
+          "21" : 21,
+        },
+        false // read-only
+      );
+      break;
+
+    case '%rpi_io_chn':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "0"  : 17,
+          "1"  : 18,
+          "2"  : 22,
+          "3"  : 27,
+          "4"  : 23,
+          "5"  : 24,
+          "6"  : 25,
+          "7"  : 4,
+          "21" : 5,
+          "22" : 6,
+          "23" : 13,
+          "24" : 19,
+          "25" : 26,
+          "26" : 12,
+          "27" : 16,
+          "28" : 20,
+          "29" : 21,
+        },
+        false // read-only
+      );
+      break;
     default:
       nop();
   }
