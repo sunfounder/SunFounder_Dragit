@@ -31,6 +31,8 @@ SpriteMorph.prototype.loadPiCarSCategories = function(blocks, block, watcherTogg
     blocks.push('-');
     blocks.push(block('picar_s_light_analog_index'));
     blocks.push(block('picar_s_line_analog_index'));
+    blocks.push('=');
+    blocks.push(block('picar_s_device_status'));
 
 }
 
@@ -165,6 +167,11 @@ SpriteMorph.prototype.blocks.picar_s_line_analog = {
     spec    : 'line_follower state'
   }
 
+SpriteMorph.prototype.blocks.picar_s_device_status = {
+    type    : 'reporter',
+    category: 'PiCar_S',
+    spec    : 'device status'
+  }
 
 // Relable
 
@@ -269,4 +276,9 @@ SpriteMorph.prototype.picar_s_line_analog = function (channel) {
     result.add(raw_result[i])
   }
   return result
+};
+
+SpriteMorph.prototype.picar_s_device_status = function () {
+  //reportURL('192.168.0.102:8000/run/picar-s/?action=get_analog&value=' + value)
+  return requests('picar-s', 'device_status')
 };

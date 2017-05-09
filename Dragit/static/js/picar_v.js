@@ -21,6 +21,7 @@ SpriteMorph.prototype.loadPiCarVCategories = function(blocks, block, watcherTogg
     blocks.push(block('picar_v_cali_left_wheel'));
     blocks.push(block('picar_v_cali_right_wheel'));
     blocks.push('=');
+    blocks.push(block('picar_v_device_status'));
 }
 
 // PiCar-V
@@ -150,6 +151,12 @@ SpriteMorph.prototype.blocks.picar_v_get_blob = {
     defaults: ["x"]
   }
 
+SpriteMorph.prototype.blocks.picar_v_device_status = {
+    type    : 'reporter',
+    category: 'PiCar_V',
+    spec    : 'device status'
+  }
+
 // Relable
 SpriteMorph.prototype.blockAlternatives.picar_v_rw_run = ['picar_v_rw_stop'];
 SpriteMorph.prototype.blockAlternatives.picar_v_rw_stop = ['picar_v_rw_run'];
@@ -169,41 +176,41 @@ SpriteMorph.prototype.blockAlternatives.picar_v_cali_right_wheel = ['picar_v_cal
 
 SpriteMorph.prototype.picar_v_rw_run = function (direction, speed) { // Define process
   //reportURL('192.168.0.102:8000/run/picar-v/?action=pwmchannel&value=' + value)
-  requests('picar-v', 'rw_run', 'both', direction, speed)
+  return requests('picar-v', 'rw_run', 'both', direction, speed)
 };
 
 SpriteMorph.prototype.picar_v_rw_stop = function () {
-  requests('picar-v', 'rw_stop')
+  return requests('picar-v', 'rw_stop')
 };
 
 SpriteMorph.prototype.picar_v_fw_turn = function (value) {
   //reportURL('192.168.0.102:8000/run/picar-v/?action=fw_turn&value=' + value)
-  requests('picar-v', 'fw_turn', value)
+  return requests('picar-v', 'fw_turn', value)
 };
 
 SpriteMorph.prototype.picar_v_cam_turn = function (value) {
   //reportURL('192.168.0.102:8000/run/picar-v/?action=fw_turn&value=' + value)
-  requests('picar-v', 'cam_turn', value)
+  return requests('picar-v', 'cam_turn', value)
 };
 
 SpriteMorph.prototype.picar_v_pan_turn = function (value) {
   //reportURL('192.168.0.102:8000/run/picar-v/?action=pan_turn&value=' + value)
-  requests('picar-v', 'pan_turn', value)
+  return requests('picar-v', 'pan_turn', value)
 };
 
 SpriteMorph.prototype.picar_v_tilt_turn = function (value) {
   //reportURL('192.168.0.102:8000/run/picar-v/?action=tilt_turn&value=' + value)
-  requests('picar-v', 'tilt_turn', value)
+  return requests('picar-v', 'tilt_turn', value)
 };
 
 SpriteMorph.prototype.picar_v_pwm_output = function (pwm_channel, value) {
   //reportURL('192.168.0.102:8000/run/picar-v/?action=pwmchannel&value=' + value)
-  requests('picar-v', 'pwm_output', pwm_channel, value)
+  return requests('picar-v', 'pwm_output', pwm_channel, value)
 };
 
 SpriteMorph.prototype.picar_v_servo_turn = function (servo_channel, angle) {
   //reportURL('192.168.0.102:8000/run/picar-v/?action=servo_turn&value=' + value)
-  requests('picar-v', 'servo_turn', servo_channel, angle)
+  return requests('picar-v', 'servo_turn', servo_channel, angle)
 };
 
 SpriteMorph.prototype.picar_v_get_analog = function (analog_channel) {
@@ -218,31 +225,36 @@ SpriteMorph.prototype.picar_v_get_digital = function (digital_channel) {
 
 SpriteMorph.prototype.picar_v_set_digital = function (digital_channel, value) {
   //reportURL('192.168.0.102:8000/run/picar-v/?action=set_digital&value=' + value)
-  requests('raspberry_pi', 'gpio', 'output', digital_channel, value)
+  return requests('raspberry_pi', 'gpio', 'output', digital_channel, value)
 };
 
 SpriteMorph.prototype.picar_v_cali_front_wheels = function (offset) {
   //reportURL('192.168.0.102:8000/run/picar-s/?action=set_digital&value=' + value)
-  requests('picar-s', 'calibrate', 'front_wheels', offset)
+  return requests('picar-s', 'calibrate', 'front_wheels', offset)
 };
 
 SpriteMorph.prototype.picar_v_cali_left_wheel = function (offset) {
   //reportURL('192.168.0.102:8000/run/picar-s/?action=set_digital&value=' + value)
-  requests('picar-s', 'calibrate', 'left_wheel', offset)
+  return requests('picar-s', 'calibrate', 'left_wheel', offset)
 };
 
 SpriteMorph.prototype.picar_v_cali_right_wheel = function (offset) {
   //reportURL('192.168.0.102:8000/run/picar-s/?action=set_digital&value=' + value)
-  requests('picar-s', 'calibrate', 'right_wheel', offset)
+  return requests('picar-s', 'calibrate', 'right_wheel', offset)
 };
 
 
 SpriteMorph.prototype.picar_v_find_blob = function () {
   //reportURL('192.168.0.102:8000/run/picar-v/?action=set_digital&value=' + value)
-  requests('picar-v', 'find_blob')
+  return requests('picar-v', 'find_blob')
 };
 
 SpriteMorph.prototype.picar_v_get_blob = function (state) {
   //reportURL('192.168.0.102:8000/run/picar-v/?action=get_analog&value=' + value)
   return requests('picar-v', 'get_blob', state)
+};
+
+SpriteMorph.prototype.picar_v_device_status = function () {
+  //reportURL('192.168.0.102:8000/run/picar-v/?action=get_analog&value=' + value)
+  return requests('picar-v', 'device_status')
 };

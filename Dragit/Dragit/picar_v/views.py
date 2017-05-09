@@ -2,14 +2,14 @@
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 
-from picar.SunFounder_PCA9685.Servo import Servo
-from picar.SunFounder_PCA9685.PCA9685 import PWM
-from picar.SunFounder_TB6612.TB6612 import Motor
-from picar import front_wheels
-from picar import back_wheels
-from picar import filedb
-from picar import ADC
-import picar
+from Dragit.picar.SunFounder_PCA9685.Servo import Servo
+from Dragit.picar.SunFounder_PCA9685.PCA9685 import PWM
+from Dragit.picar.SunFounder_TB6612.TB6612 import Motor
+from Dragit.picar import front_wheels
+from Dragit.picar import back_wheels
+from Dragit.picar import filedb
+from Dragit.picar import ADC
+import Dragit.picar
 import time
 import RPi.GPIO as GPIO
 import image_process
@@ -22,27 +22,31 @@ blob_x = 0
 blob_y = 0
 blob_r = 0
 
-adc  = ADC(0x48)
-fw   = front_wheels.Front_Wheels(debug=True, db='config')
-bw   = back_wheels.Back_Wheels(db='config')
-pan  = Servo(1)
-tilt = Servo(2)
-left_wheel  = Motor(Motor_A)
-right_wheel = Motor(Motor_B)
+try:
+    adc  = ADC(0x48)
+    fw   = front_wheels.Front_Wheels(debug=True, db='config')
+    bw   = back_wheels.Back_Wheels(db='config')
+    pan  = Servo(1)
+    tilt = Servo(2)
+    left_wheel  = Motor(Motor_A)
+    right_wheel = Motor(Motor_B)
 
-db   = filedb.fileDB(db='config')
-turning_offset = int(fw.db.get('turning_offset', default_value=0))
-pan_offset     = int(fw.db.get('pan_offset',     default_value=0))
-tilt_offset    = int(fw.db.get('tilt_offset',    default_value=0))
+    db   = filedb.fileDB(db='config')
+    turning_offset = int(fw.db.get('turning_offset', default_value=0))
+    pan_offset     = int(fw.db.get('pan_offset',     default_value=0))
+    tilt_offset    = int(fw.db.get('tilt_offset',    default_value=0))
 
 
-fw.turning_max = 45
-picar.setup()
-GPIO.setmode(GPIO.BCM)
+    fw.turning_max = 45
+    Dragit.picar.setup()
+    GPIO.setmode(GPIO.BCM)
 
-blob_x = 0
-blob_y = 0
-blob_r = 0
+    blob_x = 0
+    blob_y = 0
+    blob_r = 0
+    err_msg = ''
+except Exception,e:
+    err_msg = "PiCar-V is not avalible"
 
 def rw_run(motor_channel, direction, speed):
     if speed < 0:
@@ -56,7 +60,7 @@ def rw_run(motor_channel, direction, speed):
             bw.forward()
         elif direction == "backward":
             bw.backward()
-        bw.speed = speed
+        bw.set_speed(speed)
         msg = "[PiCar-V] Set Rear wheels %s at speed %d"%(direction, speed)
         print(msg)
     # left motor
@@ -267,109 +271,120 @@ def rw_stop():
     msg = "[PiCar-V] Stop"
     print(msg)
 
+def device_status():
+    if err_msg == '':
+        return 'Device is ok'
+    else:
+        return err_msg
+
 def run(request):
-    debug = ''
-    action = None
-    value = None
-    result = None
-    if 'action' in request.GET:
-        action = request.GET['action']
-        print("Get action: %s"%action)
-    if 'value0' in request.GET:
-        value0 = request.GET['value0']
-        print("Get value0: %s"%value0)
-    if 'value1' in request.GET:
-        value1 = request.GET['value1']
-        print("Get value1: %s"%value1)
-    if 'value2' in request.GET:
-        value2 = request.GET['value2']
-        print("Get value2: %s"%value2)
+    try:
+        debug = ''
+        action = None
+        value = None
+        result = None
+        if 'action' in request.GET:
+            action = request.GET['action']
+            print("Get action: %s"%action)
+        if 'value0' in request.GET:
+            value0 = request.GET['value0']
+            print("Get value0: %s"%value0)
+        if 'value1' in request.GET:
+            value1 = request.GET['value1']
+            print("Get value1: %s"%value1)
+        if 'value2' in request.GET:
+            value2 = request.GET['value2']
+            print("Get value2: %s"%value2)
 
-    # ============== Back wheels =============
-    if action == 'rw_run':
-        motor_channel = value0
-        direction = value1
-        speed = int(value2)
-        rw_run(motor_channel, direction, speed)
-        debug = "motor_channel = ", motor_channel
-        debug = "direction =", direction
-        debug = "speed =", speed
+        # ============== Back wheels =============
+        if action == 'rw_run':
+            motor_channel = value0
+            direction = value1
+            speed = int(value2)
+            rw_run(motor_channel, direction, speed)
+            debug = "motor_channel = ", motor_channel
+            debug = "direction =", direction
+            debug = "speed =", speed
 
-    elif action == 'rw_stop':
-        rw_stop()
+        elif action == 'rw_stop':
+            rw_stop()
 
-    # ============== Front wheels =============
-    elif action == 'fw_turn':
-        value = value0
-        fw_turn(value)
+        # ============== Front wheels =============
+        elif action == 'fw_turn':
+            value = value0
+            fw_turn(value)
 
-    # ================ Pan & Tilt=================
-    elif action == "cam_turn":
-        value = value0
-        cam_turn(value)
+        # ================ Pan & Tilt=================
+        elif action == "cam_turn":
+            value = value0
+            cam_turn(value)
 
-    elif action == "pan_turn":
-        value = value0
-        pan_turn(value)
+        elif action == "pan_turn":
+            value = value0
+            pan_turn(value)
 
-    elif action == "tilt_turn":
-        value = value0
-        tilt_turn(value)
+        elif action == "tilt_turn":
+            value = value0
+            tilt_turn(value)
 
-    # ================ Servo & Motor =================
-    elif action == "servo_turn":
-        servo_channel = int(value0)
-        angle         = int(value1)
-        servo_turn(servo_channel, angle)
+        # ================ Servo & Motor =================
+        elif action == "servo_turn":
+            servo_channel = int(value0)
+            angle         = int(value1)
+            servo_turn(servo_channel, angle)
 
-    elif action == "motor_run":
-        motor_channel = value0
-        direction     = value1
-        speed         = int(value2)
-        motor_run(motor_channel, direction, speed)
+        elif action == "motor_run":
+            motor_channel = value0
+            direction     = value1
+            speed         = int(value2)
+            motor_run(motor_channel, direction, speed)
 
-    # ================ PWM =================
-    elif action == "pwm_output":
-        pwm_channel = value0
-        value = value1
-        pwm_output(pwm_channel, value)
+        # ================ PWM =================
+        elif action == "pwm_output":
+            pwm_channel = value0
+            value = value1
+            pwm_output(pwm_channel, value)
 
-    # ================ get analog =================
-    elif action == "get_analog":
-        analog_channel = value0
-        result = get_analog(analog_channel)
+        # ================ get analog =================
+        elif action == "get_analog":
+            analog_channel = value0
+            result = get_analog(analog_channel)
 
-    # ================ Calibrate =================
-    elif action == "calibrate":
-        member = value0
-        offset = value1
+        # ================ Calibrate =================
+        elif action == "calibrate":
+            member = value0
+            offset = value1
 
-        if member == "front wheel":
-            cali_front_wheels(offset)
+            if member == "front wheel":
+                cali_front_wheels(offset)
 
-        elif member == "left wheel":
-            cali_left_wheel(offset)
+            elif member == "left wheel":
+                cali_left_wheel(offset)
 
-        elif member == "right wheel":
-            cali_right_wheel(offset)
+            elif member == "right wheel":
+                cali_right_wheel(offset)
 
-        elif member == "pan servo":
-            cali_pan_servo(offset)
+            elif member == "pan servo":
+                cali_pan_servo(offset)
 
-        elif member == "tilt servo":
-            cali_tilt_servo(offset)
+            elif member == "tilt servo":
+                cali_tilt_servo(offset)
 
-    elif action == "get_offset_fw":
-        result = turning_offset
+        elif action == "get_offset_fw":
+            result = turning_offset
 
-    # ================ Ball track =================
-    elif action == "find_blob":
-        find_blob()
+        # ================ Ball track =================
+        elif action == "find_blob":
+            find_blob()
 
-    elif action == "get_blob":
-        state = value0
-        get_blob(state)
+        elif action == "get_blob":
+            state = value0
+            get_blob(state)
 
+        elif action == "device_status":
+            result = device_status()
 
-
-    return HttpResponse(result)
+    except Exception, e:
+        result = '%s: %s'%(err_msg, e)
+    finally:
+        return HttpResponse(result)

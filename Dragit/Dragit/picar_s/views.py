@@ -2,18 +2,18 @@
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 
-from sensor_modules.SunFounder_Ultrasonic_Avoidance.Ultrasonic_Avoidance import Ultrasonic_Avoidance
-from sensor_modules.SunFounder_Light_Follower.Light_Follower import Light_Follower
-from sensor_modules.SunFounder_Line_Follower.Line_Follower import Line_Follower
+from Dragit.sensors.Ultrasonic_Avoidance import Ultrasonic_Avoidance
+from Dragit.sensors.Light_Follower import Light_Follower
+from Dragit.sensors.Line_Follower import Line_Follower
 
-from picar.SunFounder_PCA9685.Servo import Servo
-from picar.SunFounder_PCA9685.PCA9685 import PWM
-from picar.SunFounder_TB6612.TB6612 import Motor
-from picar import front_wheels
-from picar import back_wheels
-from picar import filedb
-from picar import ADC
-import picar
+from Dragit.picar.SunFounder_PCA9685.Servo import Servo
+from Dragit.picar.SunFounder_PCA9685.PCA9685 import PWM
+from Dragit.picar.SunFounder_TB6612.TB6612 import Motor
+from Dragit.picar import front_wheels
+from Dragit.picar import back_wheels
+from Dragit.picar import filedb
+from Dragit.picar import ADC
+import Dragit.picar
 import time
 import RPi.GPIO as GPIO
 import sys
@@ -21,30 +21,30 @@ import sys
 Motor_A = 17
 Motor_B = 27
 
-adc  = ADC(0x48)
-pan  = Servo(1)
-tilt = Servo(2)
-left_wheel  = Motor(Motor_A)
-right_wheel = Motor(Motor_B)
+try:
+    adc  = ADC(0x48)
+    pan  = Servo(1)
+    tilt = Servo(2)
+    left_wheel  = Motor(Motor_A)
+    right_wheel = Motor(Motor_B)
 
-lf = Line_Follower()
-lt = Light_Follower()
-lt.analog_function = adc.read
-fw = front_wheels.Front_Wheels(debug=True, db='config')
-bw = back_wheels.Back_Wheels(db='config')
+    lf = Line_Follower()
+    lt = Light_Follower()
+    lt.analog_function = adc.read
+    fw = front_wheels.Front_Wheels(debug=True, db='config')
+    bw = back_wheels.Back_Wheels(db='config')
 
-db = filedb.fileDB(db='config')
-turning_offset = int(fw.db.get('turning_offset', default_value=0))
-pan_offset     = int(fw.db.get('pan_offset',     default_value=0))
-tilt_offset    = int(fw.db.get('tilt_offset',    default_value=0))
+    db = filedb.fileDB(db='config')
+    turning_offset = int(fw.db.get('turning_offset', default_value=0))
+    pan_offset     = int(fw.db.get('pan_offset',     default_value=0))
+    tilt_offset    = int(fw.db.get('tilt_offset',    default_value=0))
 
-fw.turning_max = 45
-picar.setup()
-GPIO.setmode(GPIO.BCM)
-
-blob_x = 0
-blob_y = 0
-blob_r = 0
+    fw.turning_max = 45
+    Dragit.picar.setup()
+    GPIO.setmode(GPIO.BCM)
+    err_msg = ''
+except Exception,e:
+    err_msg = "PiCar-S is not avalible"
 
 def rw_run(motor_channel, direction, speed):
     if speed < 0:
@@ -220,98 +220,110 @@ def rw_stop():
     msg = "[PiCar-S] Stop"
     print(msg)
 
+def device_status():
+    if err_msg == '':
+        return 'Device is ok'
+    else:
+        return err_msg
+
 def run(request):
-    debug = ''
-    action = None
-    value0 = None
-    value1 = None
-    value2 = None
-    result = None
-    if 'action' in request.GET:
-        action = request.GET['action']
-        print("Get action: %s"%action)
-    if 'value0' in request.GET:
-        value0 = request.GET['value0']
-        print("Get value0: %s"%value0)
-    if 'value1' in request.GET:
-        value1 = request.GET['value1']
-        print("Get value1: %s"%value1)
-    if 'value2' in request.GET:
-        value2 = request.GET['value2']
-        print("Get value2: %s"%value2)
+    try:
+        debug = ''
+        action = None
+        value0 = None
+        value1 = None
+        value2 = None
+        result = None
+        if 'action' in request.GET:
+            action = request.GET['action']
+            print("Get action: %s"%action)
+        if 'value0' in request.GET:
+            value0 = request.GET['value0']
+            print("Get value0: %s"%value0)
+        if 'value1' in request.GET:
+            value1 = request.GET['value1']
+            print("Get value1: %s"%value1)
+        if 'value2' in request.GET:
+            value2 = request.GET['value2']
+            print("Get value2: %s"%value2)
 
-    # ============== Back wheels =============
-    if action == 'rw_run':
-        motor_channel = value0
-        direction = value1
-        speed = int(value2)
-        rw_run(motor_channel, direction, speed)
-        debug = "motor_channel = ", motor_channel
-        debug = "direction =", direction
-        debug = "speed =", speed
+        # ============== Back wheels =============
+        if action == 'rw_run':
+            motor_channel = value0
+            direction = value1
+            speed = int(value2)
+            rw_run(motor_channel, direction, speed)
+            debug = "motor_channel = ", motor_channel
+            debug = "direction =", direction
+            debug = "speed =", speed
 
-    elif action == 'rw_stop':
-        rw_stop()
+        elif action == 'rw_stop':
+            rw_stop()
 
-    # ============== Front wheels =============
-    elif action == 'fw_turn':
-        value = value0
-        fw_turn(value)
+        # ============== Front wheels =============
+        elif action == 'fw_turn':
+            value = value0
+            fw_turn(value)
 
-    # ================ Servo & Motor =================
-    elif action == "servo_turn":
-        servo_channel = int(value0)
-        angle         = int(value1)
-        servo_turn(servo_channel, angle)
+        # ================ Servo & Motor =================
+        elif action == "servo_turn":
+            servo_channel = int(value0)
+            angle         = int(value1)
+            servo_turn(servo_channel, angle)
 
-    elif action == "motor_run":
-        motor_channel = value0
-        direction     = value1
-        speed         = int(value2)
-        motor_run(motor_channel, direction, speed)
+        elif action == "motor_run":
+            motor_channel = value0
+            direction     = value1
+            speed         = int(value2)
+            motor_run(motor_channel, direction, speed)
 
-    # ================ PWM =================
-    elif action == "pwm_output":
-        pwm_channel = value0
-        value = value1
-        pwm_output(pwm_channel, value)
+        # ================ PWM =================
+        elif action == "pwm_output":
+            pwm_channel = value0
+            value = value1
+            pwm_output(pwm_channel, value)
 
-    # ================ get analog =================
-    elif action == "get_analog":
-        analog_channel = value0
-        result = get_analog(analog_channel)
+        # ================ get analog =================
+        elif action == "get_analog":
+            analog_channel = value0
+            result = get_analog(analog_channel)
 
-    # ================ Calibrate =================
-    elif action == "calibrate":
-        member = value0
-        offset = value1
+        # ================ Calibrate =================
+        elif action == "calibrate":
+            member = value0
+            offset = value1
 
-        if member == "front wheel":
-            cali_front_wheels(offset)
+            if member == "front wheel":
+                cali_front_wheels(offset)
 
-        elif member == "left wheel":
-            cali_left_wheel(offset)
+            elif member == "left wheel":
+                cali_left_wheel(offset)
 
-        elif member == "right wheel":
-            cali_right_wheel(offset)
+            elif member == "right wheel":
+                cali_right_wheel(offset)
 
-    elif action == "get_offset_fw":
-        result = turning_offset
+        elif action == "get_offset_fw":
+            result = turning_offset
 
-    # ================ Ultrasonic avoide =================
-    elif action == "ultra_distance":
-        channel = value0
-        result = ultra_get_distance(channel)
+        # ================ Ultrasonic avoide =================
+        elif action == "ultra_distance":
+            channel = value0
+            result = ultra_get_distance(channel)
 
-    # ================ Light Follower =================
-    elif action == "light_follower_analog":
-        channel = value0
-        result = light_analog_index(channel)
+        # ================ Light Follower =================
+        elif action == "light_follower_analog":
+            channel = value0
+            result = light_analog_index(channel)
 
-    # ================ Line Follower =================
-    elif action == "line_follower_analog":
-        channel = value0
-        result = line_analog_index(channel)
+        # ================ Line Follower =================
+        elif action == "line_follower_analog":
+            channel = value0
+            result = line_analog_index(channel)
 
+        elif action == "device_status":
+            result = device_status()
 
-    return HttpResponse(result)
+    except Exception, e:
+        result = '%s: %s'%(err_msg, e)
+    finally:
+        return HttpResponse(result)
