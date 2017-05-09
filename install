@@ -1,0 +1,33 @@
+#!/bin/bash
+
+##Tested on:
+
+#- Raspbian (RaspberryPi - think of those possibilities)
+
+if [ "$(whoami)" != "root" ] ; then
+    echo -e "You must run this script as root."
+    end
+fi
+
+###################################
+# install Django #
+###################################
+echo -e "\nInstalling django \n"
+if sudo pip install django ; then
+    echo -e "    Successfully installed django runtime \n"
+else
+    echo -e "    Failed to installed django."
+    end
+fi
+
+###################################
+# Startup Dragit #
+###################################
+echo -e "\nSetting up Dragit..."
+cd bin
+sudo chmod +x dragit
+sudo cp dragit /etc/init.d/dragit
+
+sudo update-rc.d dragit defaults
+
+echo -e "    Done \n"
