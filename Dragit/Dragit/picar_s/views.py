@@ -91,26 +91,6 @@ def fw_turn(angle):
     msg = "[PiCar-S] Front wheels turn %s "%(angle)
     print(msg)
 
-def pan_turn(angle):
-    angle = int(angle)+90
-    if angle < -90:
-        angle = -90
-    elif angle > 180:
-        angle = 180
-    pan.write(angle)
-    msg = "[PiCar-S] Pan servo turn %s "%(angle)
-    print(msg)
-
-def tilt_turn(angle):
-    angle = int(angle)+90
-    if angle < -30:
-        angle = -30
-    elif angle > 180:
-        angle = 180
-    tilt.write(angle)
-    msg = "[PiCar-S] Tilt servo turn %s "%(angle)
-    print(msg)
-
 def pwm_output(channel, value):
     channel = int(channel)
     value   = int(value)
@@ -173,55 +153,44 @@ def cali_front_wheels(offset):
     print("[PiCar-S] Calibrate Front wheels %s"%(value))
 
 def cali_left_wheel(offset):
-    if int(offset) < 0:
-        value = 1
-    else:
+    if int(offset) <= 0:
         value = 0
+    else:
+        value = 1
     db.set('forward_A', value)
     bw.left_wheel.offset = value
     print("[PiCar-S] Calibrate left wheel %s"%(value))
-    time.sleep(0.1)
+    bw.left_wheel.forward()
+    bw.left_wheel.speed = 40
+    time.sleep(1)
+    bw.left_wheel.speed = 0
 
 def cali_right_wheel(offset):
-    if int(offset) < 0:
-        value = 1
-    else:
+    if int(offset) <= 0:
         value = 0
-    db.set('forward_A', value)
-    bw.left_wheel.offset = value
+    else:
+        value = 1
+    db.set('forward_B', value)
+    bw.right_wheel.offset = value
     print("[PiCar-S] Calibrate right wheel %s"%(value))
-    time.sleep(0.1)
-
-def cali_pan_servo(offset):
-    value = int(offset)
-    if value < -1024:
-        value = -1024
-    elif value > 1024:
-        value = 1024
-
-    pan.offset = value
-    pan.write(90)
-
-    db.set('pan_offset', value)
-    print("[PiCar-S] Calibrate Pan %s"%(value))
-
-def cali_tilt_servo(offset):
-    value = int(offset)
-    if value < -1024:
-        value = -1024
-    elif value > 1024:
-        value = 1024
-
-    tilt.offset = value
-    tilt.write(90)
-
-    db.set('tilt_offset', value)
-    print("[PiCar-S] Calibrate Tilt %s"%(value))
+    bw.right_wheel.forward()
+    bw.right_wheel.speed = 40
+    time.sleep(1)
+    bw.right_wheel.speed = 0
 
 def ultra_get_distance(channel):
     print("Get Ultrasonic sensor distance ")
     ua = Ultrasonic_Avoidance(int(channel))
-    result = ua.get_distance()
+    def get_distance(mount = 10):
+        sum_a = []
+        for i in range(mount):
+            a = ua.distance()
+            #print '    %s' % a
+            sum_a.append(a)
+        sum_a.sort()
+        sum_a = sum_a[1:-1]
+        return int(sum(sum_a)/(mount-2))
+    result = get_distance(mount=10)
     print("[PiCar-S] Get Ultrasonic sensor channel: %s, distance: %s"%(channel, result))
     return result
 
@@ -289,15 +258,6 @@ def run(request):
         value = value0
         fw_turn(value)
 
-    # ================ Pan & Tilt=================
-    elif action == "pan_turn":
-        value = value0
-        pan_turn(value)
-
-    elif action == "tilt_turn":
-        value = value0
-        tilt_turn(value)
-
     # ================ Servo & Motor =================
     elif action == "servo_turn":
         servo_channel = int(value0)
@@ -334,12 +294,6 @@ def run(request):
 
         elif member == "right wheel":
             cali_right_wheel(offset)
-
-        elif member == "pan servo":
-            cali_pan_servo(offset)
-
-        elif member == "tilt servo":
-            cali_tilt_servo(offset)
 
     elif action == "get_offset_fw":
         result = turning_offset

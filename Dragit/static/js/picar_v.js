@@ -7,6 +7,7 @@ SpriteMorph.prototype.loadPiCarVCategories = function(blocks, block, watcherTogg
     blocks.push(block('picar_v_rw_stop'));
     blocks.push(block('picar_v_fw_turn'));
     blocks.push(block('picar_v_cam_turn'));
+    blocks.push('-');
     blocks.push(block('picar_v_pan_turn'));
     blocks.push(block('picar_v_tilt_turn'));
     blocks.push('=');
@@ -15,7 +16,11 @@ SpriteMorph.prototype.loadPiCarVCategories = function(blocks, block, watcherTogg
     blocks.push(block('picar_v_set_digital'));
     blocks.push(block('picar_v_get_digital'));
     blocks.push(block('picar_v_get_analog'));
-    blocks.push(block('picar_v_calibrate'));
+    blocks.push('=');
+    blocks.push(block('picar_v_cali_front_wheels'));
+    blocks.push(block('picar_v_cali_left_wheel'));
+    blocks.push(block('picar_v_cali_right_wheel'));
+    blocks.push('=');
 }
 
 // PiCar-V
@@ -111,11 +116,25 @@ SpriteMorph.prototype.blocks.picar_v_set_digital = {
     defaults: ['B20','HIGH']
   }
 
-SpriteMorph.prototype.blocks.picar_v_calibrate = {
+SpriteMorph.prototype.blocks.picar_v_cali_front_wheels = {
     type    : 'command',
     category: 'PiCar_V',
-    spec    : 'set %sf_picarv_cali offset to %n',
-    defaults: ["front wheel", 0]
+    spec    : 'front wheels offset to %n',
+    defaults: [0]
+  }
+
+SpriteMorph.prototype.blocks.picar_v_cali_left_wheel = {
+    type    : 'command',
+    category: 'PiCar_V',
+    spec    : 'left wheel offset to %n',
+    defaults: [0]
+  }
+
+SpriteMorph.prototype.blocks.picar_v_cali_right_wheel = {
+    type    : 'command',
+    category: 'PiCar_V',
+    spec    : 'right wheel offset to %n',
+    defaults: [0]
   }
 
 SpriteMorph.prototype.blocks.picar_v_find_blob = {
@@ -131,10 +150,22 @@ SpriteMorph.prototype.blocks.picar_v_get_blob = {
     defaults: ["x"]
   }
 
-
+// Relable
+SpriteMorph.prototype.blockAlternatives.picar_v_rw_run = ['picar_v_rw_stop'];
+SpriteMorph.prototype.blockAlternatives.picar_v_rw_stop = ['picar_v_rw_run'];
+SpriteMorph.prototype.blockAlternatives.picar_v_pan_turn = ['picar_v_tilt_turn'];
+SpriteMorph.prototype.blockAlternatives.picar_v_tilt_turn = ['picar_v_pan_turn'];
+SpriteMorph.prototype.blockAlternatives.picar_v_light_analog_index = ['picar_v_light_analog'];
+SpriteMorph.prototype.blockAlternatives.picar_v_light_analog = ['picar_v_light_analog_index'];
+SpriteMorph.prototype.blockAlternatives.picar_v_line_analog_index = ['picar_v_line_analog'];
+SpriteMorph.prototype.blockAlternatives.picar_v_line_analog = ['picar_v_line_analog_index'];
+SpriteMorph.prototype.blockAlternatives.picar_v_pwm_output = ['picar_v_servo_turn'];
+SpriteMorph.prototype.blockAlternatives.picar_v_servo_turn = ['picar_v_pwm_output'];
+SpriteMorph.prototype.blockAlternatives.picar_v_cali_front_wheels = ['picar_v_cali_left_wheel', 'picar_v_cali_right_wheel'];
+SpriteMorph.prototype.blockAlternatives.picar_v_cali_left_wheel = ['picar_v_cali_front_wheels', 'picar_v_cali_right_wheel'];
+SpriteMorph.prototype.blockAlternatives.picar_v_cali_right_wheel = ['picar_v_cali_front_wheels', 'picar_v_cali_left_wheel'];
 
 // SunFounder process
-
 
 SpriteMorph.prototype.picar_v_rw_run = function (direction, speed) { // Define process
   //reportURL('192.168.0.102:8000/run/picar-v/?action=pwmchannel&value=' + value)
@@ -190,10 +221,21 @@ SpriteMorph.prototype.picar_v_set_digital = function (digital_channel, value) {
   requests('raspberry_pi', 'gpio', 'output', digital_channel, value)
 };
 
-SpriteMorph.prototype.picar_v_calibrate = function (member, offset) {
+SpriteMorph.prototype.picar_v_cali_front_wheels = function (offset) {
   //reportURL('192.168.0.102:8000/run/picar-s/?action=set_digital&value=' + value)
-  requests('picar-v', 'calibrate', member, offset)
+  requests('picar-s', 'calibrate', 'front_wheels', offset)
 };
+
+SpriteMorph.prototype.picar_v_cali_left_wheel = function (offset) {
+  //reportURL('192.168.0.102:8000/run/picar-s/?action=set_digital&value=' + value)
+  requests('picar-s', 'calibrate', 'left_wheel', offset)
+};
+
+SpriteMorph.prototype.picar_v_cali_right_wheel = function (offset) {
+  //reportURL('192.168.0.102:8000/run/picar-s/?action=set_digital&value=' + value)
+  requests('picar-s', 'calibrate', 'right_wheel', offset)
+};
+
 
 SpriteMorph.prototype.picar_v_find_blob = function () {
   //reportURL('192.168.0.102:8000/run/picar-v/?action=set_digital&value=' + value)

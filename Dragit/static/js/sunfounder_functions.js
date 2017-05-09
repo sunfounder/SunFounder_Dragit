@@ -73,6 +73,18 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       );
       break;
 
+    case '%sf_on_off':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          'on' : ['on'],
+          'off'  : ['off']
+        },
+        true // read-only
+      );
+      break;
+
     case '%sf_fw_dir':
       part = new InputSlotMorph(
         null, // text

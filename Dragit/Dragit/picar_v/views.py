@@ -12,7 +12,7 @@ from picar import ADC
 import picar
 import time
 import RPi.GPIO as GPIO
-import ball_tracker
+import image_process
 import sys
 
 Motor_A = 17
@@ -189,24 +189,30 @@ def cali_front_wheels(offset):
     print("[PiCar-V] Calibrate Front wheels %s"%(value))
 
 def cali_left_wheel(offset):
-    if int(offset) < 0:
-        value = 1
-    else:
+    if int(offset) <= 0:
         value = 0
+    else:
+        value = 1
     db.set('forward_A', value)
     bw.left_wheel.offset = value
     print("[PiCar-V] Calibrate left wheel %s"%(value))
-    time.sleep(0.1)
+    bw.right_wheel.forward()
+    bw.right_wheel.speed = 40
+    time.sleep(1)
+    bw.right_wheel.speed = 0
 
 def cali_right_wheel(offset):
-    if int(offset) < 0:
-        value = 1
-    else:
+    if int(offset) <= 0:
         value = 0
-    db.set('forward_A', value)
-    bw.left_wheel.offset = value
+    else:
+        value = 1
+    db.set('forward_B', value)
+    bw.right_wheel.offset = value
     print("[PiCar-V] Calibrate right wheel %s"%(value))
-    time.sleep(0.1)
+    bw.right_wheel.forward()
+    bw.right_wheel.speed = 40
+    time.sleep(1)
+    bw.right_wheel.speed = 0
 
 def cali_pan_servo(offset):
     value = int(offset)
@@ -236,12 +242,12 @@ def cali_tilt_servo(offset):
 
 def find_blob():
     print("Find red blob begin")
-    (blob_x, blob_y), blob_r = ball_tracker.find_blob()
+    (blob_x, blob_y), blob_r = image_process.find_blob()
     if  blob_r == -1:
-        blob_x = (ball_tracker.SCREEN_WIDTH/2)
-        blob_y = (ball_tracker.SCREEN_HIGHT/2)
-    blob_x = -((ball_tracker.SCREEN_WIDTH/2) - blob_x)
-    blob_y = (ball_tracker.SCREEN_HIGHT/2) - blob_y
+        blob_x = (image_process.SCREEN_WIDTH/2)
+        blob_y = (image_process.SCREEN_HIGHT/2)
+    blob_x = -((image_process.SCREEN_WIDTH/2) - blob_x)
+    blob_y = (image_process.SCREEN_HIGHT/2) - blob_y
     print("x: %s, y: %s, r: %s"%(blob_x, blob_y, blob_r))
     print("[PiCar-V] Find red blob")
 
