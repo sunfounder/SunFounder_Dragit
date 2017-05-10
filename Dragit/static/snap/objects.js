@@ -143,9 +143,9 @@ SpriteMorph.prototype.blockColor = {
 
     motion : new Color(21, 101, 192),    //rgb(21, 101, 192)  Blue 800
     looks : new Color(103, 58, 183),     //rgb(103, 58, 183)  Deep Purple 500
-    sound : new Color(213, 0, 249),      //rgb(213, 0, 249)   Purple A400
+    sound : new Color(123, 31, 162),     //rgb(123, 31, 162)   Purple 700
     pen : new Color(0, 121, 107),        //rgb(0, 121, 107)  Teal 700
-    control : new Color(249, 168, 37),   //rgb(249, 168, 37) Yellow 800
+    control : new Color(245, 127, 23),   //rgb(245, 127, 23) Yellow 900
     sensing : new Color(3, 169, 244),    //rgb(3, 169, 244)  Light Blue 500
     operators : new Color(104, 159, 56), //rgb(104, 159, 56) Light Green 700
     variables : new Color(245, 124, 0),  //rgb(245, 124, 0)  Orange 700
