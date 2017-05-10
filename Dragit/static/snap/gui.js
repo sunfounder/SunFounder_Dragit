@@ -183,7 +183,7 @@ IDE_Morph.prototype.setFlatDesign = function () {
 IDE_Morph.prototype.setSunFounderDesign = function () {
     MorphicPreferences.isFlat = true;
     SpriteMorph.prototype.paletteColor = new Color(55, 55, 55);
-    SpriteMorph.prototype.paletteTextColor = new Color(230, 230, 230);
+    SpriteMorph.prototype.paletteTextColor = new Color(200, 200, 200);
     StageMorph.prototype.paletteTextColor
         = SpriteMorph.prototype.paletteTextColor;
     StageMorph.prototype.paletteColor = SpriteMorph.prototype.paletteColor;

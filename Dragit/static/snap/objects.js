@@ -145,7 +145,7 @@ SpriteMorph.prototype.blockColor = {
     looks : new Color(103, 58, 183),     //rgb(103, 58, 183)  Deep Purple 500
     sound : new Color(123, 31, 162),     //rgb(123, 31, 162)   Purple 700
     pen : new Color(0, 121, 107),        //rgb(0, 121, 107)  Teal 700
-    control : new Color(245, 127, 23),   //rgb(245, 127, 23) Yellow 900
+    control : new Color(240, 188, 89),   //rgb(240, 188, 89) Yellow A700_m rgb()
     sensing : new Color(3, 169, 244),    //rgb(3, 169, 244)  Light Blue 500
     operators : new Color(104, 159, 56), //rgb(104, 159, 56) Light Green 700
     variables : new Color(245, 124, 0),  //rgb(245, 124, 0)  Orange 700
