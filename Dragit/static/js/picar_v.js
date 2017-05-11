@@ -72,7 +72,7 @@ SpriteMorph.prototype.blocks.picar_v_pan_turn = {
     type    : 'command',
     category: 'PiCar_V',
     //spec: '[PiCar-V]  Pan servo %br    angle: %n',
-    spec    : 'pan servo turn: %n',
+    spec    : 'camera pan %n',
     defaults: [0]
   }
 
@@ -80,7 +80,7 @@ SpriteMorph.prototype.blocks.picar_v_tilt_turn = {
     type    : 'command',
     category: 'PiCar_V',
     //spec: '[PiCar-V]  Tilt servo %br    angle: %n',
-    spec    : 'tilt servo turn: %n',
+    spec    : 'camera tilt %n',
     defaults: [0]
   }
 
