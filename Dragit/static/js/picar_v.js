@@ -20,6 +20,8 @@ SpriteMorph.prototype.loadPiCarVCategories = function(blocks, block, watcherTogg
     blocks.push(block('picar_v_cali_front_wheels'));
     blocks.push(block('picar_v_cali_left_wheel'));
     blocks.push(block('picar_v_cali_right_wheel'));
+    blocks.push(block('picar_v_cali_pan_servo'));
+    blocks.push(block('picar_v_cali_tilt_servo'));
     blocks.push('=');
     blocks.push(block('picar_v_device_status'));
 }
@@ -120,21 +122,35 @@ SpriteMorph.prototype.blocks.picar_v_set_digital = {
 SpriteMorph.prototype.blocks.picar_v_cali_front_wheels = {
     type    : 'command',
     category: 'PiCar_V',
-    spec    : 'front wheels offset to %n',
+    spec    : 'set steering offset to %n',
     defaults: [0]
   }
 
 SpriteMorph.prototype.blocks.picar_v_cali_left_wheel = {
     type    : 'command',
     category: 'PiCar_V',
-    spec    : 'left wheel offset to %n',
+    spec    : 'set left wheel forward to %sf_0_1',
     defaults: [0]
   }
 
 SpriteMorph.prototype.blocks.picar_v_cali_right_wheel = {
     type    : 'command',
     category: 'PiCar_V',
-    spec    : 'right wheel offset to %n',
+    spec    : 'set right wheel forward to %sf_0_1',
+    defaults: [0]
+  }
+
+SpriteMorph.prototype.blocks.picar_v_cali_pan_servo = {
+    type    : 'command',
+    category: 'PiCar_V',
+    spec    : 'set camera pan offset to %n',
+    defaults: [0]
+  }
+
+SpriteMorph.prototype.blocks.picar_v_cali_tilt_servo = {
+    type    : 'command',
+    category: 'PiCar_V',
+    spec    : 'set camera tilt offset to %n',
     defaults: [0]
   }
 
@@ -168,9 +184,11 @@ SpriteMorph.prototype.blockAlternatives.picar_v_line_analog_index = ['picar_v_li
 SpriteMorph.prototype.blockAlternatives.picar_v_line_analog = ['picar_v_line_analog_index'];
 SpriteMorph.prototype.blockAlternatives.picar_v_pwm_output = ['picar_v_servo_turn'];
 SpriteMorph.prototype.blockAlternatives.picar_v_servo_turn = ['picar_v_pwm_output'];
-SpriteMorph.prototype.blockAlternatives.picar_v_cali_front_wheels = ['picar_v_cali_left_wheel', 'picar_v_cali_right_wheel'];
-SpriteMorph.prototype.blockAlternatives.picar_v_cali_left_wheel = ['picar_v_cali_front_wheels', 'picar_v_cali_right_wheel'];
-SpriteMorph.prototype.blockAlternatives.picar_v_cali_right_wheel = ['picar_v_cali_front_wheels', 'picar_v_cali_left_wheel'];
+SpriteMorph.prototype.blockAlternatives.picar_v_cali_front_wheels = ['picar_v_cali_left_wheel', 'picar_v_cali_right_wheel', 'picar_v_cali_pan_servo', 'picar_v_cali_tilt_servo'];
+SpriteMorph.prototype.blockAlternatives.picar_v_cali_left_wheel = ['picar_v_cali_front_wheels', 'picar_v_cali_right_wheel', 'picar_v_cali_pan_servo', 'picar_v_cali_tilt_servo'];
+SpriteMorph.prototype.blockAlternatives.picar_v_cali_right_wheel = ['picar_v_cali_front_wheels', 'picar_v_cali_left_wheel', 'picar_v_cali_pan_servo', 'picar_v_cali_tilt_servo'];
+SpriteMorph.prototype.blockAlternatives.picar_v_cali_pan_servo = ['picar_v_cali_front_wheels', 'picar_v_cali_left_wheel', 'picar_v_cali_right_wheel', 'picar_v_cali_tilt_servo'];
+SpriteMorph.prototype.blockAlternatives.picar_v_cali_tilt_servo = ['picar_v_cali_front_wheels', 'picar_v_cali_left_wheel', 'picar_v_cali_right_wheel', 'picar_v_cali_pan_servo'];
 
 // SunFounder process
 
@@ -229,18 +247,28 @@ SpriteMorph.prototype.picar_v_set_digital = function (digital_channel, value) {
 };
 
 SpriteMorph.prototype.picar_v_cali_front_wheels = function (offset) {
-  //reportURL('192.168.0.102:8000/run/picar-s/?action=set_digital&value=' + value)
-  return requests('picar-s', 'calibrate', 'front_wheels', offset)
+  //reportURL('192.168.0.102:8000/run/picar-v/?action=set_digital&value=' + value)
+  return requests('picar-v', 'calibrate', 'front_wheels', offset)
 };
 
 SpriteMorph.prototype.picar_v_cali_left_wheel = function (offset) {
-  //reportURL('192.168.0.102:8000/run/picar-s/?action=set_digital&value=' + value)
-  return requests('picar-s', 'calibrate', 'left_wheel', offset)
+  //reportURL('192.168.0.102:8000/run/picar-v/?action=set_digital&value=' + value)
+  return requests('picar-v', 'calibrate', 'left_wheel', offset)
 };
 
 SpriteMorph.prototype.picar_v_cali_right_wheel = function (offset) {
-  //reportURL('192.168.0.102:8000/run/picar-s/?action=set_digital&value=' + value)
-  return requests('picar-s', 'calibrate', 'right_wheel', offset)
+  //reportURL('192.168.0.102:8000/run/picar-v/?action=set_digital&value=' + value)
+  return requests('picar-v', 'calibrate', 'right_wheel', offset)
+};
+
+SpriteMorph.prototype.picar_v_cali_pan_servo = function (offset) {
+  //reportURL('192.168.0.102:8000/run/picar-v/?action=set_digital&value=' + value)
+  return requests('picar-v', 'calibrate', 'pan_servo', offset)
+};
+
+SpriteMorph.prototype.picar_v_cali_tilt_servo = function (offset) {
+  //reportURL('192.168.0.102:8000/run/picar-v/?action=set_digital&value=' + value)
+  return requests('picar-v', 'calibrate', 'tilt_servo', offset)
 };
 
 

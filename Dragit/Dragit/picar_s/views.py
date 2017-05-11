@@ -8,36 +8,28 @@ from Dragit.sensors.Line_Follower import Line_Follower
 
 from Dragit.picar.SunFounder_PCA9685.Servo import Servo
 from Dragit.picar.SunFounder_PCA9685.PCA9685 import PWM
-from Dragit.picar.SunFounder_TB6612.TB6612 import Motor
 from Dragit.picar import front_wheels
 from Dragit.picar import back_wheels
-from Dragit.picar import filedb
 from Dragit.picar import ADC
 import Dragit.picar
 import time
 import RPi.GPIO as GPIO
-import sys
+import sys, os
 
-Motor_A = 17
-Motor_B = 27
+config_dir = '/opt/SunFounder_Dragit/Dragit/config'
+os.system('touch %s'%config_dir)
 
 try:
     adc  = ADC(0x48)
-    pan  = Servo(1)
-    tilt = Servo(2)
-    left_wheel  = Motor(Motor_A)
-    right_wheel = Motor(Motor_B)
 
     lf = Line_Follower()
     lt = Light_Follower()
-    lt.analog_function = adc.read
-    fw = front_wheels.Front_Wheels(debug=True, db='config')
-    bw = back_wheels.Back_Wheels(db='config')
+    fw = front_wheels.Front_Wheels(db=config_dir)
+    bw = back_wheels.Back_Wheels(db=config_dir)
+    left_wheel  = bw.left_wheel
+    right_wheel = bw.right_wheel
 
-    db = filedb.fileDB(db='config')
-    turning_offset = int(fw.db.get('turning_offset', default_value=0))
-    pan_offset     = int(fw.db.get('pan_offset',     default_value=0))
-    tilt_offset    = int(fw.db.get('tilt_offset',    default_value=0))
+    lt.analog_function = adc.read
 
     fw.turning_max = 45
     Dragit.picar.setup()
@@ -103,45 +95,22 @@ def pwm_output(channel, value):
     msg = "[PiCar-S] PWM chn: %s value: %s "%(channel, value)
     print(msg)
 
-def servo_turn(servo_channel, angle):
+def servo_turn(channel, angle):
+    channel = int(channel)
     angle = int(angle)
     if angle < 0:
         angle = 0
     elif angle > 180:
         angle = 180
-    servo = Servo(int(servo_channel))
+    servo = Servo(channel)
     servo.write(angle)
-    print("[PiCar-S] Set Servo %s to %d degree"%(servo_channel, angle))
+    print("[PiCar-S] Set Servo %s to %d degree"%(channel, angle))
 
-def get_analog(analog_channel):
-    if analog_channel == "0":
-        value = adc.A0
-    elif analog_channel == "1":
-        value = adc.A1
-    elif analog_channel == "2":
-        value = adc.A2
-    elif analog_channel == "3":
-        value = adc.A3
-    elif analog_channel == "4":
-        value = adc.A4
-    print("[PiCar-S] Get Analog channel %s: %d"%(analog_channel,value))
+def get_analog(channel):
+    channel = int(channel)
+    value = adc.read(channel)
+    print("[PiCar-S] Get Analog channel %s: %d"%(channel,value))
     return value
-
-def get_digital(digital_channel):
-    digital_channel = int(digital_channel)
-    GPIO.setup(digital_channel, GPIO.IN)
-    result = GPIO.input(digital_channel)
-    print("Read GPIO %s, state: %s" )%(digital_channel, result)
-    return result
-
-def set_digital(digital_channel, IO_state):
-    digital_channel = int(digital_channel)
-    GPIO.setup(digital_channel, GPIO.OUT)
-    if(IO_state == "HIGH"):
-        GPIO.output(digital_channel, GPIO.HIGH)
-    else:
-        GPIO.output(digital_channel, GPIO.LOW)
-    print ("Set GPIO %s state to %s")%(digital_channel, IO_state)
 
 def cali_front_wheels(offset):
     value = int(offset)
@@ -153,12 +122,10 @@ def cali_front_wheels(offset):
     print("[PiCar-S] Calibrate Front wheels %s"%(value))
 
 def cali_left_wheel(offset):
-    if int(offset) <= 0:
-        value = 0
-    else:
-        value = 1
-    db.set('forward_A', value)
+    value = int(offset)
     bw.left_wheel.offset = value
+    bw.cali_forward_A = value
+    bw.cali_ok_A()
     print("[PiCar-S] Calibrate left wheel %s"%(value))
     bw.left_wheel.forward()
     bw.left_wheel.speed = 40
@@ -166,12 +133,10 @@ def cali_left_wheel(offset):
     bw.left_wheel.speed = 0
 
 def cali_right_wheel(offset):
-    if int(offset) <= 0:
-        value = 0
-    else:
-        value = 1
-    db.set('forward_B', value)
+    value = int(offset)
     bw.right_wheel.offset = value
+    bw.cali_forward_B = value
+    bw.cali_ok_B()
     print("[PiCar-S] Calibrate right wheel %s"%(value))
     bw.right_wheel.forward()
     bw.right_wheel.speed = 40
@@ -293,13 +258,13 @@ def run(request):
             member = value0
             offset = value1
 
-            if member == "front wheel":
+            if member == "front_wheels":
                 cali_front_wheels(offset)
 
-            elif member == "left wheel":
+            elif member == "left_wheel":
                 cali_left_wheel(offset)
 
-            elif member == "right wheel":
+            elif member == "right_wheel":
                 cali_right_wheel(offset)
 
         elif action == "get_offset_fw":

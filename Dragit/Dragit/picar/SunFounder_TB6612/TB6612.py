@@ -22,11 +22,11 @@ class Motor(object):
 		PWM channel using PCA9685, Set pwm_address to your address, if is not 0x40
 		Set debug to True to print out debug informations.
 	'''
-	_DEBUG = False
 	_DEBUG_INFO = 'DEBUG "TB6612.py":'
 
-	def __init__(self, direction_channel, pwm=None, offset=True):
+	def __init__(self, direction_channel, pwm=None, offset=True, debug=False):
 		'''Init a motor on giving dir. channel and PWM channel.'''
+		self._DEBUG = debug
 		if self._DEBUG:
 			print self._DEBUG_INFO, "Debug on"
 		self.direction_channel = direction_channel
@@ -40,9 +40,9 @@ class Motor(object):
 		GPIO.setwarnings(False)
 		GPIO.setmode(GPIO.BCM)
 
-		if self._DEBUG:
-			print self._DEBUG_INFO, 'setup motor direction channel at', direction_channel
-			print self._DEBUG_INFO, 'setup motor pwm channel as', self._pwm.__name__
+		#if self._DEBUG:
+		#	print self._DEBUG_INFO, 'setup motor direction channel at', direction_channel
+		#	print self._DEBUG_INFO, 'setup motor pwm channel as', self._pwm.__name__
 		GPIO.setup(self.direction_channel, GPIO.OUT)
 
 	@property
@@ -90,7 +90,8 @@ class Motor(object):
 		''' Set offset for much user-friendly '''
 		if value not in (True, False):
 			raise ValueError('offset value must be Bool value, not"{0}"'.format(value))
-		self.forward_offset = value
+		self._offset = value
+		self.forward_offset = self._offset
 		self.backward_offset = not self.forward_offset
 		if self._DEBUG:
 			print self._DEBUG_INFO, 'Set offset to %d' % self._offset

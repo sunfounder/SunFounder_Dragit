@@ -69,7 +69,7 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           'HIGH' : ['HIGH'],
           'LOW'  : ['LOW']
         },
-        false // read-only
+        true // read-only
       );
       break;
 
@@ -94,7 +94,7 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           'left' : ['left'],
           'right' : ['right']
         },
-        false // read-only
+        true // read-only
       );
       break;
 
@@ -106,7 +106,7 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           'forward'  : ['forward'],
           'backward' : ['backward']
         },
-        false // read-only
+        true // read-only
       );
       break;
 
@@ -287,6 +287,18 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           "2"  : 2,
         },
         false // read-only
+      );
+      break;
+
+    case '%sf_0_1':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "0"  : "0",
+          "1"  : "1"
+        },
+        true // read-only
       );
       break;
 

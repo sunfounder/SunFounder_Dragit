@@ -116,21 +116,21 @@ SpriteMorph.prototype.blocks.picar_s_set_digital = {
 SpriteMorph.prototype.blocks.picar_s_cali_front_wheels = {
     type    : 'command',
     category: 'PiCar_S',
-    spec    : 'front wheels offset to %n',
+    spec    : 'set steering offset to %n',
     defaults: [0]
   }
 
 SpriteMorph.prototype.blocks.picar_s_cali_left_wheel = {
     type    : 'command',
     category: 'PiCar_S',
-    spec    : 'left wheel offset to %n',
+    spec    : 'set left wheel forward to %sf_0_1',
     defaults: [0]
   }
 
 SpriteMorph.prototype.blocks.picar_s_cali_right_wheel = {
     type    : 'command',
     category: 'PiCar_S',
-    spec    : 'right wheel offset to %n',
+    spec    : 'set right wheel forward to %sf_0_1',
     defaults: [0]
   }
 

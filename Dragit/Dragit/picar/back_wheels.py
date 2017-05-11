@@ -21,24 +21,24 @@ class Back_Wheels(object):
 	Motor_A = 17
 	Motor_B = 27
 
-	PWM_A = 4
-	PWM_B = 5
+	PWM_A = 5
+	PWM_B = 4
 
 	_DEBUG = False
 	_DEBUG_INFO = 'DEBUG "back_wheels.py":'
 
 	def __init__(self, debug=False, db="config"):
 		''' Init the direction channel and pwm channel '''
-		self.forward_A = True
-		self.forward_B = True
+		self.forward_A = 1
+		self.forward_B = 1
 
 		self.db = filedb.fileDB(db=db)
 
 		self.forward_A = int(self.db.get('forward_A', default_value=1))
 		self.forward_B = int(self.db.get('forward_B', default_value=1))
 
-		self.left_wheel = TB6612.Motor(self.Motor_A, offset=self.forward_A)
-		self.right_wheel = TB6612.Motor(self.Motor_B, offset=self.forward_B)
+		self.left_wheel = TB6612.Motor(self.Motor_A, offset=self.forward_A,debug=debug)
+		self.right_wheel = TB6612.Motor(self.Motor_B, offset=self.forward_B, debug=debug)
 
 		self.pwm = PCA9685.PWM()
 		def _set_a_pwm(value):
@@ -145,12 +145,18 @@ class Back_Wheels(object):
 		self.right_wheel.offset = self.cali_forward_B
 		self.forward()
 
+	def cali_ok_A(self):
+		self.forward_A = self.cali_forward_A
+		self.db.set('forward_A', self.forward_A)
+
+	def cali_ok_B(self):
+		self.forward_B = self.cali_forward_B
+		self.db.set('forward_B', self.forward_B)
+
 	def cali_ok(self):
 		''' Save the calibration value '''
-		self.forward_A = self.cali_forward_A
-		self.forward_B = self.cali_forward_B
-		self.db.set('forward_A', self.forward_A)
-		self.db.set('forward_B', self.forward_B)
+		self.cali_ok_A()
+		self.cali_ok_B()
 		self.stop()
 
 def test():
