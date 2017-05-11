@@ -6,8 +6,9 @@ SpriteMorph.prototype.loadPiCarVCategories = function(blocks, block, watcherTogg
     blocks.push(block('picar_v_rw_run'));
     blocks.push(block('picar_v_rw_stop'));
     blocks.push(block('picar_v_fw_turn'));
+    blocks.push('=');
     blocks.push(block('picar_v_cam_turn'));
-    blocks.push('-');
+    blocks.push(block('picar_v_cam_reset'));
     blocks.push(block('picar_v_pan_turn'));
     blocks.push(block('picar_v_tilt_turn'));
     blocks.push('=');
@@ -41,7 +42,6 @@ type:   command
 SpriteMorph.prototype.blocks.picar_v_rw_run = {    // Define blocks
     type    : 'command',
     category: 'PiCar_V',
-    //spec: 'rear wheel %br    channel: %sf_motor_dir %br    direction: %sf_rw_dir %br    speed: %n',
     spec    : 'move %sf_rw_dir at %n',
     defaults: ['forward', 0]
   }
@@ -55,15 +55,19 @@ SpriteMorph.prototype.blocks.picar_v_rw_stop = {
 SpriteMorph.prototype.blocks.picar_v_cam_turn = {
     type    : 'command',
     category: 'PiCar_V',
-    //spec: '[PiCar-V]  Pan servo %br    angle: %n',
     spec    : 'camera turn %sf_cam_dir',
-    defaults: ['center']
+    defaults: ['up']
+  }
+
+SpriteMorph.prototype.blocks.picar_v_cam_reset = {
+    type    : 'command',
+    category: 'PiCar_V',
+    spec    : 'camera reset'
   }
 
 SpriteMorph.prototype.blocks.picar_v_fw_turn = {
     type    : 'command',
     category: 'PiCar_V',
-    //spec: '[PiCar-V]  Front wheels %br    turn: %sf_fw_dir',
     spec    : 'turn %sf_fw_dir',
     defaults: ['straight']
   }
@@ -71,7 +75,6 @@ SpriteMorph.prototype.blocks.picar_v_fw_turn = {
 SpriteMorph.prototype.blocks.picar_v_pan_turn = {
     type    : 'command',
     category: 'PiCar_V',
-    //spec: '[PiCar-V]  Pan servo %br    angle: %n',
     spec    : 'camera pan %n',
     defaults: [0]
   }
@@ -79,7 +82,6 @@ SpriteMorph.prototype.blocks.picar_v_pan_turn = {
 SpriteMorph.prototype.blocks.picar_v_tilt_turn = {
     type    : 'command',
     category: 'PiCar_V',
-    //spec: '[PiCar-V]  Tilt servo %br    angle: %n',
     spec    : 'camera tilt %n',
     defaults: [0]
   }
@@ -209,6 +211,11 @@ SpriteMorph.prototype.picar_v_fw_turn = function (value) {
 SpriteMorph.prototype.picar_v_cam_turn = function (value) {
   //reportURL('192.168.0.102:8000/run/picar-v/?action=fw_turn&value=' + value)
   return requests('picar-v', 'cam_turn', value)
+};
+
+SpriteMorph.prototype.picar_v_cam_reset = function () {
+  //reportURL('192.168.0.102:8000/run/picar-v/?action=fw_turn&value=' + value)
+  return requests('picar-v', 'cam_turn', 'center')
 };
 
 SpriteMorph.prototype.picar_v_pan_turn = function (value) {

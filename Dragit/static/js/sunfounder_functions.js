@@ -54,7 +54,6 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           'up' : ['up'],
           'down' : ['down'],
           'left' : ['left'],
-          'center' : ['center'],
           'right' : ['right']
         },
         true // read-only
