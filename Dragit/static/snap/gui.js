@@ -2282,7 +2282,7 @@ IDE_Morph.prototype.snapMenu = function () {
         }
     );
     menu.addItem(
-        'Dragit sourse',
+        'Dragit source',
         function () {
             window.open(
                 'https://github.com/sunfounder/SunFounder_Dragit',

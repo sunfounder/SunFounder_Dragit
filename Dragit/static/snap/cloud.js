@@ -36,8 +36,8 @@ modules.cloud = '2015-December-15';
 
 var Cloud;
 var SnapCloud = new Cloud(
-    //'https://snap.apps.miosoft.com/SnapCloud'
-    'http://192.168.0.102:8000/SnapCloud'
+    'https://snap.apps.miosoft.com/SnapCloud'
+    //'http://192.168.0.102:8000/SnapCloud'
 );
 
 // Cloud /////////////////////////////////////////////////////////////
