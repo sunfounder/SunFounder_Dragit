@@ -10,7 +10,6 @@ from Dragit.picar import ADC
 import Dragit.picar
 import time
 import RPi.GPIO as GPIO
-import image_process
 import sys, os
 
 blob_x = 0
@@ -21,6 +20,7 @@ config_dir = '/opt/SunFounder_Dragit/Dragit/config'
 os.system('touch %s'%config_dir)
 
 try:
+    import image_process
     adc  = ADC(0x48)
     fw   = front_wheels.Front_Wheels(db=config_dir)
     bw   = back_wheels.Back_Wheels(db=config_dir)
