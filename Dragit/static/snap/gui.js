@@ -901,14 +901,14 @@ IDE_Morph.prototype.createControlBar = function () {
         slider.setRight(stageSizeButton.left() - padding);
 
         settingsButton.setCenter(myself.controlBar.center());
-        settingsButton.setLeft(this.left()-40);
+        settingsButton.setLeft(this.left());
 
         cloudButton.setCenter(myself.controlBar.center());
         cloudButton.setRight(settingsButton.left() - padding);
 
         projectButton.setCenter(myself.controlBar.center());
         projectButton.setRight(cloudButton.left() - padding);
-        projectButton.setRight(settingsButton.left() - padding);
+        //projectButton.setRight(settingsButton.left() - padding);
 
         this.refreshSlider();
         this.updateLabel();
@@ -2240,10 +2240,10 @@ IDE_Morph.prototype.snapMenu = function () {
         world = this.world();
 
     menu = new MenuMorph(this);
-    menu.addItem('About...', 'aboutSnap');
+    menu.addItem('About Snap!', 'aboutSnap');
     menu.addLine();
     menu.addItem(
-        'Snap! reference manual',
+        'Reference manual',
         function () {
             var url = myself.resourceURL('help', 'SnapManual.pdf');
             window.open(url, 'SnapReferenceManual');
@@ -2256,7 +2256,7 @@ IDE_Morph.prototype.snapMenu = function () {
         }
     );
     menu.addItem(
-        'Snap! source',
+        'Download source',
         function () {
             window.open(
                 'http://snap.berkeley.edu/snapsource/snap.zip',
@@ -2265,8 +2265,9 @@ IDE_Morph.prototype.snapMenu = function () {
         }
     );
     menu.addLine();
+    menu.addItem('  ', '  ');
     menu.addLine();
-    menu.addItem('About...', 'aboutDragit');
+    menu.addItem('About Dragit', 'aboutDragit');
     menu.addLine();
     menu.addItem(
         'SunFounder website',

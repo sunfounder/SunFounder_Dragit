@@ -2131,7 +2131,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     ///////////////////////////////
 
-        blocks.push('=');
+    } else if (cat === 'lists') {
 
         blocks.push(block('reportNewList'));
         blocks.push('-');
@@ -2149,6 +2149,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     // for debugging: ///////////////
 
+    } else if (cat === 'other') {
         if (this.world().isDevMode) {
             blocks.push('-');
             txt = new TextMorph(localize(
