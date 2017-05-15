@@ -848,7 +848,7 @@ IDE_Morph.prototype.createControlBar = function () {
     settingsButton = button;
     this.controlBar.add(settingsButton);
     this.controlBar.settingsButton = settingsButton; // for menu positioning
-/*
+
     // cloudButton
     button = new PushButtonMorph(
         this,
@@ -871,7 +871,7 @@ IDE_Morph.prototype.createControlBar = function () {
     cloudButton = button;
     this.controlBar.add(cloudButton);
     this.controlBar.cloudButton = cloudButton; // for menu positioning
-*/
+
     this.controlBar.fixLayout = function () {
         x = this.right() - padding;
         [stopButton, pauseButton, startButton].forEach(
@@ -903,11 +903,11 @@ IDE_Morph.prototype.createControlBar = function () {
         settingsButton.setCenter(myself.controlBar.center());
         settingsButton.setLeft(this.left()-40);
 
-        //cloudButton.setCenter(myself.controlBar.center());
-        //cloudButton.setRight(settingsButton.left() - padding);
+        cloudButton.setCenter(myself.controlBar.center());
+        cloudButton.setRight(settingsButton.left() - padding);
 
         projectButton.setCenter(myself.controlBar.center());
-        //projectButton.setRight(cloudButton.left() - padding);
+        projectButton.setRight(cloudButton.left() - padding);
         projectButton.setRight(settingsButton.left() - padding);
 
         this.refreshSlider();
@@ -2243,12 +2243,31 @@ IDE_Morph.prototype.snapMenu = function () {
     menu.addItem('About...', 'aboutSnap');
     menu.addLine();
     menu.addItem(
-        'Snap manual',
+        'Snap! reference manual',
         function () {
             var url = myself.resourceURL('help', 'SnapManual.pdf');
             window.open(url, 'SnapReferenceManual');
         }
     );
+    menu.addItem(
+        'Snap! website',
+        function () {
+            window.open('http://snap.berkeley.edu/', 'SnapWebsite');
+        }
+    );
+    menu.addItem(
+        'Snap! source',
+        function () {
+            window.open(
+                'http://snap.berkeley.edu/snapsource/snap.zip',
+                'SnapSource'
+            );
+        }
+    );
+    menu.addLine();
+    menu.addLine();
+    menu.addItem('About...', 'aboutDragit');
+    menu.addLine();
     menu.addItem(
         'SunFounder website',
         function () {
@@ -2262,7 +2281,7 @@ IDE_Morph.prototype.snapMenu = function () {
         }
     );
     menu.addItem(
-        'Download source',
+        'Dragit sourse',
         function () {
             window.open(
                 'https://github.com/sunfounder/SunFounder_Dragit',
@@ -3232,32 +3251,27 @@ IDE_Morph.prototype.aboutSnap = function () {
     var dlg, aboutTxt, noticeTxt, creditsTxt, versions = '', translations,
         module, btn1, btn2, btn3, btn4, licenseBtn, translatorsBtn,
         world = this.world();
-    aboutTxt = 'Dragit\n\n'
-    + 'Copyright \u24B8 2017 SunFounder\n\n'
 
-    + 'Dragit is developed by SunFounder.\n'
-    + 'Dragit is modified based on Snap!(BYOB)\n'
-    + 'to fit our hardware kits and modules.\n'
-    + 'For more information, refer to\n'
-    + 'http://snap.berkeley.edu\n\n'
+    aboutTxt = 'Snap! 4.0.10.2\nBuild Your Own Blocks\n\n'
+        + 'Copyright \u24B8 2017 Jens M\u00F6nig and '
+        + 'Brian Harvey\n'
+        + 'jens@moenig.org, bh@cs.berkeley.edu\n\n'
 
-    + 'About SunFounder\n\n'
+        + 'Snap! is developed by the University of California, Berkeley\n'
+        + '          with support from the National Science Foundation (NSF), '
+        + 'MioSoft,          \n'
+        + 'the Communications Design Group (CDG) at SAP Labs, and the\n'
+        + 'Human Advancement Research Community (HARC) at YC Research.\n'
 
-    + 'SunFounder is a technology company focused on\n'
-    + 'Raspberry Pi and Arduino open source community development.\n'
-    + 'Committed to the promotion of open source culture, we strives to\n'
-    + 'bring the fun of electronics making to people around the world\n'
-    + 'and enable everyone to be a cool maker.\n'
-    + 'Our products include learning kits, development boards,\n'
-    + 'robots, sensor modules and development tools.\n'
-    + 'In addition to high quality products,\n'
-    + 'SunFounder also offers video tutorials to help you make project.\n'
-    + 'If you have interest in open source or making something cool,\n'
-    + 'welcome to join us!'
+        + 'The design of Snap! is influenced and inspired by Scratch,\n'
+        + 'from the Lifelong Kindergarten group at the MIT Media Lab\n\n'
+
+        + 'for more information see http://snap.berkeley.edu\n'
+        + 'and http://scratch.mit.edu';
 
     noticeTxt = localize('License')
         + '\n\n'
-        + 'Dragit is free software: you can redistribute it and/or modify\n'
+        + 'Snap! is free software: you can redistribute it and/or modify\n'
         + 'it under the terms of the GNU Affero General Public License as\n'
         + 'published by the Free Software Foundation, either version 3 of\n'
         + 'the License, or (at your option) any later version.\n\n'
@@ -3271,7 +3285,7 @@ IDE_Morph.prototype.aboutSnap = function () {
         + 'GNU Affero General Public License along with this program.\n'
         + 'If not, see http://www.gnu.org/licenses/\n\n'
 
-        + 'Want to use Dragit but scared by the open-source license?\n'
+        + 'Want to use Snap! but scared by the open-source license?\n'
         + 'Get in touch with us, we\'ll make it work.';
 
     creditsTxt = localize('Contributors')
@@ -3291,7 +3305,6 @@ IDE_Morph.prototype.aboutSnap = function () {
         + '\nDavide Della Casa: Morphic Optimizations'
         + '\nAchal Dave: Web Audio'
         + '\nJoe Otto: Morphic Testing and Debugging';
-        + '\nSunFounder: SunFounder Blocks, Raspberry Pi Blocks';
 
     for (module in modules) {
         if (Object.prototype.hasOwnProperty.call(modules, module)) {
@@ -3307,7 +3320,7 @@ IDE_Morph.prototype.aboutSnap = function () {
     translations = localize('Translations') + '\n' + SnapTranslator.credits();
 
     dlg = new DialogBoxMorph();
-    dlg.inform('About Dragit', aboutTxt, world);
+    dlg.inform('About Snap', aboutTxt, world);
     btn1 = dlg.buttons.children[0];
     translatorsBtn = dlg.addButton(
         function () {
@@ -3391,6 +3404,86 @@ IDE_Morph.prototype.aboutSnap = function () {
         'Credits...'
     );
     translatorsBtn.hide();
+    dlg.fixLayout();
+    dlg.drawNew();
+};
+
+IDE_Morph.prototype.aboutDragit = function () {
+    var dlg, aboutTxt, noticeTxt, creditsTxt, versions = '', translations,
+        module, btn1, btn2, btn3, btn4, licenseBtn, translatorsBtn,
+        world = this.world();
+    aboutTxt = 'Dragit\n\n'
+    + 'Copyright \u24B8 2017 SunFounder\n\n'
+
+    + 'Dragit is developed by SunFounder.\n'
+    + 'Dragit is modified based on Snap!(BYOB)\n'
+    + 'to fit our hardware kits and modules.\n'
+    + 'For more information, refer to\n'
+    + 'http://snap.berkeley.edu\n\n'
+
+    + 'About SunFounder\n\n'
+
+    + 'SunFounder is a technology company focused on\n'
+    + 'Raspberry Pi and Arduino open source community development.\n'
+    + 'Committed to the promotion of open source culture, we strives to\n'
+    + 'bring the fun of electronics making to people around the world\n'
+    + 'and enable everyone to be a cool maker.\n'
+    + 'Our products include learning kits, development boards,\n'
+    + 'robots, sensor modules and development tools.\n'
+    + 'In addition to high quality products,\n'
+    + 'SunFounder also offers video tutorials to help you make project.\n'
+    + 'If you have interest in open source or making something cool,\n'
+    + 'welcome to join us!'
+
+    noticeTxt = localize('License')
+        + '\n\n'
+        + 'Dragit is free software: you can redistribute it and/or modify\n'
+        + 'it under the terms of the GNU Affero General Public License as\n'
+        + 'published by the Free Software Foundation, either version 3 of\n'
+        + 'the License, or (at your option) any later version.\n\n'
+
+        + 'This program is distributed in the hope that it will be useful,\n'
+        + 'but WITHOUT ANY WARRANTY; without even the implied warranty of\n'
+        + 'MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n'
+        + 'GNU Affero General Public License for more details.\n\n'
+
+        + 'You should have received a copy of the\n'
+        + 'GNU Affero General Public License along with this program.\n'
+        + 'If not, see http://www.gnu.org/licenses/\n\n'
+
+        + 'Want to use Dragit but scared by the open-source license?\n'
+        + 'Get in touch with us, we\'ll make it work.';
+
+    dlg = new DialogBoxMorph();
+    dlg.inform('About Dragit', aboutTxt, world);
+    btn1 = dlg.buttons.children[0];
+    btn2 = dlg.addButton(
+        function () {
+            dlg.body.text = aboutTxt;
+            dlg.body.drawNew();
+            btn1.show();
+            btn2.hide();
+            licenseBtn.show();
+            dlg.fixLayout();
+            dlg.drawNew();
+            dlg.setCenter(world.center());
+        },
+        'Back...'
+    );
+    btn2.hide();
+    licenseBtn = dlg.addButton(
+        function () {
+            dlg.body.text = noticeTxt;
+            dlg.body.drawNew();
+            btn1.show();
+            btn2.show();
+            licenseBtn.hide();
+            dlg.fixLayout();
+            dlg.drawNew();
+            dlg.setCenter(world.center());
+        },
+        'License...'
+    );
     dlg.fixLayout();
     dlg.drawNew();
 };
@@ -4463,7 +4556,7 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
     var world = this.world(),
         elements = [
             this.logo,
-            //this.controlBar.cloudButton,
+            this.controlBar.cloudButton,
             this.controlBar.projectButton,
             this.controlBar.settingsButton,
             this.controlBar.stageSizeButton,
@@ -5429,7 +5522,7 @@ ProjectDialogMorph.prototype.buildContents = function () {
         this.srcBar.add(notification);
     }
 
-    //this.addSourceButton('cloud', localize('Cloud'), 'cloud');
+    this.addSourceButton('cloud', localize('Cloud'), 'cloud');
     this.addSourceButton('local', localize('Browser'), 'storage');
     if (this.task === 'open') {
         this.buildFilterField();
