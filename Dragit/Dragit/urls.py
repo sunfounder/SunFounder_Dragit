@@ -18,6 +18,7 @@ from django.contrib import admin
 from picar_v import views as picar_v_views
 from raspberry_pi import views as raspberry_pi_views
 from picar_s import views as picar_s_views
+from pismart_ import views as pismart_views
 import settings, views
 
 urlpatterns = [
@@ -28,4 +29,5 @@ urlpatterns = [
     url(r'^run/picar-v/$', picar_v_views.run),
     url(r'^run/raspberry_pi/$', raspberry_pi_views.run),
     url(r'^run/picar-s/$', picar_s_views.run),
+    url(r'^run/pismart/$', pismart_views.run),
 ]

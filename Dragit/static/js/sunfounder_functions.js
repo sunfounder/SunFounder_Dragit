@@ -3,11 +3,14 @@ SpriteMorph.prototype.loadSunFounderCategories = function(blocks, block, watcher
   if (cat === 'PiCar_V') {
     this.loadPiCarVCategories(blocks, block, watcherToggle);
   }
-  if (cat === 'PiCar_S') {
+  else if (cat === 'PiCar_S') {
     this.loadPiCarSCategories(blocks, block, watcherToggle);
   }
-  if (cat === 'RaspberryPi') {
+  else if (cat === 'RaspberryPi') {
     this.loadRaspberryPiCategories(blocks, block, watcherToggle);
+  }
+  else if (cat === 'PiSmart') {
+    this.loadPiSmartCategories(blocks, block, watcherToggle);
   }
 }
 
@@ -43,6 +46,19 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           'right' : ['right']
         },
         false // read-only
+      );
+      break;
+
+    case '%pismart_motor_chn':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          'MotorA' : ['MotorA'],
+          'MotorB' : ['MotorB'],
+          'both'   : ['both']
+        },
+        true // read-only
       );
       break;
 
@@ -135,6 +151,24 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       );
       break;
 
+    case '%pismart_pwm_chn':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          '0' : ['0'],
+          '1' : ['1'],
+          '2' : ['2'],
+          '3' : ['3'],
+          '4' : ['4'],
+          '5' : ['5'],
+          '6' : ['6'],
+          '7' : ['7']
+        },
+        true // read-only
+      );
+      break;
+
     case '%sf_Achn':
       part = new InputSlotMorph(
         null, // text
@@ -144,6 +178,21 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           '1' : 1,
           '2' : 2,
           '3' : 3
+        },
+        false // read-only
+      );
+      break;
+
+    case '%pismart_Achn':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          '0' : 0,
+          '1' : 1,
+          '2' : 2,
+          '3' : 3,
+          '4' : 4
         },
         false // read-only
       );
@@ -164,6 +213,24 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           "B5"  : [5]
         },
         false // read-only
+      );
+      break;
+
+    case '%pismart_Dchn':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "0" : [0],
+          "1" : [1],
+          "2" : [2],
+          "3" : [3],
+          "4" : [4],
+          "5" : [5],
+          "6" : [6],
+          "7" : [7]
+        },
+        true // read-only
       );
       break;
 
@@ -296,6 +363,18 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         {
           "0"  : "0",
           "1"  : "1"
+        },
+        true // read-only
+      );
+      break;
+
+    case '%D_state':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "HIGH" : "HIGH",
+          "LOW"  : "LOW"
         },
         true // read-only
       );

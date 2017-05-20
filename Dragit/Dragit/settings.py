@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'Dragit.picar_v',
     'Dragit.raspberry_pi',
     'Dragit.picar_s',
+    'Dragit.pismart_',
 ]
 
 MIDDLEWARE = [
