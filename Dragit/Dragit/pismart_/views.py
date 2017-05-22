@@ -4,52 +4,53 @@ from __future__ import unicode_literals
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 
-from Dragit.pismart_.pismart import pismart
-from Dragit.pismart_.pismart import led as pismart_led
-from Dragit.pismart_.pismart import motor as pismart_motor
-from Dragit.pismart_.pismart import servo as pismart_servo
-from Dragit.pismart_.pismart import pwm as pismart_pwm
-from Dragit.pismart_.pismart import adc as pismart_adc
-from Dragit.pismart_.pismart import tts as pismart_tts
-from Dragit.pismart_.pismart import stt as pismart_stt
-
 import RPi.GPIO as GPIO
 import time
 import sys, os
 import threading
-D_CHANNEL = {"0":17, "1":18, "2":22, "3":27, "4":23, "5":24, "6":25, "7":4,}
-D_STATE   = {"HIGH":GPIO.HIGH, "LOW":GPIO.LOW}
 
-pismart = pismart.PiSmart()
-pico    = pismart_tts.TTS()
+try:
+    from Dragit.pismart_.pismart import pismart
+    from Dragit.pismart_.pismart import led as pismart_led
+    from Dragit.pismart_.pismart import motor as pismart_motor
+    from Dragit.pismart_.pismart import servo as pismart_servo
+    from Dragit.pismart_.pismart import pwm as pismart_pwm
+    from Dragit.pismart_.pismart import adc as pismart_adc
+    from Dragit.pismart_.pismart import tts as pismart_tts
+    from Dragit.pismart_.pismart import stt as pismart_stt
 
-sps_file_path = "/home/pi/dictionary.sps"
-os.system("cp %s ./"%sps_file_path)
+    D_CHANNEL = {"0":17, "1":18, "2":22, "3":27, "4":23, "5":24, "6":25, "7":4,}
+    D_STATE   = {"HIGH":GPIO.HIGH, "LOW":GPIO.LOW}
 
-stt     = pismart_stt.STT('dictionary',dictionary_update=True)
+    pismart = pismart.PiSmart()
+    pico    = pismart_tts.TTS()
 
-pismart.speaker_switch(1)  # 1:on 0:off
-pismart.servo_switch(1)
-pismart.pwm_switch(1)
-pismart.motor_switch(1)
+    sps_file_path = "/home/pi/dictionary.sps"
+    os.system("cp %s ./"%sps_file_path)
 
-pismart.speaker_volume = 100
-pismart.capture_volume = 100
+    stt     = pismart_stt.STT('dictionary',dictionary_update=True)
 
-def stt_recognize():
-    while True:
-        print("Thread start")
-        stt.recognize()
+    pismart.speaker_switch(1)  # 1:on 0:off
+    pismart.servo_switch(1)
+    pismart.pwm_switch(1)
+    pismart.motor_switch(1)
 
-#try:
-power_voltage = pismart.power_voltage
-err_msg = ''
-t = threading.Thread(target=stt_recognize,name="Recognize")
-t.daemon = True
-t.start()
-print("Current Thread: %s"%threading.current_thread().name)
-#except Exception,e:
-err_msg = "PiSmart is not avalible"
+    pismart.speaker_volume = 100
+    pismart.capture_volume = 100
+
+    def stt_recognize():
+        while True:
+            print("Thread start")
+            stt.recognize()
+
+    power_voltage = pismart.power_voltage
+    err_msg = ''
+    t = threading.Thread(target=stt_recognize,name="Recognize")
+    t.daemon = True
+    t.start()
+    print("Current Thread: %s"%threading.current_thread().name)
+except Exception,e:
+    err_msg = "PiSmart is not avalible"
 '''
 def init_pismart(pwm=1,motor=1,speaker=1):
     GPIO.setmode(GPIO.BCM)

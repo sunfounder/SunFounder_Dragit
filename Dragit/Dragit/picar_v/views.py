@@ -16,10 +16,10 @@ blob_x = 0
 blob_y = 0
 blob_r = 0
 
-config_dir = '/opt/SunFounder_Dragit/Dragit/config'
-os.system('touch %s'%config_dir)
-
 try:
+    config_dir = '/opt/SunFounder_Dragit/Dragit/config'
+    os.system('touch %s'%config_dir)
+
     import image_process
     adc  = ADC(0x48)
     fw   = front_wheels.Front_Wheels(db=config_dir)

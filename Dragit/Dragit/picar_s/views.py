@@ -16,10 +16,10 @@ import time
 import RPi.GPIO as GPIO
 import sys, os
 
-config_dir = '/opt/SunFounder_Dragit/Dragit/config'
-os.system('touch %s'%config_dir)
-
 try:
+    config_dir = '/opt/SunFounder_Dragit/Dragit/config'
+    os.system('touch %s'%config_dir)
+
     adc  = ADC(0x48)
 
     lf = Line_Follower()
