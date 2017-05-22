@@ -85,12 +85,12 @@ def led_off():
     print(msg)
 
 def motor_run(motor_chn, speed):
-    pismart.motor_switch(1)
+    #pismart.motor_switch(1)
     # motor库中有速度正负和限值的处理。
-    if motor_chn == "MotorA":
+    if motor_chn == "A":
         MotorA = pismart_motor.Motor(pismart_motor.Motor.MotorA)
         MotorA.speed = int(speed)
-    elif motor_chn == "MotorB":
+    elif motor_chn == "B":
         MotorB = pismart_motor.Motor(pismart_motor.Motor.MotorB)
         MotorB.speed = int(speed)
     elif motor_chn == "both":
@@ -98,7 +98,7 @@ def motor_run(motor_chn, speed):
         MotorA.speed = int(speed)
         MotorB = pismart_motor.Motor(pismart_motor.Motor.MotorB)
         MotorB.speed = int(speed)
-    msg = "[PiSmart] Set %s at speed %d"%(motor_chn, speed)
+    msg = "[PiSmart] Set Motor %s at speed %d"%(motor_chn, speed)
     print(msg)
 
 def pwm_output(pwm_channel, value):
@@ -111,7 +111,7 @@ def pwm_output(pwm_channel, value):
     print(msg)
 
 def servo_turn(servo_channel, angle):
-    pismart.servo_switch(1)
+    #pismart.servo_switch(1)
     channel = int(servo_channel)
     angle = int(angle)
     # servo 库有value限值的处理

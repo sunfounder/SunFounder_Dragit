@@ -21,6 +21,7 @@ SpriteMorph.prototype.loadPiSmartCategories = function(blocks, block, watcherTog
     blocks.push(block('pismart_set_dictionary'));
     blocks.push('=');
     blocks.push(block('pismart_heard'));
+    blocks.push(block('pismart_is_heard'));
     blocks.push(block('pismart_result'));
     blocks.push('=');
     blocks.push(block('pismart_device_status'));
@@ -41,7 +42,7 @@ type:   command
 SpriteMorph.prototype.blocks.pismart_led_bright = {    // Define blocks
     type    : 'command',
     category: 'PiSmart',
-    spec    : 'led brightness %n',
+    spec    : 'set led to %n',
     defaults: [0]
   }
 
@@ -54,8 +55,8 @@ SpriteMorph.prototype.blocks.pismart_led_off = {
 SpriteMorph.prototype.blocks.pismart_motor_run = {
     type    : 'command',
     category: 'PiSmart',
-    spec    : '%pismart_motor_chn speed: %n',
-    defaults: ['MotorA', 0]
+    spec    : 'set motor %pismart_motor_chn to %n',
+    defaults: ['A', 0]
   }
 
 SpriteMorph.prototype.blocks.pismart_pwm_output = {
@@ -82,7 +83,7 @@ SpriteMorph.prototype.blocks.pismart_get_analog = {
 SpriteMorph.prototype.blocks.pismart_set_digital = {
     type    : 'command',
     category: 'PiSmart',
-    spec    : 'set digital %pismart_Dchn %D_state',
+    spec    : 'set digital %pismart_Dchn to %D_state',
     defaults: ['0', 'HIGH']
   }
 
@@ -115,7 +116,13 @@ SpriteMorph.prototype.blocks.pismart_set_dictionary = {
 SpriteMorph.prototype.blocks.pismart_heard = {
     type    : 'predicate',
     category: 'PiSmart',
-    spec    : 'heard something'
+    spec    : 'heard'
+  }
+
+SpriteMorph.prototype.blocks.pismart_is_heard = {
+    type    : 'predicate',
+    category: 'PiSmart',
+    spec    : '%s is heard'
   }
 
 SpriteMorph.prototype.blocks.pismart_result = {
@@ -137,7 +144,8 @@ SpriteMorph.prototype.blockAlternatives.pismart_led_off     = ['pismart_led_brig
 SpriteMorph.prototype.blockAlternatives.pismart_pwm_output  = ['pismart_servo_turn'];
 SpriteMorph.prototype.blockAlternatives.pismart_servo_turn  = ['pismart_pwm_output'];
 SpriteMorph.prototype.blockAlternatives.pismart_say         = ['pismart_heard'];
-SpriteMorph.prototype.blockAlternatives.pismart_heard       = ['pismart_say'];
+SpriteMorph.prototype.blockAlternatives.pismart_heard       = ['pismart_say','pismart_is_heard'];
+SpriteMorph.prototype.blockAlternatives.pismart_is_heard    = ['pismart_say','pismart_heard'];
 SpriteMorph.prototype.blockAlternatives.pismart_get_analog  = ['pismart_get_digital', 'pismart_set_digital']
 SpriteMorph.prototype.blockAlternatives.pismart_get_digital = ['pismart_get_analog', 'pismart_set_digital']
 SpriteMorph.prototype.blockAlternatives.pismart_set_digital = ['pismart_get_digital', 'pismart_get_analog']
@@ -205,6 +213,16 @@ SpriteMorph.prototype.pismart_heard = function () {
   //reportURL('192.168.0.102:8000/run/pismart/?action=get_analog&value=' + value)
   result = requests('pismart', 'heard')
   if (result == 'True')
+    result = true;
+  else
+    result = false
+  return result
+};
+
+SpriteMorph.prototype.pismart_is_heard = function (command) {
+  //reportURL('192.168.0.102:8000/run/pismart/?action=get_analog&value=' + value)
+  result = this.pismart_result()
+  if (result == command)
     result = true;
   else
     result = false

@@ -54,8 +54,8 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         null, // text
         false, // numeric?
         {
-          'MotorA' : ['MotorA'],
-          'MotorB' : ['MotorB'],
+          'A' : ['A'],
+          'B' : ['B'],
           'both'   : ['both']
         },
         true // read-only
