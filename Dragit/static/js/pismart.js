@@ -83,7 +83,7 @@ SpriteMorph.prototype.blocks.pismart_get_analog = {
 SpriteMorph.prototype.blocks.pismart_set_digital = {
     type    : 'command',
     category: 'PiSmart',
-    spec    : 'set digital %pismart_Dchn to %D_state',
+    spec    : 'set digital %pismart_Dchn %D_state',
     defaults: ['0', 'HIGH']
   }
 
