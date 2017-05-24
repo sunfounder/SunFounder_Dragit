@@ -23,14 +23,14 @@ try:
     D_STATE   = {"HIGH":GPIO.HIGH, "LOW":GPIO.LOW}
 
     pismart = pismart.PiSmart()
-    pico    = pismart_tts.TTS()
+    pico    = pismart_tts.TTS('pico')
 
     sps_file_path = "/home/pi/dictionary.sps"
     os.system("cp %s ./"%sps_file_path)
 
     stt     = pismart_stt.STT('dictionary',dictionary_update=True)
 
-    pismart.speaker_switch(1)  # 1:on 0:off
+    pismart.speaker_switch(0)  # 1:on 0:off
     pismart.servo_switch(1)
     pismart.pwm_switch(1)
     pismart.motor_switch(1)
@@ -143,7 +143,10 @@ def get_analog(analog_channel):
 
 def say(words):
     global pico
+    pismart.speaker_switch(1)  # 1:on 0:off
     pico.say = words
+    time.sleep(2)
+    pismart.speaker_switch(0)  # 1:on 0:off
 
 def set_dictionary(dic):
     global stt
@@ -257,7 +260,7 @@ def run_request(request):
     elif action == "say":
         print("[PiSmart] Say")
         words = value0
-        pico.say = words
+        say(words)
 
     # ================ Heard =================
     elif action == "set_dictionary":

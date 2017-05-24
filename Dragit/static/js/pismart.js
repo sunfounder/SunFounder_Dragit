@@ -98,13 +98,14 @@ SpriteMorph.prototype.blocks.pismart_say = {
     type    : 'command',
     category: 'PiSmart',
     spec    : 'PiSmart say %s',
-    defaults: [localize('Hello!')]
+    defaults: ['Hello!']
   }
 
 SpriteMorph.prototype.blocks.pismart_dictionary = {
     type    : 'reporter',
     category: 'PiSmart',
-    spec    : 'dictionary %s : %s'
+    spec    : 'dictionary %s : %s',
+    defaults: [localize('command'), localize('words')]
   }
 
 SpriteMorph.prototype.blocks.pismart_set_dictionary = {
