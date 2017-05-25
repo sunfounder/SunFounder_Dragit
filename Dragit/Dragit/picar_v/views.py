@@ -11,6 +11,7 @@ import Dragit.picar
 import time
 import RPi.GPIO as GPIO
 import sys, os
+import stream
 
 blob_x = 0
 blob_y = 0
@@ -32,6 +33,8 @@ try:
     fw.turning_max = 45
     Dragit.picar.setup()
     GPIO.setmode(GPIO.BCM)
+
+    stream.stop()
 
     blob_x = 0
     blob_y = 0
@@ -83,6 +86,14 @@ def fw_turn(angle):
         angle = int(angle)+90
         fw.turn(angle)
     msg = "[PiCar-V] Front wheels turn %s "%(angle)
+    print(msg)
+
+def cam_switch(state):
+    if state == 'on':
+        stream.start()
+    elif state == 'off':
+        stream.stop()
+    msg = "[PiCar-V] Stream server %s ,0.0.0.0:8080"%(state)
     print(msg)
 
 def cam_turn(angle):
@@ -276,6 +287,10 @@ def run_request(request):
         fw_turn(value)
 
     # ================ Pan & Tilt=================
+    elif action == "cam_switch":
+        value = value0
+        cam_switch(value)
+
     elif action == "cam_turn":
         value = value0
         cam_turn(value)

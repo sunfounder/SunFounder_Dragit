@@ -7,6 +7,7 @@ SpriteMorph.prototype.loadPiCarVCategories = function(blocks, block, watcherTogg
     blocks.push(block('picar_v_rw_stop'));
     blocks.push(block('picar_v_fw_turn'));
     blocks.push('=');
+    blocks.push(block('picar_v_cam_switch'));
     blocks.push(block('picar_v_cam_turn'));
     blocks.push(block('picar_v_cam_reset'));
     blocks.push(block('picar_v_pan_turn'));
@@ -50,6 +51,13 @@ SpriteMorph.prototype.blocks.picar_v_rw_stop = {
     type    : 'command',
     category: 'PiCar_V',
     spec    : 'stop'
+  }
+
+SpriteMorph.prototype.blocks.picar_v_cam_switch = {
+    type    : 'command',
+    category: 'PiCar_V',
+    spec    : 'camera switch %sf_on_off',
+    defaults: ['off']
   }
 
 SpriteMorph.prototype.blocks.picar_v_cam_turn = {
@@ -206,6 +214,11 @@ SpriteMorph.prototype.picar_v_rw_stop = function () {
 SpriteMorph.prototype.picar_v_fw_turn = function (value) {
   //reportURL('192.168.0.102:8000/run/picar-v/?action=fw_turn&value=' + value)
   return requests('picar-v', 'fw_turn', value)
+};
+
+SpriteMorph.prototype.picar_v_cam_switch = function (value) {
+  //reportURL('192.168.0.102:8000/run/picar-v/?action=fw_turn&value=' + value)
+  return requests('picar-v', 'cam_switch', value)
 };
 
 SpriteMorph.prototype.picar_v_cam_turn = function (value) {
