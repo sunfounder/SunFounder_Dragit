@@ -22,6 +22,7 @@ try:
     D_CHANNEL = {"0":17, "1":18, "2":22, "3":27, "4":23, "5":24, "6":25, "7":4,}
     D_STATE   = {"HIGH":GPIO.HIGH, "LOW":GPIO.LOW}
 
+    GPIO.setmode(GPIO.BCM)
     pismart = pismart.PiSmart()
     pico    = pismart_tts.TTS('pico')
 
@@ -127,7 +128,7 @@ def set_digital(d_chn, d_state):
     print(msg)
 
 def get_digital(d_chn):
-    GPIO.setup(D_CHANNEL[d_chn], GPIO.IN)
+    #GPIO.setup(D_CHANNEL[d_chn], GPIO.IN)
     state = GPIO.input(D_CHANNEL[d_chn])
     msg = "[PiSmart] Read Digital %s : %s"%(d_chn, state)
     print(msg)
@@ -250,7 +251,7 @@ def run_request(request):
     elif action == "set_digital":
         digital_channel = value0
         digital_state   = value1
-        result = set_analog(analog_channel, digital_state)
+        result = set_digital(digital_channel, digital_state)
 
     elif action == "get_digital":
         digital_channel = value0

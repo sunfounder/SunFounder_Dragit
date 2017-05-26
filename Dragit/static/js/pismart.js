@@ -189,7 +189,7 @@ SpriteMorph.prototype.pismart_get_digital = function (digital_channel) {
 
 SpriteMorph.prototype.pismart_set_digital = function (digital_channel, digital_state) {
   //reportURL('192.168.0.102:8000/run/pismart/?action=get_analog&value=' + value)
-  requests('pismart', 'set_digital', analog_channel, digital_state)
+  requests('pismart', 'set_digital', digital_channel, digital_state)
 };
 
 SpriteMorph.prototype.pismart_say = function (words) {
