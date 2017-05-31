@@ -12,6 +12,9 @@ SpriteMorph.prototype.loadSunFounderCategories = function(blocks, block, watcher
   else if (cat === 'PiSmart') {
     this.loadPiSmartCategories(blocks, block, watcherToggle);
   }
+  else if (cat === 'Modules') {
+    this.loadModulesCategories(blocks, block, watcherToggle);
+  }
 }
 
 function requests(device, action, value0=null, value1=null, value2=null){
@@ -179,7 +182,7 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           '2' : 2,
           '3' : 3
         },
-        false // read-only
+        true // read-only
       );
       break;
 
@@ -194,7 +197,7 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           '3' : 3,
           '4' : 4
         },
-        false // read-only
+        true // read-only
       );
       break;
 
@@ -212,7 +215,7 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           "B6"  : [6],
           "B5"  : [5]
         },
-        false // read-only
+        true // read-only
       );
       break;
 
@@ -285,7 +288,7 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           "20" : 20,
           "21" : 21,
         },
-        false // read-only
+        true // read-only
       );
       break;
 
@@ -312,7 +315,7 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           "28 (BCM 20)"  : 20,
           "29 (BCM 21)"  : 21,
         },
-        false // read-only
+        true // read-only
       );
       break;
 
@@ -339,7 +342,7 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           "4"  : 4,
           "5"  : 5,
         },
-        false // read-only
+        true // read-only
       );
       break;
 
@@ -352,7 +355,7 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           "1"  : 1,
           "2"  : 2,
         },
-        false // read-only
+        true // read-only
       );
       break;
 

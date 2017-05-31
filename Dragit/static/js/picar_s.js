@@ -245,18 +245,18 @@ SpriteMorph.prototype.picar_s_cali_right_wheel = function (offset) {
 
 SpriteMorph.prototype.picar_s_ultra_get_distance = function (channel) {
   //reportURL('192.168.0.102:8000/run/picar-s/?action=set_digital&value=' + value)
-  return requests('picar-s', 'ultra_distance', channel)
+  return requests('modules', 'ultra_distance', channel)
 };
 
 SpriteMorph.prototype.picar_s_light_analog_index = function (channel) {
   //reportURL('192.168.0.102:8000/run/picar-s/?action=get_analog&value=' + value)
-  return requests('picar-s', 'light_follower_analog', channel)
+  return requests('modules', 'light_follower_analog', channel)
 };
 
 SpriteMorph.prototype.picar_s_light_analog = function (channel) {
   //reportURL('192.168.0.102:8000/run/picar-s/?action=get_analog&value=' + value)
   var result = new List()
-  raw_result = requests('picar-s', 'light_follower_analog').split(',');
+  raw_result = requests('modules', 'light_follower_analog').split(',');
   for (i=0; i<raw_result.length; i++){
     result.add(raw_result[i])
   }
@@ -265,13 +265,13 @@ SpriteMorph.prototype.picar_s_light_analog = function (channel) {
 
 SpriteMorph.prototype.picar_s_line_analog_index = function (channel) {
   //reportURL('192.168.0.102:8000/run/picar-s/?action=get_analog&value=' + value)
-  return requests('picar-s', 'line_follower_analog', channel)
+  return requests('modules', 'line_follower_analog', channel)
 };
 
 SpriteMorph.prototype.picar_s_line_analog = function (channel) {
   //reportURL('192.168.0.102:8000/run/picar-s/?action=get_analog&value=' + value)
   var result = new List()
-  raw_result = requests('picar-s', 'line_follower_analog').split(',');
+  raw_result = requests('modules', 'line_follower_analog').split(',');
   for (i=0; i<raw_result.length; i++){
     result.add(raw_result[i])
   }

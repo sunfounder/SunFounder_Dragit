@@ -128,7 +128,7 @@ def set_digital(d_chn, d_state):
     print(msg)
 
 def get_digital(d_chn):
-    #GPIO.setup(D_CHANNEL[d_chn], GPIO.IN)
+    GPIO.setup(D_CHANNEL[d_chn], GPIO.IN)
     state = GPIO.input(D_CHANNEL[d_chn])
     msg = "[PiSmart] Read Digital %s : %s"%(d_chn, state)
     print(msg)
