@@ -32,7 +32,7 @@ else
 fi
 
 sudo cp ./Dragit/Dragit/libs/modules/hardware.conf /etc/lirc/
-sudo cp ./Dragit/Dragit/libs/modules/lirc.conf /etc/lirc/
+sudo cp ./Dragit/Dragit/libs/modules/lircd.conf /etc/lirc/
 sudo cp ./Dragit/Dragit/libs/modules/pylirc_conf /etc/lirc/
 
 echo -e "\nInstalling python-pylirc \n"
