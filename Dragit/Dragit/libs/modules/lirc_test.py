@@ -4,7 +4,7 @@ import pylirc, time
 blocking = 0
 
 def setup():
-	integer = pylirc.init("my_lirc", "./lirc_conf", blocking)
+	integer = pylirc.init("my_lirc", "./pylirc_conf", blocking)
 
 def loop():
 	while True:

@@ -20,7 +20,7 @@ import time
 import RPi.GPIO as GPIO
 import sys, os
 
-ir_conf_path = "./Dragit/libs/modules/lirc_conf"
+ir_conf_path = "/etc/lirc/pylirc_conf"
 ir_time_out = 5
 ultrasonic_time_out = 2
 
