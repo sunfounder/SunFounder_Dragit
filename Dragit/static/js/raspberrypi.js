@@ -16,6 +16,9 @@ SpriteMorph.prototype.loadRaspberryPiCategories = function(blocks, block, watche
     blocks.push(block('ram_used'));
     blocks.push(block('disk_total'));
     blocks.push(block('disk_used'));
+    blocks.push('=');
+    blocks.push(block('bcm_num'));
+    blocks.push(block('gpio_num'));
 }
 
 // PiCar-V
@@ -34,21 +37,21 @@ type:   command
 SpriteMorph.prototype.blocks.rpi_gpio_set = {    // Define blocks
     type: 'command',
     category: 'RaspberryPi',
-    spec: 'gpio %rpi_io_chn %sf_io_state',
+    spec: 'gpio %rpi_bcm_chn %sf_io_state',
     defaults: ['17', 'LOW']
   }
 
 SpriteMorph.prototype.blocks.rpi_gpio_get = {    // Define blocks
     type: 'reporter',
     category: 'RaspberryPi',
-    spec: 'gpio %rpi_io_chn',
+    spec: 'gpio %rpi_bcm_chn',
     defaults: ['17']
   }
 
 SpriteMorph.prototype.blocks.rpi_gpio_get_tf = {    // Define blocks
     type: 'predicate',
     category: 'RaspberryPi',
-    spec: 'gpio %rpi_io_chn',
+    spec: 'gpio %rpi_bcm_chn',
     defaults: ['17']
   }
 
@@ -100,21 +103,30 @@ SpriteMorph.prototype.blocks.disk_used = {    // Define blocks
     category: 'RaspberryPi',
     spec: 'disk used'
   }
-// SunFounder process
 
+SpriteMorph.prototype.blocks.bcm_num = {    // Define blocks
+    type: 'reporter',
+    category: 'RaspberryPi',
+    spec: 'BCM %rpi_bcm_chn',
+    defaults: [17]
+  }
+
+SpriteMorph.prototype.blocks.gpio_num = {    // Define blocks
+    type: 'reporter',
+    category: 'RaspberryPi',
+    spec: 'GPIO %rpi_gpio_chn',
+    defaults: [0]
+  }
 
 SpriteMorph.prototype.rpi_gpio_set = function (channel, status) { // Define process
-  // '192.168.0.102:8000/run/raspberry_pi/?action=gpio&value0=output&value1=channel&
   requests('raspberry_pi', 'gpio', 'output', channel, status)
 };
 
 SpriteMorph.prototype.rpi_gpio_get = function (channel) { // Define process
-  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=gpio&value=' + value)
   return requests('raspberry_pi', 'gpio', 'input', channel)
 };
 
 SpriteMorph.prototype.rpi_gpio_get_tf = function (channel) { // Define process
-  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=gpio&value=' + value)
   result = requests('raspberry_pi', 'gpio', 'input', channel);
   if (result == 1)
     result = true;
@@ -124,7 +136,6 @@ SpriteMorph.prototype.rpi_gpio_get_tf = function (channel) { // Define process
 };
 
 SpriteMorph.prototype.rpi_i2cdetect = function (busnum) { // Define process
-  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=pwmchannel&value=' + value)
   var result = new List()
   raw_result = requests('raspberry_pi', 'i2cdetect', busnum).split(',');
   for (i=0; i<raw_result.length; i++){
@@ -134,36 +145,58 @@ SpriteMorph.prototype.rpi_i2cdetect = function (busnum) { // Define process
 };
 
 SpriteMorph.prototype.cpu_temperature = function () { // Define process
-  // 192.168.0.102:8000/run/raspberry_pi/?action=cpu_temperature
   return requests('raspberry_pi', 'cpu_temperature')
 };
 
 SpriteMorph.prototype.gpu_temperature = function () { // Define process
-  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=pwmchannel&value=' + value)
   return requests('raspberry_pi', 'gpu_temperature')
 };
 
 SpriteMorph.prototype.cpu_usage = function () { // Define process
-  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=pwmchannel&value=' + value)
   return requests('raspberry_pi', 'cpu_usage')
 };
 
 SpriteMorph.prototype.ram_total = function () { // Define process
-  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=pwmchannel&value=' + value)
   return requests('raspberry_pi', 'ram_total')
 };
 
 SpriteMorph.prototype.ram_used = function () { // Define process
-  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=pwmchannel&value=' + value)
   return requests('raspberry_pi', 'ram_used')
 };
 
 SpriteMorph.prototype.disk_total = function () { // Define process
-  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=pwmchannel&value=' + value)
   return requests('raspberry_pi', 'disk_total')
 };
 
 SpriteMorph.prototype.disk_used = function () { // Define process
-  //reportURL('192.168.0.102:8000/run/raspberry_pi/?action=pwmchannel&value=' + value)
   return requests('raspberry_pi', 'disk_used')
+};
+
+SpriteMorph.prototype.bcm_num = function (num) { // Define process
+  return num
+};
+
+var gpio_to_bcm = {
+  0 : 17,
+  1 : 18,
+  2 : 22,
+  3 : 27,
+  4 : 23,
+  5 : 24,
+  6 : 25,
+  7 : 4,
+  21 : 5,
+  22 : 6,
+  23 : 13,
+  24 : 19,
+  25 : 26,
+  26 : 12,
+  27 : 16,
+  28 : 20,
+  29 : 21,
+};
+
+SpriteMorph.prototype.gpio_num = function (num) { // Define process
+  result = gpio_to_bcm[num];
+  return result
 };

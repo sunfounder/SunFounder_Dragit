@@ -849,7 +849,7 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.add(settingsButton);
     this.controlBar.settingsButton = settingsButton; // for menu positioning
 
-    // cloudButton
+    /*// cloudButton
     button = new PushButtonMorph(
         this,
         'cloudMenu',
@@ -871,7 +871,7 @@ IDE_Morph.prototype.createControlBar = function () {
     cloudButton = button;
     this.controlBar.add(cloudButton);
     this.controlBar.cloudButton = cloudButton; // for menu positioning
-
+*/
     this.controlBar.fixLayout = function () {
         x = this.right() - padding;
         [stopButton, pauseButton, startButton].forEach(
@@ -901,14 +901,14 @@ IDE_Morph.prototype.createControlBar = function () {
         slider.setRight(stageSizeButton.left() - padding);
 
         settingsButton.setCenter(myself.controlBar.center());
-        settingsButton.setLeft(this.left());
+        settingsButton.setLeft(this.left()-40);
 
-        cloudButton.setCenter(myself.controlBar.center());
-        cloudButton.setRight(settingsButton.left() - padding);
+        //cloudButton.setCenter(myself.controlBar.center());
+        //cloudButton.setRight(settingsButton.left() - padding);
 
         projectButton.setCenter(myself.controlBar.center());
-        projectButton.setRight(cloudButton.left() - padding);
-        //projectButton.setRight(settingsButton.left() - padding);
+        //projectButton.setRight(cloudButton.left() - padding);
+        projectButton.setRight(settingsButton.left() - padding);
 
         this.refreshSlider();
         this.updateLabel();

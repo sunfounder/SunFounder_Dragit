@@ -2,12 +2,12 @@
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 
-from Dragit.picar.SunFounder_PCA9685.Servo import Servo
-from Dragit.picar.SunFounder_PCA9685.PCA9685 import PWM
-from Dragit.picar import front_wheels
-from Dragit.picar import back_wheels
-from Dragit.picar import ADC
-import Dragit.picar
+from Dragit.libs.picar.SunFounder_PCA9685.Servo import Servo
+from Dragit.libs.picar.SunFounder_PCA9685.PCA9685 import PWM
+from Dragit.libs.picar import front_wheels
+from Dragit.libs.picar import back_wheels
+from Dragit.libs.picar import ADC
+import Dragit.libs.picar as picar
 import time
 import RPi.GPIO as GPIO
 import sys, os
@@ -31,7 +31,7 @@ try:
     right_wheel = bw.right_wheel
 
     fw.turning_max = 45
-    Dragit.picar.setup()
+    picar.setup()
     GPIO.setmode(GPIO.BCM)
 
     stream.stop()

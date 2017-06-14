@@ -1,4 +1,3 @@
-
 SpriteMorph.prototype.loadSunFounderCategories = function(blocks, block, watcherToggle, cat){
   if (cat === 'PiCar_V') {
     this.loadPiCarVCategories(blocks, block, watcherToggle);
@@ -17,7 +16,7 @@ SpriteMorph.prototype.loadSunFounderCategories = function(blocks, block, watcher
   }
 }
 
-function requests(device, action, value0=null, value1=null, value2=null){
+function requests(device, action, value0=null, value1=null, value2=null, value3=null, value4=null){
   var xmlHttp  = new XMLHttpRequest();
   var protocol  = window.location.protocol;
   var host      = window.location.host;
@@ -31,6 +30,12 @@ function requests(device, action, value0=null, value1=null, value2=null){
   }
   if (value2 != null){
     url = url + "&value2=" + value2;
+  }
+  if (value3 != null){
+    url = url + "&value3=" + value3;
+  }
+  if (value4 != null){
+    url = url + "&value4=" + value4;
   }
   //document.getElementById("debug").innerHTML=url;
   xmlHttp.open( "GET", url, false );
@@ -97,7 +102,7 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         false, // numeric?
         {
           'on' : ['on'],
-          'off'  : ['off']
+          'off'  : ['off'],
         },
         true // read-only
       );
@@ -133,22 +138,22 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         null, // text
         false, // numeric?
         {
-          '0' : ['0'],
-          '1' : ['1'],
-          '2' : ['2'],
-          '3' : ['3'],
-          '4' : ['4'],
-          '5' : ['5'],
-          '6' : ['6'],
-          '7' : ['7'],
-          '8' : ['8'],
-          '9' : ['9'],
-          '10' : ['10'],
-          '11' : ['11'],
-          '12' : ['12'],
-          '13' : ['13'],
-          '14' : ['14'],
-          '15' : ['15']
+          '0'  : [0],
+          '1'  : [1],
+          '2'  : [2],
+          '3'  : [3],
+          '4'  : [4],
+          '5'  : [5],
+          '6'  : [6],
+          '7'  : [7],
+          '8'  : [8],
+          '9'  : [9],
+          '10' : [10],
+          '11' : [11],
+          '12' : [12],
+          '13' : [13],
+          '14' : [14],
+          '15' : [15],
         },
         false // read-only
       );
@@ -159,14 +164,14 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         null, // text
         false, // numeric?
         {
-          '0' : ['0'],
-          '1' : ['1'],
-          '2' : ['2'],
-          '3' : ['3'],
-          '4' : ['4'],
-          '5' : ['5'],
-          '6' : ['6'],
-          '7' : ['7']
+          '0' : [0],
+          '1' : [1],
+          '2' : [2],
+          '3' : [3],
+          '4' : [4],
+          '5' : [5],
+          '6' : [6],
+          '7' : [7],
         },
         true // read-only
       );
@@ -177,10 +182,10 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         null, // text
         false, // numeric?
         {
-          '0' : 0,
-          '1' : 1,
-          '2' : 2,
-          '3' : 3
+          '0' : [0],
+          '1' : [1],
+          '2' : [2],
+          '3' : [3],
         },
         true // read-only
       );
@@ -191,11 +196,11 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         null, // text
         false, // numeric?
         {
-          '0' : 0,
-          '1' : 1,
-          '2' : 2,
-          '3' : 3,
-          '4' : 4
+          '0' : [0],
+          '1' : [1],
+          '2' : [2],
+          '3' : [3],
+          '4' : [4]
         },
         true // read-only
       );
@@ -292,28 +297,28 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       );
       break;
 
-    case '%rpi_io_chn':
+    case '%rpi_gpio_chn':
       part = new InputSlotMorph(
         null, // text
         false, // numeric?
         {
-          "0 (BCM 17)"  : 17,
-          "1 (BCM 18)"  : 18,
-          "2 (BCM 22)"  : 22,
-          "3 (BCM 27)"  : 27,
-          "4 (BCM 23)"  : 23,
-          "5 (BCM 24)"  : 24,
-          "6 (BCM 25)"  : 25,
-          "7 (BCM 4)"  : 4,
-          "21 (BCM 5)"  : 5,
-          "22 (BCM 6)"  : 6,
-          "23 (BCM 13)"  : 13,
-          "24 (BCM 19)"  : 19,
-          "25 (BCM 26)"  : 26,
-          "26 (BCM 12)"  : 12,
-          "27 (BCM 16)"  : 16,
-          "28 (BCM 20)"  : 20,
-          "29 (BCM 21)"  : 21,
+          "0"  : [0],
+          "1"  : [1],
+          "2"  : [2],
+          "3"  : [3],
+          "4"  : [4],
+          "5"  : [5],
+          "6"  : [6],
+          "7"  : [7],
+          "21" : [21],
+          "22" : [22],
+          "23" : [23],
+          "24" : [24],
+          "25" : [25],
+          "26" : [26],
+          "27" : [27],
+          "28" : [28],
+          "29" : [29],
         },
         true // read-only
       );
@@ -324,8 +329,8 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         null, // text
         false, // numeric?
         {
-          "0"  : 0,
-          "1"  : 1
+          "0"  : [0],
+          "1"  : [1],
         },
         true // read-only
       );
@@ -351,9 +356,9 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         null, // text
         false, // numeric?
         {
-          "0"  : 0,
-          "1"  : 1,
-          "2"  : 2,
+          "0"  : [0],
+          "1"  : [1],
+          "2"  : [2],
         },
         true // read-only
       );
@@ -371,6 +376,18 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       );
       break;
 
+    case '%common_polarity':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "cathode" : "cathode",
+          "anode"   : "anode",
+        },
+        true // read-only
+      );
+      break;
+
     case '%D_state':
       part = new InputSlotMorph(
         null, // text
@@ -382,6 +399,251 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         true // read-only
       );
       break;
+
+    case '%pcf8591_ain':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "AIN0"  : "AIN0",
+          "AIN1"  : "AIN1",
+          "AIN2"  : "AIN2",
+          "AIN3"  : "AIN3"
+        },
+        true // read-only
+      );
+      break;
+
+    case '%pcf8591_addr':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "0x48"  : '0x48',
+          "0x49"  : '0x49',
+          "0x4A"  : '0x4A',
+          "0x4B"  : '0x4B',
+          "0x4C"  : '0x4C',
+          "0x4D"  : '0x4D',
+          "0x4E"  : '0x4E',
+          "0x4F"  : '0x4F'
+        },
+        true // read-only
+      );
+      break;
+
+    case '%joystick_ps2_pin':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "X"  : "X",
+          "Y"  : "Y",
+          "Bt" : "Bt"
+        },
+        true // read-only
+      );
+      break;
+
+    case '%unit':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "c"  : "c",
+          "f"  : "f"
+        },
+        true // read-only
+      );
+      break;
+
+    case '%week':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "mon."  : "mon.",
+          "tue."  : "tue.",
+          "wed."  : "wed.",
+          "thu."  : "thu.",
+          "fri."  : "fri.",
+          "sat."  : "sat.",
+          "sun."  : "sun.",
+        },
+        true // read-only
+      );
+      break;
+
+    case '%col_1602':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "0"  : [0],
+          "1"  : [1],
+          "2"  : [2],
+          "3"  : [3],
+          "4"  : [4],
+          "5"  : [5],
+          "6"  : [6],
+          "6"  : [6],
+          "7"  : [7],
+          "8"  : [8],
+          "10" : [10],
+          "11" : [11],
+          "12" : [12],
+          "13" : [13],
+          "14" : [14],
+          "15" : [15],
+        },
+        true // read-only
+      );
+      break;
+
+    case '%row_1602':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "0"  : [0],
+          "1"  : [1],
+        },
+        true // read-only
+      );
+      break;
+
+    case '%RGBcolors':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "red"    : '0xFF0000',
+          "green"  : '0x00FF00',
+          "blue"   : '0x0000FF',
+          "yellow" : '0xFFFF00',
+          "purple" : '0xFF00FF',
+          "cyan"   : '0x00FFFF',
+          "white"  : '0xFFFFFF',
+        },
+        false // read-only
+      );
+      break;
+
+    case '%DUALcolors':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "red"   : "red",
+          "green" : "green",
+          "off"   : "off",
+        },
+        true // read-only
+      );
+      break;
+
+    case '%buzzer':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "beep" : 'beep',
+          "off"  : 'off',
+        },
+        false // read-only
+      );
+      break;
+
+    case '%dht_mode':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "temperature C" : 'temperature C',
+          "temperature F" : 'temperature F',
+          "humidity"  : 'humidity',
+        },
+        true // read-only
+      );
+      break;
+
+    case '%mpu6050_item':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "gyroscope x"    : 'gyroscope x',
+          "gyroscope y"    : 'gyroscope y',
+          "gyroscope z"    : 'gyroscope z',
+          "acceleration x" : 'acceleration x',
+          "acceleration y" : 'acceleration y',
+          "acceleration z" : 'acceleration z',
+          "x rotation"     : 'x rotation',
+          "y rotation"     : 'y rotation',
+        },
+        true // read-only
+      );
+      break;
+
+    case '%bmp280_item':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "temperature" : 'temperature',
+          "pressure"    : 'pressure',
+        },
+        true // read-only
+      );
+      break;
+
+    case '%rtc_ds1302_item':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "year"  : 'year',
+          "month" : 'month',
+          "day"   : 'day',
+          "hour"  : 'hour',
+          "minute": 'minute',
+          "second": 'second',
+        },
+        true // read-only
+      );
+      break;
+
+    case '%remoteKey':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "power"     : 'power',
+          "mode"      : 'mode',
+          "mute"      : 'mute',
+          "playpause" : 'playpause',
+          "previous"  : 'previous',
+          "next"      : 'next',
+          "-"         : '-',
+          "+"         : '+',
+          "EQ"        : 'EQ',
+          "0"         : '0',
+          "1"         : '1',
+          "2"         : '2',
+          "3"         : '3',
+          "4"         : '4',
+          "5"         : '5',
+          "6"         : '6',
+          "7"         : '7',
+          "8"         : '8',
+          "9"         : '9',
+          "swap"      : 'swap',
+          "u/sd"      : 'u/sd',
+        },
+        true // read-only
+      );
+      break;
+
 
     default:
       nop();

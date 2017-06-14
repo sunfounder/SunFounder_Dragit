@@ -2,16 +2,16 @@
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 
-from Dragit.sensors.Ultrasonic_Avoidance import Ultrasonic_Avoidance
-from Dragit.sensors.Light_Follower import Light_Follower
-from Dragit.sensors.Line_Follower import Line_Follower
+from Dragit.libs.modules.Ultrasonic_Avoidance import Ultrasonic_Avoidance
+from Dragit.libs.modules.Light_Follower import Light_Follower
+from Dragit.libs.modules.Line_Follower import Line_Follower
 
-from Dragit.picar.SunFounder_PCA9685.Servo import Servo
-from Dragit.picar.SunFounder_PCA9685.PCA9685 import PWM
-from Dragit.picar import front_wheels
-from Dragit.picar import back_wheels
-from Dragit.picar import ADC
-import Dragit.picar
+from Dragit.libs.picar.SunFounder_PCA9685.Servo import Servo
+from Dragit.libs.picar.SunFounder_PCA9685.PCA9685 import PWM
+from Dragit.libs.picar import front_wheels
+from Dragit.libs.picar import back_wheels
+from Dragit.libs.picar import ADC
+import Dragit.libs.picar as picar
 import time
 import RPi.GPIO as GPIO
 import sys, os
@@ -32,7 +32,7 @@ try:
     lt.analog_function = adc.read
 
     fw.turning_max = 45
-    Dragit.picar.setup()
+    picar.setup()
     GPIO.setmode(GPIO.BCM)
     err_msg = ''
 except Exception,e:

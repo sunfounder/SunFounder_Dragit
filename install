@@ -21,7 +21,18 @@ else
 fi
 
 ###################################
-# Enable I2C1 #
+# install python-pylirc #
+###################################
+echo -e "\nInstalling django \n"
+if sudo apt-get install python-pylirc ; then
+    echo -e "    Successfully installed python-pylirc runtime \n"
+else
+    echo -e "    Failed to installed python-pylirc."
+    end
+fi
+
+###################################
+# setup /boot/config.txt  Enable I2C1 #
 ###################################
 # Add lines to /boot/config.txt
 echo -e "\nEnalbe I2C..."
@@ -30,6 +41,16 @@ if grep -q 'dtparam=i2c_arm=on' config.txt.temp; then  # whether i2c_arm in unco
     echo -e '    Seem i2c_arm parameter already set, skip this step \n'
 else
     echo -e '    dtparam=i2c_arm=on \n' >> /boot/config.txt
+fi
+if grep -q 'dtoverlay=w1-gpio' config.txt.temp; then
+    echo -e '    Seem w1-gpio parameter already set, skip this step \n'
+else
+    echo -e '    dtoverlay=w1-gpio \n' >> /boot/config.txt
+fi
+if grep -q 'dtoverlay=lirc-rpi:gpio_in_pin=26' config.txt.temp; then
+    echo -e '    Seem lirc gpio_in_pin=26 parameter already set, skip this step \n'
+else
+    echo -e '    dtoverlay=lirc-rpi:gpio_in_pin=26 \n' >> /boot/config.txt
 fi
 rm config.txt.temp
 echo -e "    Done\n"

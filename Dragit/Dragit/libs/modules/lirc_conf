@@ -1,0 +1,147 @@
+begin
+  remote = *
+  button = KEY_CHANNELDOWN
+  prog = my_lirc
+  config = power
+end
+
+begin
+  remote = *
+  button = KEY_CHANNEL
+  prog = my_lirc
+  config = mode
+end
+
+begin
+  remote = *
+  button = KEY_CHANNELUP
+  prog = my_lirc
+  config = mute
+end
+
+begin
+  remote = *
+  button = KEY_PREVIOUS
+  prog = my_lirc
+  config = playpause
+end
+
+begin
+  remote = *
+  button = KEY_NEXT
+  prog = my_lirc
+  config = previous
+end
+
+begin
+  remote = *
+  button = KEY_PLAYPAUSE
+  prog = my_lirc
+  config = next
+end
+
+begin
+  remote = *
+  button = KEY_VOLUMEDOWN
+  prog = my_lirc
+  config = EQ
+end
+
+begin
+  remote = *
+  button = KEY_VOLUMEUP
+  prog = my_lirc
+  config = minus
+end
+
+begin
+  remote = *
+  button = KEY_EQUAL
+  prog = my_lirc
+  config = plus
+end
+
+begin
+  remote = *
+  button = KEY_NUMERIC_0
+  prog = my_lirc
+  config = 0
+end
+
+begin
+  remote = *
+  button = KEY_NUMERIC_1
+  prog = my_lirc
+  config = 1
+end
+
+begin
+  remote = *
+  button = KEY_NUMERIC_2
+  prog = my_lirc
+  config = 2
+end
+
+begin
+  remote = *
+  button = KEY_NUMERIC_3
+  prog = my_lirc
+  config = 3
+end
+
+begin
+  remote = *
+  button = KEY_NUMERIC_4
+  prog = my_lirc
+  config = 4
+end
+
+begin
+  remote = *
+  button = KEY_NUMERIC_5
+  prog = my_lirc
+  config = 5
+end
+
+begin
+  remote = *
+  button = KEY_NUMERIC_6
+  prog = my_lirc
+  config = 6
+end
+
+begin
+  remote = *
+  button = KEY_NUMERIC_7
+  prog = my_lirc
+  config = 7
+end
+
+begin
+  remote = *
+  button = KEY_NUMERIC_8
+  prog = my_lirc
+  config = 8
+end
+
+begin
+  remote = *
+  button = KEY_NUMERIC_9
+  prog = my_lirc
+  config = 9
+end
+
+begin
+  remote = *
+  button = BTN_0
+  prog = my_lirc
+  config = swap
+end
+
+begin
+  remote = *
+  button = BTN_1
+  prog = my_lirc
+  config = u/sd
+end
+

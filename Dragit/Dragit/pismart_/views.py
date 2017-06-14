@@ -10,26 +10,26 @@ import sys, os
 import threading
 
 try:
-    from Dragit.pismart_.pismart import pismart
-    from Dragit.pismart_.pismart import led as pismart_led
-    from Dragit.pismart_.pismart import motor as pismart_motor
-    from Dragit.pismart_.pismart import servo as pismart_servo
-    from Dragit.pismart_.pismart import pwm as pismart_pwm
-    from Dragit.pismart_.pismart import adc as pismart_adc
-    from Dragit.pismart_.pismart import tts as pismart_tts
-    from Dragit.pismart_.pismart import stt as pismart_stt
+    from pismart.pismart import PiSmart
+    from pismart.led import  LED
+    from pismart.motor import  Motor
+    from pismart.servo import  Servo
+    from pismart.pwm import  PWM
+    from pismart.adc import  ADC
+    from pismart.tts import  TTS
+    from pismart.stt import  STT
 
     D_CHANNEL = {"0":17, "1":18, "2":22, "3":27, "4":23, "5":24, "6":25, "7":4,}
     D_STATE   = {"HIGH":GPIO.HIGH, "LOW":GPIO.LOW}
 
     GPIO.setmode(GPIO.BCM)
-    pismart = pismart.PiSmart()
-    pico    = pismart_tts.TTS('pico')
+    pismart = PiSmart()
+    pico    = TTS('pico')
 
     sps_file_path = "/home/pi/dictionary.sps"
     os.system("cp %s ./"%sps_file_path)
 
-    stt     = pismart_stt.STT('dictionary',dictionary_update=True)
+    stt     = STT('dictionary',dictionary_update=True)
 
     pismart.speaker_switch(0)  # 1:on 0:off
     pismart.servo_switch(1)
@@ -74,13 +74,13 @@ def set_led_brightness(brightness):
     elif brightness > 100:
         brightness = 100
 
-    led = pismart_led.LED()
+    led = LED()
     led.brightness = int(brightness)
     msg = "[PiSmart] Set LED brightness %d"%(brightness)
     print(msg)
 
 def led_off():
-    led = pismart_led.LED()
+    led = LED()
     led.off()
     msg = "[PiSmart] Set LED off"
     print(msg)
@@ -89,15 +89,15 @@ def motor_run(motor_chn, speed):
     #pismart.motor_switch(1)
     # motor库中有速度正负和限值的处理。
     if motor_chn == "A":
-        MotorA = pismart_motor.Motor(pismart_motor.Motor.MotorA)
+        MotorA = Motor(Motor.MotorA)
         MotorA.speed = int(speed)
     elif motor_chn == "B":
-        MotorB = pismart_motor.Motor(pismart_motor.Motor.MotorB)
+        MotorB = Motor(Motor.MotorB)
         MotorB.speed = int(speed)
     elif motor_chn == "both":
-        MotorA = pismart_motor.Motor(pismart_motor.Motor.MotorA)
+        MotorA = Motor(Motor.MotorA)
         MotorA.speed = int(speed)
-        MotorB = pismart_motor.Motor(pismart_motor.Motor.MotorB)
+        MotorB = Motor(Motor.MotorB)
         MotorB.speed = int(speed)
     msg = "[PiSmart] Set Motor %s at speed %d"%(motor_chn, speed)
     print(msg)
@@ -106,7 +106,7 @@ def pwm_output(pwm_channel, value):
     channel = int(pwm_channel)
     value   = int(value)
     # pwm 库有value限值的处理
-    pwm = pismart_pwm.PWM(channel)
+    pwm = PWM(channel)
     pwm.value = value
     msg = "[PiSmart PWM chn: %s value: %s "%(channel, value)
     print(msg)
@@ -116,7 +116,7 @@ def servo_turn(servo_channel, angle):
     channel = int(servo_channel)
     angle = int(angle)
     # servo 库有value限值的处理
-    servo = pismart_servo.Servo(channel)
+    servo = Servo(channel)
     servo.angle = angle
     msg = "[PiSmart] Set Servo %s to %d degree"%(channel, angle)
     print(msg)
@@ -136,7 +136,7 @@ def get_digital(d_chn):
 
 def get_analog(analog_channel):
     channel = int(analog_channel)
-    adc = pismart_adc.ADC(channel)
+    adc = ADC(channel)
     value = adc.read()
     msg = "[PiSmart] Read analog channel %s: %d"%(channel,value)
     print(msg)

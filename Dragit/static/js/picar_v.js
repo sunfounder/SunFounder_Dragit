@@ -31,7 +31,7 @@ SpriteMorph.prototype.loadPiCarVCategories = function(blocks, block, watcherTogg
 // PiCar-V
 SpriteMorph.prototype.categories.push('PiCar_V')   // Add categories
 
-SpriteMorph.prototype.blockColor.PiCar_V = new Color(211, 47, 47)    // Define category colors rgb(211, 47, 47)
+SpriteMorph.prototype.blockColor.PiCar_V = new Color(229, 115, 115)    // rgb(229, 115, 115) Define category colors rgb(211, 47, 47)
 /*
 type:   command
         reporter

@@ -30,16 +30,16 @@ class Ultrasonic_Avoidance(object):
 		time.sleep(0.00001)
 		GPIO.output(self.channel, False)
 		GPIO.setup(self.channel,GPIO.IN)
-		
+
 		timeout_start = time.time()
 		while GPIO.input(self.channel)==0:
 			pulse_start = time.time()
 			if pulse_start - timeout_start > self.timeout:
-				return -1 
+				return -1
 		while GPIO.input(self.channel)==1:
 			pulse_end = time.time()
 			if pulse_start - timeout_start > self.timeout:
-				return -1 
+				return -1
 
 		if pulse_start != 0 and pulse_end != 0:
 			pulse_duration = pulse_end - pulse_start
@@ -62,7 +62,7 @@ class Ultrasonic_Avoidance(object):
 			a = self.distance()
 			#print '    %s' % a
 			sum += a
-		return int(sum/mount)			
+		return int(sum/mount)
 	def less_than(self, alarm_gate):
 		dis = self.get_distance()
 		status = 0

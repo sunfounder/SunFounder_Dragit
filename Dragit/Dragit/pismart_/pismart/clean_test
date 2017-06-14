@@ -1,3 +1,0 @@
-rm *.pyc
-rm *.wav
-rm *.fsg *.jsgf *.db *.dic
