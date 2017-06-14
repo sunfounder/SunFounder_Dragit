@@ -78,5 +78,5 @@ sudo cp dragit /etc/init.d/dragit
 sudo update-rc.d dragit defaults
 
 echo -e "    Done \n"
-echo -e"  Reboot to effect"
-sudo reboot
+echo -e"  Reboot your pi to take effect or do it later"
+#sudo reboot
