@@ -121,6 +121,7 @@ def pan_turn(angle):
         angle = -90
     elif angle > 180:
         angle = 180
+    pan.write(angle)
     msg = "[PiCar-V] Pan servo turn %s "%(angle)
     print(msg)
 
