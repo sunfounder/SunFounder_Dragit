@@ -15,6 +15,8 @@
 case "$1" in
     start)
         echo "Starting Dragit"
+        sudo modprobe w1-gpio
+        sudo modprobe w1-therm
         /opt/SunFounder_Dragit/Dragit/start &
         ;;
     stop)

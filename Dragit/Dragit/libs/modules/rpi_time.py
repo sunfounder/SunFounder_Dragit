@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from datetime import datetime
 import ds1302
-
+from time import sleep
 
 class DS1302:
 	def __init__(self, rangechecks=True):
@@ -37,10 +37,10 @@ class DS1302:
 			year = 2017
 			print("year   out of range, set to default")
 		if month not in range(1, 13):
-			month = 6
+			month = 1
 			print("month  out of range, set to default")
 		if day not in range(1, 32):
-			day = 9
+			day = 1
 			print("day    out of range, set to default")
 		if hour not in range(0, 24):
 			hour = 0
@@ -79,4 +79,11 @@ def parse_time(s):
 	fmt = "%m/%d/%Y %H:%M"
 	return datetime.strptime(s, fmt)
 
+def test():
+	rtc = DS1302()
+	while True:
+		print (rtc.get_datetime())
+		sleep(1)
 
+if __name__ == '__main__':
+	test()

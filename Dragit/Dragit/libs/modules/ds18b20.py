@@ -1,36 +1,30 @@
-from basic import _Basic_class
 import os
 import time
 
-class DS18B20(_Basic_class):
+class DS18B20(object):
 
     _RUNTIME = 1000
-    _class_name = 'DS18B20'
     C = 'c'
     F = 'f'
-    def __init__(self, log='debug'):
-        self.logger_setup()
-        self.DEBUG = log
+    def __init__(self):
+        print("DS18B20 init")
         self._ds18b20 = []
-        self._debug('Start searching ds18b20 addresses')
+        print('DS18B20: Start searching ds18b20 addresses')
         self._unit = self.C
-        while True:
-            for i in range(self._RUNTIME):
-                for i in os.listdir('/sys/bus/w1/devices'):
-                    if i[:3] == '28-':
-                        self._ds18b20.append(i)
-                self.mount = len(self._ds18b20)
-                if self.mount > 0:
-                    self._info('DS18B20 founded.')
-                    self._info('Slave addresses:')
-                    for i in range(self.mount):
-                        self._info('Device: %d  Address: %s' % (i,self._ds18b20[i]))
-                    break
-                time.sleep(0.001)
+        for i in range(self._RUNTIME):
+            for i in os.listdir('/sys/bus/w1/devices'):
+                if i[:3] == '28-':
+                    self._ds18b20.append(i)
+            self.mount = len(self._ds18b20)
             if self.mount > 0:
+                print('DS18B20: DS18B20 founded.')
+                print('DS18B20: Slave addresses:')
+                for i in range(self.mount):
+                    print('DS18B20: Device: %d  Address: %s' % (i,self._ds18b20[i]))
                 break
-            else:
-                self._debug('Timeout. No devices. Check if DS18B20 is connected.')
+            time.sleep(0.001)
+        if self.mount < 0:
+            print('DS18B20: Timeout. No devices. Check if DS18B20 is connected.')
 
     @property
     def unit(self):
@@ -39,49 +33,49 @@ class DS18B20(_Basic_class):
     @unit.setter
     def unit(self, value):
         if value not in ['c', 'f']:
-            self._error('unit should be set to "C" or "F"')
+            print('DS18B20 ERROR: unit should be set to "C" or "F"')
             raise ValueError('unit should be set to "C" or "F"')
         self._unit = value
 
     def get_temperature(self, index):
         _location = '/sys/bus/w1/devices/%s/w1_slave' % self._ds18b20[index]
-        self._debug('Read device: %s'%_location)
-        while True:
-            for i in range(self._RUNTIME):
-                try:
-                    _tfile = open(_location)
-                    _text = _tfile.read()
-                    _tfile.close()
-                    _firstline = _text.split("\n")[0]
-                    _secondline = _text.split("\n")[1]
-                    status = _firstline.split(' ')[-1]
-                    if status != 'YES':
-                        _flag = 0
-                        self._warning('DS18B20@%s value error'%self._ds18b20[index])
-                    else:
-                        _flag = 1
-                        break
-                    time.sleep(0.001)
-                except:
+        print('DS18B20: Read device: %s'%_location)
+        _flag = 0
+        for i in range(self._RUNTIME):
+            try:
+                _tfile = open(_location)
+                _text = _tfile.read()
+                _tfile.close()
+                _firstline = _text.split("\n")[0]
+                _secondline = _text.split("\n")[1]
+                status = _firstline.split(' ')[-1]
+                if status != 'YES':
                     _flag = 0
-            if _flag == 1:
-                break
-            else:
-                self._error('Timeout. No device. Check if device is connected correctly.')
+                    self._warning('DS18B20@%s value error'%self._ds18b20[index])
+                else:
+                    _flag = 1
+                    break
+                time.sleep(0.001)
+            except:
+                _flag = 0
 
-        _temperaturedata = _secondline.split(" ")[-1]
-        self._debug("Raw data: %s"%_temperaturedata)
-        _temperature = float(_temperaturedata.split('=')[1])
-        self._debug("Raw value: %s"%_temperature)
-        _temperature_c = _temperature / 1000
-        self._debug("Temperatue in Celsius: %s C"%_temperature_c)
-        _temperature_f = _temperature_c * 9.0 / 5.0 + 32.0
-        self._debug("Temperatue in Fahrenheit: %s F"%_temperature_f)
+        if _flag == 1:
+            _temperaturedata = _secondline.split(" ")[-1]
+            print("DS18B20: Raw data: %s"%_temperaturedata)
+            _temperature = float(_temperaturedata.split('=')[1])
+            print("DS18B20: Raw value: %s"%_temperature)
+            _temperature_c = _temperature / 1000
+            print("DS18B20: Temperatue in Celsius: %s C"%_temperature_c)
+            _temperature_f = _temperature_c * 9.0 / 5.0 + 32.0
+            print("DS18B20: Temperatue in Fahrenheit: %s F"%_temperature_f)
 
-        if self.unit.lower() == self.C:
-            return _temperature_c
-        elif self.unit.lower() == self.F:
-            return _temperature_f
+            if self.unit.lower() == self.C:
+                return _temperature_c
+            elif self.unit.lower() == self.F:
+                return _temperature_f
+        else:
+            print('DS18B20 ERROR: Timeout. No device. Check if device is connected correctly.')
+            return "CRC ERROR"
 
     def get_all(self):
         result = []

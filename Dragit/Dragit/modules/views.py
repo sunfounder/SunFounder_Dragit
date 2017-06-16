@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+# pin connect:
+#   module         pin       BCM_pin
+#   ds18b20        sig       GPIO_4
+#   IR_receiver    sig       GPIO_26
+#                  SCL       GPIO_23
+#   RTC_ds1302     I/O       GPIO_24
+#                  RST       GPIO_25
 from __future__ import unicode_literals
 
 from django.shortcuts import render
@@ -14,6 +21,7 @@ from Dragit.libs.modules.dht11 import DHT11 as DHT11
 from Dragit.libs.modules.mpu6050 import MPU6050 as MPU6050
 from Dragit.libs.modules.rpi_time import DS1302 as DS1302
 from Dragit.libs.modules.bmp280 import BMP280 as BMP280
+from Dragit.libs.modules.soft_pwm import Soft_PWM as SoftPWM
 
 import pylirc
 import time
@@ -23,6 +31,7 @@ import sys, os
 ir_conf_path = "/etc/lirc/pylirc_conf"
 ir_time_out = 5
 ultrasonic_time_out = 2
+buzz_note = {'C':262, 'D':294, 'E':330, 'F':350, 'G':393, 'A':441, 'B':495, 'C#':525}
 
 try:
     # adc = ADC(0x48)
@@ -33,13 +42,11 @@ try:
 
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
-    r_pin = 17
-    g_pin = 18
-    b_pin = 27
-    buzzer_chn = -1
+    r_pin = 0
+    g_pin = 0
+    b_pin = 0
+    buzzer_chn = 0
     err_msg = ''
-    num = 0
-    num2 = 0
 
 except Exception,e:
     err_msg = "Modules is not avalible"
@@ -67,10 +74,6 @@ def set_rgb_color(R_val=0, G_val=0, B_val=0):   # For example : col = 0x112233
     #G_val = (col & 0x00ff00) >> 8
     #B_val = (col & 0x0000ff) >> 0
 
-    R_val = map(R_val, 0, 255, 0, 100)
-    G_val = map(G_val, 0, 255, 0, 100)
-    B_val = map(B_val, 0, 255, 0, 100)
-
     print ("R_duty=%d G_duty=%d B_duty=%d "%(R_val, G_val, B_val))
     p_R.ChangeDutyCycle(R_val)
     p_G.ChangeDutyCycle(G_val)
@@ -93,11 +96,16 @@ def rgb_led(r, g, b, com_pol, color):
     R_val = color[0]
     G_val = color[1]
     B_val = color[2]
-    if com_pol == 'cathode':
-        R_val = 255 - R_val
-        G_val = 255 - G_val
-        B_val = 255 - B_val
+
     print ("R_val=%d G_val=%d B_val=%d "%(R_val,G_val,B_val))
+
+    R_val = map(R_val, 0, 255, 0, 100)
+    G_val = map(G_val, 0, 255, 0, 100)
+    B_val = map(B_val, 0, 255, 0, 100)
+    if com_pol == 'cathode':
+        R_val = 100 - R_val
+        G_val = 100 - G_val
+        B_val = 100 - B_val
     return set_rgb_color( R_val, G_val, B_val)
 
 def setup_dual_led(r_pin, g_pin):
@@ -136,7 +144,6 @@ def dual_color_led(r, g, com_pol, col):
     col = col.encode('utf8')
     setup_dual_led(r, g)
     set_dual_color(r, g, com_pol, col)
-
 
 def ultra_get_distance(channel):
     print("Get Ultrasonic sensor distance ")
@@ -198,11 +205,15 @@ def pcf8591_read(addr, chn):
     return value
 
 def w1_temperature(index, unit):
-    my_18b20 = DS18B20(log=False)
-    index = int(index)
-    my_18b20.unit = unit.encode('utf8')
-    value = my_18b20.get_temperature(index)
-    return value
+    try:
+        my_18b20 = DS18B20()
+        index = int(index)
+        my_18b20.unit = unit.encode('utf8')
+        value = my_18b20.get_temperature(index)
+        my_18b20 = 0
+        return value
+    except:
+        return "Device not founded"
 
 def setup_ultrasonic(trig,echo):
     GPIO.setup(trig, GPIO.OUT)
@@ -251,27 +262,34 @@ def i2c_lcd_print(pos_col, pos_row, words):
     words   = words.encode('utf8')
     set_i2c_lcd(pos_col, pos_row, words)
 
-def setup_buzzer(buzzer_chn=17):
-    print ("setup passive buzzer %s"%buzzer_chn)
-    global Buzz
-    GPIO.setup(buzzer_chn, GPIO.OUT)
-    Buzz = GPIO.PWM(buzzer_chn, 440)
-    Buzz.start(0)
-    print ("setup success")
-
 def passive_buzzer(chn, freq, on_off):
-    global buzzer_chn, num, num2
     chn = int(chn)
-    if (chn == buzzer_chn):
-        pass
-    else:
-        buzzer_chn = chn
-        setup_buzzer(buzzer_chn)
+
+    Buzz = SoftPWM(chn)
 
     if (on_off == 'off'):
+        print ("stop thread")
         Buzz.stop()
     else:
-        Buzz.ChangeFrequency(int(freq))
+        print ("start thread")
+        Buzz.start()
+        Buzz.set_dutycycle(50)
+        Buzz.set_frequency(int(freq))
+
+def buzzer_play(chn, note, second):
+    chn  = int(chn)
+    sec  = float(second)
+    note = note.encode('utf8')
+    freq = buzz_note[note]
+
+    Buzz = SoftPWM(chn)
+
+    print ("start thread")
+    Buzz.start()
+    Buzz.set_dutycycle(50)
+    Buzz.set_frequency(int(freq))
+    time.sleep(sec)
+    Buzz.stop()
 
 def dht11_module(pin,mode):
     pin = int(pin)
@@ -296,8 +314,10 @@ def dht11_module(pin,mode):
             return (value)
     else:
         value = value.error_code
-        print("Error: %d" % value)
-        return ("value not good")
+        if value == 1:
+            return ("ERR_MISSING_DATA")
+        elif value == 2:
+            return ("ERR_CRC")
 
 def bmp280_sensor(item):
     bmp = BMP280()
@@ -328,35 +348,35 @@ def mpu6050_sensor(item):
     rotation_out = my_mpu6050.get_rotation_out()
     gyro_out = my_mpu6050.get_gyro_out()
 
-    if item == "accel_x_scaled":
+    if item == "acceleration x":
         accel_x_scaled = accel_out[0]
         return (accel_x_scaled)
 
-    elif item == "accel_y_scaled":
+    elif item == "acceleration y":
         accel_y_scaled = accel_out[1]
         return (accel_y_scaled)
 
-    elif item == "accel_z_scaled":
+    elif item == "acceleration z":
         accel_z_scaled = accel_out[2]
         return (accel_z_scaled)
 
-    elif item == "x_rotation":
+    elif item == "x rotation":
         x_rotation = rotation_out[0]
         return (x_rotation)
 
-    elif item == "y_rotation":
-        x_rotation = rotation_out[1]
+    elif item == "y rotation":
+        y_rotation = rotation_out[1]
         return (y_rotation)
 
-    elif item == "gyro_x":
+    elif item == "gyroscope x":
         gyro_x = gyro_out[0]
         return (gyro_x)
 
-    elif item == "gyro_y":
+    elif item == "gyroscope y":
         gyro_y = gyro_out[1]
         return (gyro_y)
 
-    elif item == "gyro_z":
+    elif item == "gyroscope z":
         gyro_z = gyro_out[2]
         return (gyro_z)
 
@@ -393,6 +413,7 @@ def rtc_ds1302_set(date, time):
     print ("set ds1302 success \n time: %s"%dt)
 
 def ir_codes():
+    GPIO.setup(26, GPIO.IN)
     pylirc.init("my_lirc", ir_conf_path, 0)
     ir_codes = pylirc.nextcode(1)
     # while with time out
@@ -506,6 +527,12 @@ def run(request):
             on_off  = value2
             result  = passive_buzzer(chn, freq, on_off)
 
+        elif action == "buzzer_play":
+            chn     = value0
+            note    = value1
+            second  = value2
+            result  = buzzer_play(chn, note, second)
+
         # ================ dht11 module =================
         elif action == "dht11_module":
             pin     = value0
@@ -528,14 +555,13 @@ def run(request):
             result  = rtc_ds1302_get(item)
 
         elif action == "rtc_ds1302_set":
-            date    = value0
-            time    = value1
-            result  = rtc_ds1302_set(date, time)
+            _date    = value0
+            _time    = value1
+            result  = rtc_ds1302_set(_date, _time)
 
         # ================ rtc_ds1302 =================
         elif action == "ir_codes":
             result  = ir_codes()
-
 
     except Exception, e:
         result = '%s: %s'%(err_msg, e)

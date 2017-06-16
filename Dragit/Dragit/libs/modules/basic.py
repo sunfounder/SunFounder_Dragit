@@ -16,7 +16,7 @@ class _Basic_class(object):
 
     def __init__(self):
         self.logger_setup()
-        
+
     def logger_setup(self):
         self.logger = logging.getLogger(self._class_name)
         self.ch = logging.StreamHandler()
@@ -33,7 +33,7 @@ class _Basic_class(object):
     @property
     def DEBUG(self):
         return self._DEBUG
-    
+
     @DEBUG.setter
     def DEBUG(self, debug):
         if debug in range(5):
@@ -58,4 +58,4 @@ class _Basic_class(object):
         return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
     def end(self):
-        pass        
+        pass

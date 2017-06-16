@@ -26,10 +26,13 @@ SpriteMorph.prototype.loadModulesCategories = function(blocks, block, watcherTog
     blocks.push(block('ir_codes'));
     blocks.push('-');
     blocks.push(block('passive_buzzer_module'));
+    blocks.push(block('passive_buzzer_play_note'));
     blocks.push('=');
 
     blocks.push(block('rgb_led'));
     blocks.push(block('i2c_lcd_print'));
+    blocks.push(block('led_matrix'));
+    blocks.push(block('led_matrix_mod'));
     blocks.push('-');
     blocks.push(block('rtc_ds1302_set'));
     blocks.push(block('rtc_ds1302_get'));
@@ -241,7 +244,14 @@ SpriteMorph.prototype.blocks.passive_buzzer_module = {
     type    : 'command',
     category: 'Modules',
     spec    : 'passive buzzer %rpi_bcm_chn %sf_on_off %br   frequency %n',
-    defaults: ['17', 'off', 131]
+    defaults: ['12', 'off', 131]
+  }
+
+SpriteMorph.prototype.blocks.passive_buzzer_play_note = {
+    type    : 'command',
+    category: 'Modules',
+    spec    : 'passive buzzer %rpi_bcm_chn %br    play %buzzer_note %n second',
+    defaults: ['12', 'C', '0.25']
   }
 
 // PCF9685
@@ -341,7 +351,7 @@ SpriteMorph.prototype.blocks.rgb_led = {
     type    : 'command',
     category: 'Modules',
     spec    : 'rgb led %br   R pin: %rpi_bcm_chn %br   G pin: %rpi_bcm_chn %br   B pin: %rpi_bcm_chn %br   com: %common_polarity %br   color: %clr ',
-    defaults: [17, 18, 27, 'anode']
+    defaults: [16, 20, 21, 'cathode']
   }
 
 SpriteMorph.prototype.blocks.dual_color_led = {
@@ -354,7 +364,7 @@ SpriteMorph.prototype.blocks.dual_color_led = {
 SpriteMorph.prototype.blocks.ds18b20_temper = {
     type    : 'reporter',
     category: 'Modules',
-    spec    : 'ds18b20 %n %br unit %unit',
+    spec    : 'ds18b20 ordinal %n %br unit %unit',
     defaults: [0, 'c']
   }
 
@@ -397,7 +407,7 @@ SpriteMorph.prototype.blocks.rtc_ds1302_set = {
     type    : 'command',
     category: 'Modules',
     spec    : 'set rtc ds1302 %br   year: %n %br   mon: %n %br   day: %n %br   hour: %n %br   min: %n %br   sec: %n',
-    defaults: [2017, 06, 09, 09, 15, 00]
+    defaults: [current_datetime.year, current_datetime.mon, current_datetime.day, current_datetime.hour, current_datetime.min, current_datetime.sec]
   }
 
 SpriteMorph.prototype.blocks.ir_codes = {
@@ -407,6 +417,17 @@ SpriteMorph.prototype.blocks.ir_codes = {
     defaults: ['0']
   }
 
+SpriteMorph.prototype.blocks.led_matrix = {
+    type    : 'command',
+    category: 'Modules',
+    spec    : 'led matrix set'
+  }
+
+SpriteMorph.prototype.blocks.led_matrix_mod = {
+    type    : 'reporter',
+    category: 'Modules',
+    spec    : 'led matrix %br   %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %br   %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %br   %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %br   %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %br   %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %br   %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %br   %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %br   %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx'
+  }
 /*
 SpriteMorph.prototype.blocks.ir_receiver_module = {
     type    : 'reporter',
@@ -421,20 +442,29 @@ SpriteMorph.prototype.blockAlternatives.light_analog_index = ['light_analog'];
 SpriteMorph.prototype.blockAlternatives.light_analog = ['light_analog_index'];
 SpriteMorph.prototype.blockAlternatives.line_analog_index = ['line_analog'];
 SpriteMorph.prototype.blockAlternatives.line_analog = ['line_analog_index'];
+SpriteMorph.prototype.blockAlternatives.ultrasonic_3pin = ['ultrasonic_4pin'];
+SpriteMorph.prototype.blockAlternatives.ultrasonic_4pin = ['ultrasonic_3pin'];
+SpriteMorph.prototype.blockAlternatives.passive_buzzer_module = ['passive_buzzer_play_note'];
+SpriteMorph.prototype.blockAlternatives.passive_buzzer_play_note = ['passive_buzzer_module'];
+SpriteMorph.prototype.blockAlternatives.rtc_ds1302_set = ['rtc_ds1302_get'];
+SpriteMorph.prototype.blockAlternatives.rtc_ds1302_get = ['rtc_ds1302_set'];
+/*SpriteMorph.prototype.blockAlternatives.ds18b20_temper = ['dht11_module', 'mpu6050_sensor', 'bmp280_sensor'];
+SpriteMorph.prototype.blockAlternatives.dht11_module = ['ds18b20_temper', 'mpu6050_sensor', 'bmp280_sensor'];
+SpriteMorph.prototype.blockAlternatives.mpu6050_sensor = ['dht11_module', 'ds18b20_temper', 'bmp280_sensor'];
+SpriteMorph.prototype.blockAlternatives.bmp280_sensor = ['ds18b20_temper', 'mpu6050_sensor', 'dht11_module'];
+SpriteMorph.prototype.blockAlternatives.i2c_lcd_print = ['rgb_led'];
+SpriteMorph.prototype.blockAlternatives.rgb_led = ['i2c_lcd_print'];*/
 
 // SunFounder process
 SpriteMorph.prototype.ultrasonic_3pin = function (channel) {
-  //reportURL('192.168.0.102:8000/run/modules/?action=set_digital&value=' + value)
   return requests('modules', 'ultra_distance', channel)
 };
 
 SpriteMorph.prototype.light_analog_index = function (channel) {
-  //reportURL('192.168.0.102:8000/run/modules/?action=get_analog&value=' + value)
   return requests('modules', 'light_follower_analog', channel)
 };
 
 SpriteMorph.prototype.light_analog = function () {
-  //reportURL('192.168.0.102:8000/run/modules/?action=get_analog&value=' + value)
   var result = new List()
   raw_result = requests('modules', 'light_follower_analog').split(',');
   for (i=0; i<raw_result.length; i++){
@@ -444,12 +474,10 @@ SpriteMorph.prototype.light_analog = function () {
 };
 
 SpriteMorph.prototype.line_analog_index = function (channel) {
-  //reportURL('192.168.0.102:8000/run/modules/?action=get_analog&value=' + value)
   return requests('modules', 'line_follower_analog', channel)
 };
 
 SpriteMorph.prototype.line_analog = function () {
-  //reportURL('192.168.0.102:8000/run/modules/?action=get_analog&value=' + value)
   var result = new List()
   raw_result = requests('modules', 'line_follower_analog').split(',');
   for (i=0; i<raw_result.length; i++){
@@ -536,6 +564,9 @@ SpriteMorph.prototype.passive_buzzer_module = function (chn, on_off, frequency) 
   requests('modules', 'passive_buzzer', chn, frequency, on_off)
 };
 
+SpriteMorph.prototype.passive_buzzer_play_note = function (chn, note, second) {
+  requests('modules', 'buzzer_play', chn, note, second)
+};
 
 // pcf8591 module
 SpriteMorph.prototype.pcf8591_module = function (addr, chn) {
@@ -614,6 +645,26 @@ SpriteMorph.prototype.ds18b20_temper = function (index, unit) {
 
 SpriteMorph.prototype.i2c_lcd_print = function (pos_col, pos_row, words) {
   return requests('modules', 'i2c_lcd', pos_col, pos_row, words)
+};
+
+SpriteMorph.prototype.led_matrix = function (pos_col, pos_row, words) {
+  return requests('modules', 'i2c_lcd', pos_col, pos_row, words)
+};
+
+SpriteMorph.prototype.led_matrix_mod = function (box1,box2,box3,box4,box5,box6,box7,box8,box9,box10,box11,box12,box13,box14,box15,box16,box17,box18,box19,box20,box21,box22,box23,box24,box25,box26,box27,box28,box29,box30,box31,box32,box33,box34,box35,box36,box37,box38,box39,box40,box41,box42,box43,box44,box45,box46,box47,box48,box49,box50,box51,box52,box53,box54,box55,box56,box57,box58,box59,box60,box61,box62,box63,box64,box65,box66,box67,box68,box69,box70,box71,box72,box73,box74,box75,box76,box77,box78,box79,box80,box81,box82,box83,box84,box85,box86,box87,box88,box89,box90,box91,box92,box93,box94,box95,box96,box97,box98,box99,box100,box101,box102,box103,box104,box105,box106,box107,box108,box109,box110,box111,box112,box113,box114,box115,box116,box117,box118,box119,box120,box121,box122,box123,box124,box125,box126,box127,box128,box129,box130,box131,box132,box133,box134,box135,box136,box137,box138,box139,box140,box141,box142,box143,box144,box145,box146,box147,box148,box149,box150,box151,box152,box153,box154,box155,box156,box157,box158,box159,box160,box161,box162,box163,box164,box165,box166,box167,box168,box169,box170,box171,box172,box173,box174,box175,box176,box177,box178,box179,box180,box181,box182,box183,box184,box185,box186,box187,box188,box189,box190,box191,box192) {
+  temp_map = [box1,box2,box3,box4,box5,box6,box7,box8,box9,box10,box11,box12,box13,box14,box15,box16,box17,box18,box19,box20,box21,box22,box23,box24,box25,box26,box27,box28,box29,box30,box31,box32,box33,box34,box35,box36,box37,box38,box39,box40,box41,box42,box43,box44,box45,box46,box47,box48,box49,box50,box51,box52,box53,box54,box55,box56,box57,box58,box59,box60,box61,box62,box63,box64,box65,box66,box67,box68,box69,box70,box71,box72,box73,box74,box75,box76,box77,box78,box79,box80,box81,box82,box83,box84,box85,box86,box87,box88,box89,box90,box91,box92,box93,box94,box95,box96,box97,box98,box99,box100,box101,box102,box103,box104,box105,box106,box107,box108,box109,box110,box111,box112,box113,box114,box115,box116,box117,box118,box119,box120,box121,box122,box123,box124,box125,box126,box127,box128,box129,box130,box131,box132,box133,box134,box135,box136,box137,box138,box139,box140,box141,box142,box143,box144,box145,box146,box147,box148,box149,box150,box151,box152,box153,box154,box155,box156,box157,box158,box159,box160,box161,box162,box163,box164,box165,box166,box167,box168,box169,box170,box171,box172,box173,box174,box175,box176,box177,box178,box179,box180,box181,box182,box183,box184,box185,box186,box187,box188,box189,box190,box191,box192];
+  byte_list = []
+  for (i=0;i<24;i++){
+    byte = 0x00
+    for (j=0;j<8;j++){
+      tmp = temp_map[i*8+j] ? 1 : 0;
+      byte = (byte << 1) + tmp;
+    }
+    byte_list.push(byte)
+    console.log("return byte",byte)
+  }
+  console.log("return byte_list",byte_list)
+  return byte_list
 };
 
 SpriteMorph.prototype.dht11_module = function (pin, mode) {

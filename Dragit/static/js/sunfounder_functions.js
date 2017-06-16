@@ -1,3 +1,13 @@
+var myDate = new Date();
+current_datetime = {
+  'year' : myDate.getFullYear(),
+  'mon'  : myDate.getMonth()+1,
+  'day'  : myDate.getDate(),
+  'hour' : myDate.getHours(),
+  'min'  : myDate.getMinutes(),
+  'sec'  : myDate.getSeconds()
+}
+
 SpriteMorph.prototype.loadSunFounderCategories = function(blocks, block, watcherToggle, cat){
   if (cat === 'PiCar_V') {
     this.loadPiCarVCategories(blocks, block, watcherToggle);
@@ -376,18 +386,6 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       );
       break;
 
-    case '%common_polarity':
-      part = new InputSlotMorph(
-        null, // text
-        false, // numeric?
-        {
-          "cathode" : "cathode",
-          "anode"   : "anode",
-        },
-        true // read-only
-      );
-      break;
-
     case '%D_state':
       part = new InputSlotMorph(
         null, // text
@@ -529,6 +527,18 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       );
       break;
 
+    case '%common_polarity':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "cathode" : "cathode",
+          "anode"   : "anode",
+        },
+        true // read-only
+      );
+      break;
+
     case '%DUALcolors':
       part = new InputSlotMorph(
         null, // text
@@ -644,9 +654,124 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       );
       break;
 
+    case '%chkbx':
+        part = new CheckboxSlotMorph();
+        part.isStatic = true;
+        break;
+
+    case '%buzzer_note':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "C"  : 'C',
+          "D"  : 'D',
+          "E"  : 'E',
+          "F"  : 'F',
+          "G"  : 'G',
+          "A"  : 'A',
+          "B"  : 'B',
+          "C#" :'C#',
+        },
+        true // read-only
+      );
+      break;
 
     default:
       nop();
   }
   return part
 }
+
+
+// CheckboxSlotMorph //////////////////////////////////////////////////////
+
+/*
+    my block spec is %chkbx
+*/
+
+// CheckboxSlotMorph  inherits from ArgMorph:
+
+CheckboxSlotMorph.prototype = new ArgMorph();
+CheckboxSlotMorph.prototype.constructor = CheckboxSlotMorph;
+CheckboxSlotMorph.uber = ArgMorph.prototype;
+
+// CheckboxSlotMorph  instance creation:
+
+function CheckboxSlotMorph(flag) {
+  this.init(flag);
+}
+
+CheckboxSlotMorph.prototype.init = function (flag) {
+    this.flag = flag
+    CheckboxSlotMorph.uber.init.call(this, null, true); // silently
+    if (this.flag)
+        this.setColor(new Color(225, 225, 225));
+    else
+        this.flag = false
+        this.setColor(new Color(35, 35, 35));
+};
+
+CheckboxSlotMorph.prototype.getSpec = function () {
+    return '%chkbx';
+};
+
+CheckboxSlotMorph.prototype.setContents = function (flag) {
+    this.flag = flag;
+};
+
+// CheckboxSlotMorph  color sensing:
+CheckboxSlotMorph.prototype.mouseClickLeft = function () {
+    var myself = this,
+        world = this.world(),
+        hand = world.hand;
+    this.flag = !this.flag;
+    if (this.flag)
+        this.setColor(new Color(225, 225, 225));
+    else
+        this.setColor(new Color(35, 35, 35));
+};
+
+// CheckboxSlotMorph evaluating:
+
+CheckboxSlotMorph.prototype.evaluate = function () {
+    return this.flag;
+};
+
+// CheckboxSlotMorph drawing:
+
+CheckboxSlotMorph.prototype.drawNew = function () {
+    var context, borderColor, side;
+
+    side = this.fontSize + this.edge * 2 + this.typeInPadding * 2;
+    this.silentSetExtent(new Point(side, side));
+
+    // initialize my surface property
+    this.image = newCanvas(this.extent());
+    context = this.image.getContext('2d');
+    if (this.parent) {
+        borderColor = this.parent.color;
+    } else {
+        borderColor = new Color(120, 120, 120);
+    }
+    context.fillStyle = this.color.toString();
+
+    // cache my border colors
+    this.cachedClr = borderColor.toString();
+    this.cachedClrBright = borderColor.lighter(this.contrast)
+        .toString();
+    this.cachedClrDark = borderColor.darker(this.contrast).toString();
+
+    context.fillRect(
+        this.edge,
+        this.edge,
+        this.width() - this.edge * 2,
+        this.height() - this.edge * 2
+    );
+    if (!MorphicPreferences.isFlat) {
+        this.drawRectBorder(context);
+    }
+};
+
+CheckboxSlotMorph.prototype.drawRectBorder =
+    InputSlotMorph.prototype.drawRectBorder;
