@@ -21,6 +21,7 @@ SpriteMorph.prototype.loadModulesCategories = function(blocks, block, watcherTog
 
     blocks.push('=');
     blocks.push(block('pcf8591_module'));
+    blocks.push(block('pcf8591_output'));
 
     blocks.push('=');
     blocks.push(block('ir_codes'));
@@ -31,8 +32,8 @@ SpriteMorph.prototype.loadModulesCategories = function(blocks, block, watcherTog
 
     blocks.push(block('rgb_led'));
     blocks.push(block('i2c_lcd_print'));
-    blocks.push(block('led_matrix'));
-    blocks.push(block('led_matrix_mod'));
+    //blocks.push(block('led_matrix'));
+    //blocks.push(block('led_matrix_mod'));
     blocks.push('-');
     blocks.push(block('rtc_ds1302_set'));
     blocks.push(block('rtc_ds1302_get'));
@@ -260,6 +261,13 @@ SpriteMorph.prototype.blocks.pcf8591_module = {
     category: 'Modules',
     spec    : 'adc pcf8591 %br  addr: %pcf8591_addr %br  chn: %pcf8591_ain',
     defaults: ['0x48', 'AIN0']
+  }
+
+SpriteMorph.prototype.blocks.pcf8591_output = {
+    type    : 'command',
+    category: 'Modules',
+    spec    : 'adc pcf8591 %br  addr: %pcf8591_addr %br  output: %n',
+    defaults: ['0x48', '0']
   }
 
 // analog input modules
@@ -575,6 +583,12 @@ SpriteMorph.prototype.pcf8591_module = function (addr, chn) {
   else if (chn == 'AIN2') {chn = 2;}
   else if (chn == 'AIN3') {chn = 3;}
   return requests('modules', 'pcf8591', addr, chn)
+};
+
+SpriteMorph.prototype.pcf8591_output = function (addr, value) {
+  if (value > 255)    {value = 255;}
+  else if (value < 0) {value = 0;}
+  return requests('modules', 'pcf8591_write', addr, value)
 };
 
 SpriteMorph.prototype.ultrasonic_4pin = function (t_pin, e_pin) {

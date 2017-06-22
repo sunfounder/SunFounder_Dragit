@@ -204,6 +204,22 @@ def pcf8591_read(addr, chn):
 
     return value
 
+def pcf8591_write(addr, value):
+    try:
+        addr   = addr.encode('utf8')  # unicode to str
+        addr   = int(addr, 16)         # Hex str to int
+        value  = value.encode('utf8') # unicode to str
+        value  = int(value, 10)  # Oct str to int
+        #print ("addr: %s, %s" %(type(addr), addr))
+        #print ("chn: %s, %s" %(type(chn), chn))
+        adc  = ADC(addr)
+        adc.write(value)
+        print("[Modules] Analog write addr=%s, value=%s"%(addr, value))
+    except:
+        print("[Modules] Analog write address error")
+
+    return value
+
 def w1_temperature(index, unit):
     try:
         my_18b20 = DS18B20()
@@ -484,6 +500,11 @@ def run(request):
             addr    = value0
             channel = value1
             result  = pcf8591_read(addr, channel)
+
+        elif action == "pcf8591_write":
+            addr    = value0
+            value   = value1
+            result  = pcf8591_write(addr, value)
 
         # ================ RGB led =================
         elif action == "rgb_led":

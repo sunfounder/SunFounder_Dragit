@@ -24,7 +24,7 @@ class PCF8591(object):
 	RPI_REVISION_2 = ["a01041", "a21041"]
 	RPI_REVISION_3 = ["a02082", "a22082"]
 
-	AD_CHANNEL = [0x43, 0x42, 0x41, 0x40]
+	AD_CHANNEL = [0x40, 0x41, 0x42, 0x43]
 
 	def __init__(self, address=0x48, bus_number=None):
 		self.address = address
@@ -38,6 +38,15 @@ class PCF8591(object):
 		self.bus.write_byte(self.address, self.AD_CHANNEL[chn])
 		self.bus.read_byte(self.address) # dummy read to start conversion
 		return self.bus.read_byte(self.address)
+
+	def write(self, val):
+		try:
+			val = int(val) # change string to integer
+			# print temp to see on terminal else comment out
+			self.bus.write_byte_data(self.address, 0x40, val)
+		except Exception, e:
+			print "Error: Device address: 0x%2X" % self.address
+			print e
 
 	@property
 	def A0(self):
