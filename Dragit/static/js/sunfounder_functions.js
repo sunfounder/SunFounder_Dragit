@@ -487,6 +487,7 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           "6"  : [6],
           "7"  : [7],
           "8"  : [8],
+          "9"  : [9],
           "10" : [10],
           "11" : [11],
           "12" : [12],
@@ -671,7 +672,7 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
           "G"  : 'G',
           "A"  : 'A',
           "B"  : 'B',
-          "C#" :'C#',
+          "C2" :'C2',
         },
         true // read-only
       );

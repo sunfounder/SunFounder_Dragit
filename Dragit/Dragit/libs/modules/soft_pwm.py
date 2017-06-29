@@ -9,8 +9,9 @@ class Soft_PWM(object):
     def __init__(self, chn):
         self.chn  = chn
         self.dc   = 50
+        self.freq = 100
         self.pwm_status = 0
-        self.set_frequency(60)
+
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         GPIO.setup(self.chn, GPIO.OUT)
@@ -51,6 +52,7 @@ class Soft_PWM(object):
         return self.pwm_status
 
 def test_dc():
+    print ("Test DC, pin 17")
     led = Soft_PWM(17)
     led.set_frequency(100)
     led.start()
@@ -67,6 +69,7 @@ def test_freq():
 
     CH = [0, 525, 589, 661, 700, 786, 882, 990]     # Frequency of High C notes
     '''
+    print("Test freq")
     CM = [0, 262, 294, 330, 350, 393, 441, 495, 525]
     led = Soft_PWM(17)
     led.set_dutycycle(50)
@@ -80,6 +83,7 @@ def test_freq():
     led.stop()
 
 def test_rpigpio_pwm():
+    print("Test RPi.GPIO pwm")
     GPIO.setup(17,GPIO.OUT)
     led2 = GPIO.PWM(17, 100)
     led2.start(0)
@@ -89,10 +93,10 @@ def test_rpigpio_pwm():
     led2.stop()
 
 if __name__ == '__main__':
-    '''for x in xrange(1,6):
+    for x in xrange(1,6):
         test_dc()
         time.sleep(0.5)
         test_rpigpio_pwm()
         time.sleep(0.5)
-    '''
-    test_freq()
+
+    #test_freq()

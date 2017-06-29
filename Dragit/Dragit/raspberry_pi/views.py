@@ -3,8 +3,52 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse
 import commands, os
 import RPi.GPIO as GPIO
+import time
+from Dragit.libs.modules.bcm_gpio import BCM_GPIO as BCM_GPIO
 
 GPIO.setmode(GPIO.BCM)
+
+rpi_bcm_chn = [17, 18, 22, 27, 23, 24, 25, 4, 5, 6, 13, 19, 26, 12, 16, 20, 21]
+pin_obj=[]
+
+for x in rpi_bcm_chn:
+    # creat object for each pin, so that can use the object to open or close pwm
+    pin_obj.append(BCM_GPIO(x))
+
+def pin(num):
+    # return pin object
+    n = rpi_bcm_chn.index(num)
+    print ("pin ", rpi_bcm_chn[n])
+    return pin_obj[n]
+
+def set_pwm(chn, dc=None, freq=None):
+    pin(chn).pwm_output(dc=dc, freq=freq)
+    result = "set %s as pwm, dc=%s, freq=%s"%(chn, dc, freq)
+    return result
+
+def volume_set_pwm(vol_pwm_pin, vol_pwm_val):
+    # Formate data in function, to make Code Reuse
+    vol_pin = vol_pwm_pin.encode('utf8').split(',')
+    vol_val = vol_pwm_val.encode('utf8').split(',')
+    pwm_result = ""
+    for x in range(0, len(vol_pin)):
+        set_pwm(int(vol_pin[x]), float(vol_val[x]))
+        pwm_result += ("  %s. pin = %s val = %s \n"%(x, vol_pin[x], vol_val[x]))
+    result = "volume set pwm: \n" + pwm_result
+    return result
+
+def destroy_pwm(chn):
+    pin(chn).end()
+    result = "destroy_pwm, pin %s"%chn
+    return result
+
+def gpio(chn, direction, status):
+    if direction == 'output':
+        pin(chn).output(status)
+    elif direction == 'input':
+        result = pin(chn).input()
+        print "result = %s" % result
+        return result
 
 def ram_info():
     p = os.popen('free')
@@ -23,7 +67,6 @@ def disk_space():
         line = p.readline()
         if i==2:
             return line.split()[1:5]
-
 
 def cpu_temperature():
     raw_cpu_temperature = commands.getoutput("cat /sys/class/thermal/thermal_zone0/temp")
@@ -94,6 +137,9 @@ def run(request):
     debug = ''
     action = None
     result = None
+    value0 = None
+    value1 = None
+    value2 = None
     if 'action' in request.GET:
         action = request.GET['action']
         print("Get action: %s"%action)
@@ -107,49 +153,61 @@ def run(request):
         value2 = request.GET['value2']
         print("Get value2: %s"%value2)
 
-    # ================ GPIO Ports =================
+    # ================GPIO Ports =================
     if action == "gpio":
-        print "start"
+        # Control gpio input or output
+        chn  = int(value1)
         direction = value0
-        channel = int(value1)
-        if direction == 'output':
-            status = value2
-            if status == "HIGH":
-                status = 1
-            elif status == "LOW":
-                status = 0
-            GPIO.setup(channel, GPIO.OUT)
-            GPIO.output(channel, status)
-        elif direction == 'input':
-            GPIO.setup(channel, GPIO.IN)
-            result = GPIO.input(channel)
-            print "result = %s" % result
-        else:
-            print "direction error"
+        status    = value2
+        result = gpio(chn, direction, status)
+
+    elif action == "set_pwm":
+        chn  = int(value0)
+        dc   = float(value1)
+        freq = int(value2)
+        result = set_pwm(chn, dc, freq)
+
+    elif action == "volume_set_pwm":
+        vol_pwm_pin = value0
+        vol_pwm_val = value1
+        result = volume_set_pwm(vol_pwm_pin, vol_pwm_val)
+
+    elif action == "stop_pwm":
+        pin = int(value0)
+        result = destroy_pwm(pin)
+
     elif action == "cpu_temperature":
         # Get CPU Temperature in Celcius
         result = cpu_temperature()
+
     elif action == "gpu_temperature":
         # Get GPU Temperature in Celcius
         result = gpu_temperature()
+
     elif action == "ram_total":
         # Get Ram Total
         result = ram_total()
+
     elif action == "ram_used":
         # Get Ram Used
         result = ram_used()
+
     elif action == "disk_total":
         # Get Disk Total
         result = disk_total()
+
     elif action == "disk_used":
         # Get Disk Used
         result = disk_used()
+
     elif action == "cpu_usage":
         # Get CPU Usage
         result = cpu_usage()
+
     elif action == "i2cdetect":
         busnum = int(value0)
         result = get_i2c_address(busnum)
+
     else:
         print "action undefined"
     print("result: %s"%result)

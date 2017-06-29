@@ -14,6 +14,7 @@ SpriteMorph.prototype.loadModulesCategories = function(blocks, block, watcherTog
     blocks.push(block('ultrasonic_3pin'));
     blocks.push(block('ultrasonic_4pin'));
     blocks.push('-');
+    blocks.push(block('temperature_sensor'));
     blocks.push(block('ds18b20_temper'));
     blocks.push(block('bmp280_sensor'));
     blocks.push(block('dht11_module'));
@@ -24,13 +25,17 @@ SpriteMorph.prototype.loadModulesCategories = function(blocks, block, watcherTog
     blocks.push(block('pcf8591_output'));
 
     blocks.push('=');
-    blocks.push(block('ir_codes'));
+    blocks.push(block('is_IR_received'));
+    blocks.push(block('IR_received_val'));
+    blocks.push(block('IR_key_list'));
+
     blocks.push('-');
     blocks.push(block('passive_buzzer_module'));
     blocks.push(block('passive_buzzer_play_note'));
     blocks.push('=');
 
     blocks.push(block('rgb_led'));
+    blocks.push(block('i2c_lcd_clear'));
     blocks.push(block('i2c_lcd_print'));
     //blocks.push(block('led_matrix'));
     //blocks.push(block('led_matrix_mod'));
@@ -66,7 +71,6 @@ SpriteMorph.prototype.loadModulesCategories = function(blocks, block, watcherTog
     // analog input (convert to digital)
     blocks.push('=');
     blocks.push(block('analog_hall_switch'));
-    blocks.push(block('temperature_sensor'));
     blocks.push(block('tracking_sensor'));
     blocks.push(block('potentiometer_module'));
     blocks.push(block('photoresistor_module'));
@@ -213,12 +217,6 @@ SpriteMorph.prototype.blocks.ir_receiver_module = {
     defaults: ['17']
   }
 
-SpriteMorph.prototype.blocks.ir_codes = {
-    type    : 'reporter',
-    category: 'Modules',
-    spec    : 'ir receiver code'
-  }
-
 // digital output modules
 SpriteMorph.prototype.blocks.relay_module = {
     type    : 'command',
@@ -281,8 +279,8 @@ SpriteMorph.prototype.blocks.analog_hall_switch = {
 SpriteMorph.prototype.blocks.temperature_sensor = {
     type    : 'reporter',
     category: 'Modules',
-    spec    : 'temperature sensor %s',
-    //defaults: ['pcf8591_mod']
+    spec    : 'thermistor %s',
+    defaults: ['adc block']
   }
 
 SpriteMorph.prototype.blocks.tracking_sensor = {
@@ -376,6 +374,12 @@ SpriteMorph.prototype.blocks.ds18b20_temper = {
     defaults: [0, 'c']
   }
 
+SpriteMorph.prototype.blocks.i2c_lcd_clear = {
+    type    : 'command',
+    category: 'Modules',
+    spec    : 'i2c lcd1602 clear',
+  }
+
 SpriteMorph.prototype.blocks.i2c_lcd_print = {
     type    : 'command',
     category: 'Modules',
@@ -418,11 +422,23 @@ SpriteMorph.prototype.blocks.rtc_ds1302_set = {
     defaults: [current_datetime.year, current_datetime.mon, current_datetime.day, current_datetime.hour, current_datetime.min, current_datetime.sec]
   }
 
-SpriteMorph.prototype.blocks.ir_codes = {
+SpriteMorph.prototype.blocks.is_IR_received = {
     type    : 'predicate',
     category: 'Modules',
-    spec    : 'key %remoteKey pressed ?',
-    defaults: ['0']
+    spec    : 'ir received?',
+  }
+
+SpriteMorph.prototype.blocks.IR_received_val = {
+    type    : 'reporter',
+    category: 'Modules',
+    spec    : 'ir received value',
+  }
+
+SpriteMorph.prototype.blocks.IR_key_list = {
+    type    : 'reporter',
+    category: 'Modules',
+    spec    : 'remote %remoteKey',
+    defaults: '0'
   }
 
 SpriteMorph.prototype.blocks.led_matrix = {
@@ -456,16 +472,17 @@ SpriteMorph.prototype.blockAlternatives.passive_buzzer_module = ['passive_buzzer
 SpriteMorph.prototype.blockAlternatives.passive_buzzer_play_note = ['passive_buzzer_module'];
 SpriteMorph.prototype.blockAlternatives.rtc_ds1302_set = ['rtc_ds1302_get'];
 SpriteMorph.prototype.blockAlternatives.rtc_ds1302_get = ['rtc_ds1302_set'];
+SpriteMorph.prototype.blockAlternatives.i2c_lcd_print = ['i2c_lcd_clear'];
+SpriteMorph.prototype.blockAlternatives.i2c_lcd_clear = ['i2c_lcd_print'];
 /*SpriteMorph.prototype.blockAlternatives.ds18b20_temper = ['dht11_module', 'mpu6050_sensor', 'bmp280_sensor'];
 SpriteMorph.prototype.blockAlternatives.dht11_module = ['ds18b20_temper', 'mpu6050_sensor', 'bmp280_sensor'];
 SpriteMorph.prototype.blockAlternatives.mpu6050_sensor = ['dht11_module', 'ds18b20_temper', 'bmp280_sensor'];
 SpriteMorph.prototype.blockAlternatives.bmp280_sensor = ['ds18b20_temper', 'mpu6050_sensor', 'dht11_module'];
-SpriteMorph.prototype.blockAlternatives.i2c_lcd_print = ['rgb_led'];
 SpriteMorph.prototype.blockAlternatives.rgb_led = ['i2c_lcd_print'];*/
 
 // SunFounder process
 SpriteMorph.prototype.ultrasonic_3pin = function (channel) {
-  return requests('modules', 'ultra_distance', channel)
+  return requests('modules', 'ultrasonic_3pin', channel)
 };
 
 SpriteMorph.prototype.light_analog_index = function (channel) {
@@ -601,7 +618,7 @@ SpriteMorph.prototype.analog_hall_switch = function (pcf8591_module) {
 };
 
 SpriteMorph.prototype.temperature_sensor = function (pcf8591_module) {
-  return pcf8591_module
+  return requests('modules', 'thermitor', pcf8591_module)
 };
 
 SpriteMorph.prototype.tracking_sensor = function (pcf8591_module) {
@@ -645,7 +662,24 @@ SpriteMorph.prototype.joystick_ps2 = function (pcf8591_module) {
 };
 
 SpriteMorph.prototype.rgb_led = function (r_pin, g_pin, b_pin, com_pol, rgb) {
-  requests('modules', 'rgb_led', r_pin, g_pin, b_pin, com_pol, rgb)
+  console.log(rgb);
+  R_val = rgb.r * 100 /255;
+  G_val = rgb.g * 100 /255;
+  B_val = rgb.b * 100 /255;
+  if (com_pol == "cathode")
+  {
+    R_val = 100 - R_val;
+    G_val = 100 - G_val;
+    B_val = 100 - B_val;
+  }
+  console.log(R_val, G_val, B_val)
+
+  var vol_pin = ""  // vol_pin = 'pin1,pin2,pin3'
+  var vol_val = ""  // vol_val = 'val1,val2,val3'
+  vol_pin = r_pin + "," + g_pin + "," + b_pin
+  vol_val = R_val + "," + G_val + "," + B_val
+  requests('raspberry_pi', 'volume_set_pwm', vol_pin, vol_val)
+  console.log(vol_pin, vol_val)
   //return rgb
 };
 
@@ -657,12 +691,16 @@ SpriteMorph.prototype.ds18b20_temper = function (index, unit) {
   return requests('modules', 'w1', index, unit)
 };
 
+SpriteMorph.prototype.i2c_lcd_clear = function () {
+  return requests('modules', 'i2c_lcd_clear')
+};
+
 SpriteMorph.prototype.i2c_lcd_print = function (pos_col, pos_row, words) {
-  return requests('modules', 'i2c_lcd', pos_col, pos_row, words)
+  return requests('modules', 'i2c_lcd_print', pos_col, pos_row, words)
 };
 
 SpriteMorph.prototype.led_matrix = function (pos_col, pos_row, words) {
-  return requests('modules', 'i2c_lcd', pos_col, pos_row, words)
+  return requests('modules', 'led_matrix', pos_col, pos_row, words)
 };
 
 SpriteMorph.prototype.led_matrix_mod = function (box1,box2,box3,box4,box5,box6,box7,box8,box9,box10,box11,box12,box13,box14,box15,box16,box17,box18,box19,box20,box21,box22,box23,box24,box25,box26,box27,box28,box29,box30,box31,box32,box33,box34,box35,box36,box37,box38,box39,box40,box41,box42,box43,box44,box45,box46,box47,box48,box49,box50,box51,box52,box53,box54,box55,box56,box57,box58,box59,box60,box61,box62,box63,box64,box65,box66,box67,box68,box69,box70,box71,box72,box73,box74,box75,box76,box77,box78,box79,box80,box81,box82,box83,box84,box85,box86,box87,box88,box89,box90,box91,box92,box93,box94,box95,box96,box97,box98,box99,box100,box101,box102,box103,box104,box105,box106,box107,box108,box109,box110,box111,box112,box113,box114,box115,box116,box117,box118,box119,box120,box121,box122,box123,box124,box125,box126,box127,box128,box129,box130,box131,box132,box133,box134,box135,box136,box137,box138,box139,box140,box141,box142,box143,box144,box145,box146,box147,box148,box149,box150,box151,box152,box153,box154,box155,box156,box157,box158,box159,box160,box161,box162,box163,box164,box165,box166,box167,box168,box169,box170,box171,box172,box173,box174,box175,box176,box177,box178,box179,box180,box181,box182,box183,box184,box185,box186,box187,box188,box189,box190,box191,box192) {
@@ -705,13 +743,22 @@ SpriteMorph.prototype.rtc_ds1302_set = function (year,month,day,hour,minute,seco
   return requests('modules', 'rtc_ds1302_set', date, time)
 };
 
-SpriteMorph.prototype.ir_codes = function (key) {
-  result = requests('modules', 'ir_codes');
-  if (result == key)
+SpriteMorph.prototype.is_IR_received = function () {
+  result = requests('modules', 'is_IR_received');
+  if (result == 1)
     result = true;
-  else
+  else if (result == 0)
     result = false;
   return result
+};
+
+SpriteMorph.prototype.IR_received_val = function () {
+  result = requests('modules', 'IR_received_val');
+  return result
+};
+
+SpriteMorph.prototype.IR_key_list = function (key) {
+  return key
 };
 
 

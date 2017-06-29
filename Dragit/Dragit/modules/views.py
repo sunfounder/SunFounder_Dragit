@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 # pin connect:
 #   module         pin       BCM_pin
+#
 #   ds18b20        sig       GPIO_4
+#
 #   IR_receiver    sig       GPIO_26
-#                  SCL       GPIO_23
-#   RTC_ds1302     I/O       GPIO_24
+#
+#   RTC_ds1302     SCL       GPIO_23
+#                  I/O       GPIO_24
 #                  RST       GPIO_25
 from __future__ import unicode_literals
 
@@ -21,17 +24,19 @@ from Dragit.libs.modules.dht11 import DHT11 as DHT11
 from Dragit.libs.modules.mpu6050 import MPU6050 as MPU6050
 from Dragit.libs.modules.rpi_time import DS1302 as DS1302
 from Dragit.libs.modules.bmp280 import BMP280 as BMP280
-from Dragit.libs.modules.soft_pwm import Soft_PWM as SoftPWM
+from Dragit.libs.modules.bcm_gpio import BCM_GPIO as BCM_GPIO
 
 import pylirc
 import time
+import math
 import RPi.GPIO as GPIO
 import sys, os
 
 ir_conf_path = "/etc/lirc/pylirc_conf"
-ir_time_out = 5
+ir_time_out = 1
 ultrasonic_time_out = 2
-buzz_note = {'C':262, 'D':294, 'E':330, 'F':350, 'G':393, 'A':441, 'B':495, 'C#':525}
+buzz_note = {'C':262, 'D':294, 'E':330, 'F':350, 'G':393, 'A':441, 'B':495, 'C2':525}
+read_ir_key_val = None
 
 try:
     # adc = ADC(0x48)
@@ -46,106 +51,13 @@ try:
     g_pin = 0
     b_pin = 0
     buzzer_chn = 0
+    lcd_flag = False
     err_msg = ''
 
 except Exception,e:
     err_msg = "Modules is not avalible"
 
-def map(x, in_min, in_max, out_min, out_max):
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
-
-def setup_rgb_led(r_pin=17, g_pin=18, b_pin=27):
-    print ("setup rgb led r:%s g:%s b:%s"%(r_pin, g_pin, b_pin))
-    global p_R, p_G, p_B
-    pins = (int(r_pin), int(g_pin), int(b_pin))
-    for i in range(0,3):
-        GPIO.setup(pins[i], GPIO.OUT)
-        #GPIO.output(pins[i], GPIO.HIGH)
-    p_R = GPIO.PWM(pins[0], 6000)
-    p_G = GPIO.PWM(pins[1], 6000)
-    p_B = GPIO.PWM(pins[2], 6000)
-
-    p_R.start(0)      # Initial duty Cycle = 0(leds off)
-    p_G.start(0)
-    p_B.start(0)
-
-def set_rgb_color(R_val=0, G_val=0, B_val=0):   # For example : col = 0x112233
-    #R_val = (col & 0xff0000) >> 16
-    #G_val = (col & 0x00ff00) >> 8
-    #B_val = (col & 0x0000ff) >> 0
-
-    print ("R_duty=%d G_duty=%d B_duty=%d "%(R_val, G_val, B_val))
-    p_R.ChangeDutyCycle(R_val)
-    p_G.ChangeDutyCycle(G_val)
-    p_B.ChangeDutyCycle(B_val)
-
-def rgb_led(r, g, b, com_pol, color):
-    global r_pin, g_pin, b_pin
-    if (r == r_pin) and (g == g_pin) and (b == b_pin):
-        pass
-    else:
-        r_pin = r
-        g_pin = g
-        b_pin = b
-        setup_rgb_led(r_pin, g_pin, b_pin)
-
-    color = color[5:-1].split(',')
-    for i in range(0,len(color)):   # unicode to int
-        color[i] = int(color[i])
-    #print ("%s %s"%(type(color),color))
-    R_val = color[0]
-    G_val = color[1]
-    B_val = color[2]
-
-    print ("R_val=%d G_val=%d B_val=%d "%(R_val,G_val,B_val))
-
-    R_val = map(R_val, 0, 255, 0, 100)
-    G_val = map(G_val, 0, 255, 0, 100)
-    B_val = map(B_val, 0, 255, 0, 100)
-    if com_pol == 'cathode':
-        R_val = 100 - R_val
-        G_val = 100 - G_val
-        B_val = 100 - B_val
-    return set_rgb_color( R_val, G_val, B_val)
-
-def setup_dual_led(r_pin, g_pin):
-    try:
-        GPIO.setup(r_pin, GPIO.OUT)
-        GPIO.setup(g_pin, GPIO.OUT)
-    except:
-        pass
-    print ("setup dual led r:%s g:%s"%(r_pin, g_pin))
-
-def set_dual_color(r, g, com_pol, col):
-    if com_pol == 0:
-        on_val = GPIO.HIGH
-        off_val = GPIO.LOW
-    elif com_pol == 1:
-        on_val = GPIO.LOW
-        off_val = GPIO.HIGH
-
-    if col == 'red':
-        GPIO.output(r, on_val)
-        GPIO.output(g, off_val)
-        print("%s pin, %s \n%s pin, %s "%(r, on_val, g, off_val))
-    elif col == 'green':
-        GPIO.output(r, off_val)
-        GPIO.output(g, on_val)
-        print("%s pin, %s \n%s pin, %s "%(r, off_val, g, on_val))
-    elif col == 'off':
-        GPIO.output(r, off_val)
-        GPIO.output(g, off_val)
-        print("%s pin, %s \n%s pin, %s "%(r, off_val, g, off_val))
-
-def dual_color_led(r, g, com_pol, col):
-    r = int(r)
-    g = int(g)
-    com_pol = int(com_pol)
-    col = col.encode('utf8')
-    setup_dual_led(r, g)
-    set_dual_color(r, g, com_pol, col)
-
-def ultra_get_distance(channel):
+def ultrasonic_3pin(channel):
     print("Get Ultrasonic sensor distance ")
     ua = Ultrasonic_Avoidance(int(channel))
     def get_distance(mount = 10):
@@ -231,7 +143,7 @@ def w1_temperature(index, unit):
     except:
         return "Device not founded"
 
-def setup_ultrasonic(trig,echo):
+def setup_ultrasonic_4pin(trig, echo):
     GPIO.setup(trig, GPIO.OUT)
     GPIO.setup(echo, GPIO.IN)
 
@@ -242,10 +154,10 @@ def setup_ultrasonic(trig,echo):
     time.sleep(0.00001)
     GPIO.output(trig, 0)
 
-def ultrasonic_ranging(t_pin, e_pin):
+def ultrasonic_4pin(t_pin, e_pin):
     trig = int(t_pin)
     echo = int(e_pin)
-    setup_ultrasonic(trig, echo)
+    setup_ultrasonic_4pin(trig, echo)
     timeout_start = time.time()
     while GPIO.input(echo) == 0:
         if (time.time()-timeout_start > ultrasonic_time_out):
@@ -262,35 +174,37 @@ def ultrasonic_ranging(t_pin, e_pin):
     print("time2 = %d"%time2)
     during = time2 - time1
     dis = (during *340 *100 /2)
+    dis = round(dis, 3)
     print("during = %s ,dis = %s cm"%(during, dis))
     return dis
 
 def setup_i2c_lcd(addr=0x27):
-    LCD1602.init(addr, 1)   # init(slave address, background light)
-
-def set_i2c_lcd(pos_col, pos_row, words):
-    LCD1602.write(pos_col, pos_row, words)
+    global lcd_flag
+    if (lcd_flag == True):
+        pass
+    elif (lcd_flag == False):
+        lcd_flag = LCD1602.init(addr, 1) # init(slave address, background light)
+    return lcd_flag
 
 def i2c_lcd_print(pos_col, pos_row, words):
     setup_i2c_lcd()
     pos_col = int(pos_col)
     pos_row = int(pos_row)
     words   = words.encode('utf8')
-    set_i2c_lcd(pos_col, pos_row, words)
+    LCD1602.write(pos_col, pos_row, words)
+
+def i2c_lcd_clear():
+    LCD1602.clear()
 
 def passive_buzzer(chn, freq, on_off):
     chn = int(chn)
 
-    Buzz = SoftPWM(chn)
+    Buzz = BCM_GPIO(chn)
 
     if (on_off == 'off'):
-        print ("stop thread")
-        Buzz.stop()
+        Buzz.end()
     else:
-        print ("start thread")
-        Buzz.start()
-        Buzz.set_dutycycle(50)
-        Buzz.set_frequency(int(freq))
+        Buzz.pwm_output(freq=int(freq))
 
 def buzzer_play(chn, note, second):
     chn  = int(chn)
@@ -298,14 +212,11 @@ def buzzer_play(chn, note, second):
     note = note.encode('utf8')
     freq = buzz_note[note]
 
-    Buzz = SoftPWM(chn)
+    Buzz = BCM_GPIO(chn)
 
-    print ("start thread")
-    Buzz.start()
-    Buzz.set_dutycycle(50)
-    Buzz.set_frequency(int(freq))
+    Buzz.pwm_output(freq=int(freq))
     time.sleep(sec)
-    Buzz.stop()
+    Buzz.end()
 
 def dht11_module(pin,mode):
     pin = int(pin)
@@ -429,6 +340,7 @@ def rtc_ds1302_set(date, time):
     print ("set ds1302 success \n time: %s"%dt)
 
 def ir_codes():
+    global read_ir_key_val
     GPIO.setup(26, GPIO.IN)
     pylirc.init("my_lirc", ir_conf_path, 0)
     ir_codes = pylirc.nextcode(1)
@@ -441,151 +353,208 @@ def ir_codes():
             #print("ircodes = %s"%ir_codes)
             #print(type(conf_key))
             pylirc.exit()
+            read_ir_key_val = conf_key
             return conf_key
         elif (time.time()-timeout_start > ir_time_out):
             pylirc.exit()
-            return "time out"
+            read_ir_key_val = None
+            print "time out"
+            return -1
         time.sleep(0.05)
 
+def is_IR_received():
+    result = ir_codes()
+    if result == -1:
+        print "[IR_receiver] time out"
+        return 0
+    else:
+        print ("[IR_receiver] IR is received, %s"%read_ir_key_val)
+        return 1
 
-def run(request):
+def IR_received_val():
+    global read_ir_key_val
+    received_val = read_ir_key_val
+    #read_ir_key_val = None
+    print ("[IR_receiver] IR is received, %s"%read_ir_key_val)
+    return received_val
+
+def thermitor(analogVal):
+    analogVal = float(analogVal)
+    B = 3950
+    Tk0 = 273.15
+    T0 = 25+ Tk0
+    Vref = 3.3
+    R0 = 10000
+    Vr = Vref * float(analogVal) / 255
+    print ("Vr = %s"%Vr)
+    Rt = R0 * Vr / (Vref - Vr)
+    print ("Rt = %s"%(Rt/1000))
+    temp = B / (math.log(Rt/R0)+(B/T0))
+    temp = temp - Tk0
+    print 'temperature = ', temp, 'C'
+    return temp
+
+def get_result(request):
+    debug = ''
+    action = None
+    result = None
+    value0 = None
+    value1 = None
+    value2 = None
+    value3 = None
+    value4 = None
+    if 'action' in request.GET:
+        action = request.GET['action']
+        print("Get action: %s"%action)
+    if 'value0' in request.GET:
+        value0 = request.GET['value0']
+        print("Get value0: %s"%value0)
+    if 'value1' in request.GET:
+        value1 = request.GET['value1']
+        print("Get value1: %s"%value1)
+    if 'value2' in request.GET:
+        value2 = request.GET['value2']
+        print("Get value2: %s"%value2)
+    if 'value3' in request.GET:
+        value3 = request.GET['value3']
+        print("Get value3: %s"%value3)
+    if 'value4' in request.GET:
+        value4 = request.GET['value4']
+        print("Get value4: %s"%value4)
+
+    # ================ Ultrasonic avoide =================
+    if action == "ultrasonic_3pin":
+        channel = value0
+        result  = ultrasonic_3pin(channel)
+
+    # ================ Light Follower =================
+    elif action == "light_follower_analog":
+        channel = value0
+        result  = light_analog_index(channel)
+
+    # ================ Line Follower =================
+    elif action == "line_follower_analog":
+        channel = value0
+        result  = line_analog_index(channel)
+
+    elif action == "device_status":
+        result  = device_status()
+
+    # ================ analog input sensor =================
+    elif action == "pcf8591":
+        addr    = value0
+        channel = value1
+        result  = pcf8591_read(addr, channel)
+
+    elif action == "pcf8591_write":
+        addr    = value0
+        value   = value1
+        result  = pcf8591_write(addr, value)
+
+    # ================ RGB led =================
+    elif action == "rgb_led":
+        r_pin = value0
+        g_pin = value1
+        b_pin = value2
+        com_pol = value3
+        color = value4
+        result  = rgb_led(r_pin, g_pin, b_pin, com_pol, color)
+
+    elif action == "dual_color_led":
+        r_pin = value0
+        g_pin = value1
+        com_pol = value2
+        color = value3
+        result  = dual_color_led(r_pin, g_pin, com_pol, color)
+
+    # ================ thermitor =================
+    elif action == "thermitor":
+        analogVal = value0
+        result  = thermitor(analogVal)
+
+    # ================ W1 ds18b20 =================
+    elif action == "w1":
+        index = value0
+        unit  = value1
+        result  = w1_temperature(index, unit)
+
+    # ================ ultra sonic trig & echo =================
+    elif action == "ultrasonic_4pin":
+        t_pin   = value0
+        e_pin   = value1
+        result  = ultrasonic_4pin(t_pin, e_pin)
+
+    # ================ I2C LCD1602 =================
+    elif action == "i2c_lcd_print":
+        pos_row  = value0
+        pos_col  = value1
+        words    = value2
+        result   = i2c_lcd_print(pos_col, pos_row, words)
+
+    elif action == "i2c_lcd_clear":
+        result   = i2c_lcd_clear()
+
+
+    # ================ passive buzzer =================
+    elif action == "passive_buzzer":
+        chn     = value0
+        freq    = value1
+        on_off  = value2
+        result  = passive_buzzer(chn, freq, on_off)
+
+    elif action == "buzzer_play":
+        chn     = value0
+        note    = value1
+        second  = value2
+        result  = buzzer_play(chn, note, second)
+
+    # ================ dht11 module =================
+    elif action == "dht11_module":
+        pin     = value0
+        mode    = value1
+        result  = dht11_module(pin, mode)
+
+    # ================ bmp280 =================
+    elif action == "bmp280_sensor":
+        item    = value0
+        result  = bmp280_sensor(item)
+
+    # ================ mpu6050 =================
+    elif action == "mpu6050_sensor":
+        item    = value0
+        result  = mpu6050_sensor(item)
+
+    # ================ rtc_ds1302 =================
+    elif action == "rtc_ds1302_get":
+        item    = value0
+        result  = rtc_ds1302_get(item)
+
+    elif action == "rtc_ds1302_set":
+        _date    = value0
+        _time    = value1
+        result  = rtc_ds1302_set(_date, _time)
+
+    # ================ IR key_pressed =================
+    elif action == "is_IR_received":
+        result = is_IR_received()
+
+    elif action == "IR_received_val":
+        result  = IR_received_val()
+
+
+
+
+    return result
+
+def run_with_try(request):
     try:
-        debug = ''
-        action = None
-        result = None
-        value0 = None
-        value1 = None
-        value2 = None
-        value3 = None
-        value4 = None
-        if 'action' in request.GET:
-            action = request.GET['action']
-            print("Get action: %s"%action)
-        if 'value0' in request.GET:
-            value0 = request.GET['value0']
-            print("Get value0: %s"%value0)
-        if 'value1' in request.GET:
-            value1 = request.GET['value1']
-            print("Get value1: %s"%value1)
-        if 'value2' in request.GET:
-            value2 = request.GET['value2']
-            print("Get value2: %s"%value2)
-        if 'value3' in request.GET:
-            value3 = request.GET['value3']
-            print("Get value3: %s"%value3)
-        if 'value4' in request.GET:
-            value4 = request.GET['value4']
-            print("Get value4: %s"%value4)
-
-        # ================ Ultrasonic avoide =================
-        if action == "ultra_distance":
-            channel = value0
-            result  = ultra_get_distance(channel)
-
-        # ================ Light Follower =================
-        elif action == "light_follower_analog":
-            channel = value0
-            result  = light_analog_index(channel)
-
-        # ================ Line Follower =================
-        elif action == "line_follower_analog":
-            channel = value0
-            result  = line_analog_index(channel)
-
-        elif action == "device_status":
-            result  = device_status()
-
-        # ================ analog input sensor =================
-        elif action == "pcf8591":
-            addr    = value0
-            channel = value1
-            result  = pcf8591_read(addr, channel)
-
-        elif action == "pcf8591_write":
-            addr    = value0
-            value   = value1
-            result  = pcf8591_write(addr, value)
-
-        # ================ RGB led =================
-        elif action == "rgb_led":
-            r_pin = value0
-            g_pin = value1
-            b_pin = value2
-            com_pol = value3
-            color = value4
-            result  = rgb_led(r_pin, g_pin, b_pin, com_pol, color)
-
-        elif action == "dual_color_led":
-            r_pin = value0
-            g_pin = value1
-            com_pol = value2
-            color = value3
-            result  = dual_color_led(r_pin, g_pin, com_pol, color)
-
-        # ================ W1 ds18b20 =================
-        elif action == "w1":
-            index = value0
-            unit  = value1
-            result  = w1_temperature(index, unit)
-
-        # ================ ultra sonic trig & echo =================
-        elif action == "ultrasonic_ranging":
-            t_pin   = value0
-            e_pin   = value1
-            result  = ultrasonic_ranging(t_pin, e_pin)
-
-        # ================ I2C LCD1602 =================
-        elif action == "i2c_lcd":
-            pos_row  = value0
-            pos_col  = value1
-            words    = value2
-            result   = i2c_lcd_print(pos_col, pos_row, words)
-
-        # ================ passive buzzer =================
-        elif action == "passive_buzzer":
-            chn     = value0
-            freq    = value1
-            on_off  = value2
-            result  = passive_buzzer(chn, freq, on_off)
-
-        elif action == "buzzer_play":
-            chn     = value0
-            note    = value1
-            second  = value2
-            result  = buzzer_play(chn, note, second)
-
-        # ================ dht11 module =================
-        elif action == "dht11_module":
-            pin     = value0
-            mode    = value1
-            result  = dht11_module(pin, mode)
-
-        # ================ bmp280 =================
-        elif action == "bmp280_sensor":
-            item    = value0
-            result  = bmp280_sensor(item)
-
-        # ================ mpu6050 =================
-        elif action == "mpu6050_sensor":
-            item    = value0
-            result  = mpu6050_sensor(item)
-
-        # ================ rtc_ds1302 =================
-        elif action == "rtc_ds1302_get":
-            item    = value0
-            result  = rtc_ds1302_get(item)
-
-        elif action == "rtc_ds1302_set":
-            _date    = value0
-            _time    = value1
-            result  = rtc_ds1302_set(_date, _time)
-
-        # ================ rtc_ds1302 =================
-        elif action == "ir_codes":
-            result  = ir_codes()
-
+        result = get_result(request)
     except Exception, e:
         result = '%s: %s'%(err_msg, e)
     finally:
         print result
         return HttpResponse(result)
+
+def run(request):
+    return HttpResponse(get_result(request))
+    #return run_with_try(request)
