@@ -4,6 +4,8 @@ modules.cloud = "2017-May-05"
 
 SpriteMorph.prototype.loadRaspberryPiCategories = function(blocks, block, watcherToggle){
     blocks.push(block('rpi_gpio_set'));
+    blocks.push(block('rpi_set_pwm_dc'));
+    blocks.push(block('rpi_set_pwm_freq'));
     blocks.push(block('rpi_gpio_get'));
     blocks.push(block('rpi_gpio_get_tf'));  //predicate
     blocks.push('=');
@@ -53,6 +55,20 @@ SpriteMorph.prototype.blocks.rpi_gpio_get_tf = {    // Define blocks
     category: 'RaspberryPi',
     spec: 'gpio %rpi_bcm_chn',
     defaults: ['17']
+  }
+
+SpriteMorph.prototype.blocks.rpi_set_pwm_dc = {    // Define blocks
+    type: 'command',
+    category: 'RaspberryPi',
+    spec: 'gpio %rpi_bcm_chn %n',
+    defaults: ['17', 50]
+  }
+
+SpriteMorph.prototype.blocks.rpi_set_pwm_freq = {    // Define blocks
+    type: 'command',
+    category: 'RaspberryPi',
+    spec: 'gpio %rpi_bcm_chn freq %n',
+    defaults: ['17', 262]
   }
 
 SpriteMorph.prototype.blocks.rpi_i2cdetect = {    // Define blocks
@@ -133,6 +149,16 @@ SpriteMorph.prototype.rpi_gpio_get_tf = function (channel) { // Define process
   else
     result = false;
   return result
+};
+
+SpriteMorph.prototype.rpi_set_pwm_dc = function (chn, dc) { // Define process
+  if (dc<0) {dc = 0;}
+  if (dc>100) {dc = 100;}
+  return requests('raspberry_pi', 'set_pwm', chn, dc, -1)
+};
+
+SpriteMorph.prototype.rpi_set_pwm_freq = function (chn, freq) { // Define process
+  return requests('raspberry_pi', 'set_pwm', chn, -1, freq)
 };
 
 SpriteMorph.prototype.rpi_i2cdetect = function (busnum) { // Define process

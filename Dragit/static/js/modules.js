@@ -25,6 +25,12 @@ SpriteMorph.prototype.loadModulesCategories = function(blocks, block, watcherTog
     blocks.push(block('pcf8591_output'));
 
     blocks.push('=');
+    blocks.push(block('rotaryEncoder_start'));
+    blocks.push(block('rotaryEncoder_rotation'));
+    blocks.push(block('rotaryEncoder_button'));
+    blocks.push(block('rotaryEncoder_end'));
+
+    blocks.push('=');
     blocks.push(block('is_IR_received'));
     blocks.push(block('IR_received_val'));
     blocks.push(block('IR_key_list'));
@@ -437,7 +443,7 @@ SpriteMorph.prototype.blocks.IR_received_val = {
 SpriteMorph.prototype.blocks.IR_key_list = {
     type    : 'reporter',
     category: 'Modules',
-    spec    : 'remote %remoteKey',
+    spec    : 'remote key %remoteKey',
     defaults: '0'
   }
 
@@ -451,6 +457,31 @@ SpriteMorph.prototype.blocks.led_matrix_mod = {
     type    : 'reporter',
     category: 'Modules',
     spec    : 'led matrix %br   %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %br   %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %br   %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %br   %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %br   %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %br   %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %br   %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %br   %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx %chkbx'
+  }
+
+SpriteMorph.prototype.blocks.rotaryEncoder_start = {
+    type    : 'command',
+    category: 'Modules',
+    spec    : 'start rotary encoder %br   CLK %rpi_bcm_chn DT %rpi_bcm_chn SW %rpi_bcm_chn ',
+    defaults: ['17', '18', '27']
+  }
+
+SpriteMorph.prototype.blocks.rotaryEncoder_rotation = {
+    type    : 'reporter',
+    category: 'Modules',
+    spec    : 'rotary encoder rotation'
+  }
+
+SpriteMorph.prototype.blocks.rotaryEncoder_button = {
+    type    : 'reporter',
+    category: 'Modules',
+    spec    : 'rotary encoder button '
+  }
+
+SpriteMorph.prototype.blocks.rotaryEncoder_end = {
+    type    : 'command',
+    category: 'Modules',
+    spec    : 'end encoder button '
   }
 /*
 SpriteMorph.prototype.blocks.ir_receiver_module = {
@@ -760,5 +791,23 @@ SpriteMorph.prototype.IR_received_val = function () {
 SpriteMorph.prototype.IR_key_list = function (key) {
   return key
 };
+
+
+SpriteMorph.prototype.rotaryEncoder_start = function (A_PIN, B_PIN, SW) {
+  return requests('modules', 'encoder_start', A_PIN, B_PIN, SW)
+};
+
+SpriteMorph.prototype.rotaryEncoder_rotation = function () {
+  return requests('modules', 'encoder_rotation')
+};
+
+SpriteMorph.prototype.rotaryEncoder_button = function () {
+  return requests('modules', 'encoder_button')
+};
+
+SpriteMorph.prototype.rotaryEncoder_end = function () {
+  return requests('modules', 'encoder_end')
+};
+
 
 

@@ -51,14 +51,14 @@ begin
   remote = *
   button = KEY_VOLUMEUP
   prog = my_lirc
-  config = minus
+  config = -
 end
 
 begin
   remote = *
   button = KEY_EQUAL
   prog = my_lirc
-  config = plus
+  config = +
 end
 
 begin

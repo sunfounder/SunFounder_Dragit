@@ -25,6 +25,7 @@ from Dragit.libs.modules.mpu6050 import MPU6050 as MPU6050
 from Dragit.libs.modules.rpi_time import DS1302 as DS1302
 from Dragit.libs.modules.bmp280 import BMP280 as BMP280
 from Dragit.libs.modules.bcm_gpio import BCM_GPIO as BCM_GPIO
+from Dragit.libs.modules.rotary_encoder import RotaryEncoder as RotaryEncoder
 
 import pylirc
 import time
@@ -394,6 +395,39 @@ def thermitor(analogVal):
     print 'temperature = ', temp, 'C'
     return temp
 
+encoder = 0
+def start_encoder(A_PIN, B_PIN, SW):
+    a_pin = int(A_PIN)
+    b_pin = int(B_PIN)
+    sw    = int(SW)
+    encoder = RotaryEncoder(a_pin, b_pin, sw)
+    encoder.start()
+    print encoder
+    return encoder
+
+def get_encoder_rotation(encoder):
+    encoder = encoder
+    try:
+        return encoder.get_rotation()
+    except:
+        return "enconder not started"
+
+def get_encoder_button(encoder):
+    encoder = encoder
+    try:
+        return encoder.get_button()
+    except:
+        return "enconder not started"
+
+def end_encoder(encoder):
+    encoder = encoder
+    try:
+        encoder.end()
+        print ("encoder ended")
+    except:
+        return "encoder not started"
+
+
 def get_result(request):
     debug = ''
     action = None
@@ -541,7 +575,38 @@ def get_result(request):
     elif action == "IR_received_val":
         result  = IR_received_val()
 
+    global encoder
+    # ================ rotary encoder =================
+    if action == "encoder_start":
+        A_PIN  = value0
+        B_PIN  = value1
+        SW_PIN = value2
+        if encoder == 0:
+            encoder = start_encoder(A_PIN, B_PIN, SW_PIN)
+        result = "start encoder %s %s %s"%(A_PIN, B_PIN, SW_PIN)
+        print result
 
+    elif action == "encoder_rotation":
+        try:
+            result = get_encoder_rotation(encoder)
+            print result
+        except:
+            result = "encoder not started"
+
+    elif action == "encoder_button":
+        try:
+            result = get_encoder_button(encoder)
+            print result
+        except:
+            result = "encoder not started"
+
+    elif action == "encoder_end":
+        try:
+            result  = end_encoder(encoder)
+            encoder = 0
+            print result
+        except:
+            result = "encoder not started"
 
 
     return result

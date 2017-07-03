@@ -22,6 +22,10 @@ def pin(num):
     return pin_obj[n]
 
 def set_pwm(chn, dc=None, freq=None):
+    if dc == -1:
+        dc = None
+    if freq == -1:
+        freq = None
     pin(chn).pwm_output(dc=dc, freq=freq)
     result = "set %s as pwm, dc=%s, freq=%s"%(chn, dc, freq)
     return result
