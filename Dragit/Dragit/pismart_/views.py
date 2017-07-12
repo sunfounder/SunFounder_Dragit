@@ -26,7 +26,7 @@ try:
     pismart = PiSmart()
     pico    = TTS('pico')
 
-    sps_file_path = "/home/pi/dictionary.sps"
+    sps_file_path = "/opt/SunFounder_Dragit/Dragit/dictionary.sps"
     os.system("cp %s ./"%sps_file_path)
 
     stt     = STT('dictionary',dictionary_update=True)
@@ -169,7 +169,7 @@ def set_dictionary(dic):
     print("words: %s" % words)
 
     try:
-        sps_file = open(sps_file_path, 'w+') # 追加写入模式
+        sps_file = open(sps_file_path, 'w')
         '''
         [ words ];
         @results
