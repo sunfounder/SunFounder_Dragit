@@ -160,8 +160,8 @@ def run(request):
     # ================GPIO Ports =================
     if action == "gpio":
         # Control gpio input or output
-        chn  = int(value1)
         direction = value0
+        chn  = int(value1)
         status    = value2
         result = gpio(chn, direction, status)
 

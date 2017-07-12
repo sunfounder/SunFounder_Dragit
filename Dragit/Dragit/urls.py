@@ -20,6 +20,7 @@ from raspberry_pi import views as raspberry_pi_views
 from picar_s import views as picar_s_views
 from pismart_ import views as pismart_views
 from modules import views as modules_views
+from piplus import views as piplus_views
 import settings, views
 
 urlpatterns = [
@@ -32,4 +33,5 @@ urlpatterns = [
     url(r'^run/picar-s/$', picar_s_views.run),
     url(r'^run/pismart/$', pismart_views.run),
     url(r'^run/modules/$', modules_views.run),
+    url(r'^run/piplus/$', piplus_views.run),
 ]

@@ -24,6 +24,9 @@ SpriteMorph.prototype.loadSunFounderCategories = function(blocks, block, watcher
   else if (cat === 'Modules') {
     this.loadModulesCategories(blocks, block, watcherToggle);
   }
+  else if (cat === 'PiPlus') {
+    this.loadPiPlusCategories(blocks, block, watcherToggle);
+  }
 }
 
 function requests(device, action, value0=null, value1=null, value2=null, value3=null, value4=null){
@@ -74,7 +77,7 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         {
           'A' : ['A'],
           'B' : ['B'],
-          'both'   : ['both']
+          'both' : ['both']
         },
         true // read-only
       );
@@ -85,9 +88,9 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         null, // text
         false, // numeric?
         {
-          'up' : ['up'],
-          'down' : ['down'],
-          'left' : ['left'],
+          'up'    : ['up'],
+          'down'  : ['down'],
+          'left'  : ['left'],
           'right' : ['right']
         },
         true // read-only
@@ -111,12 +114,24 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         null, // text
         false, // numeric?
         {
-          'on' : ['on'],
-          'off'  : ['off'],
+          'on'  : ['on'],
+          'off' : ['off'],
         },
         true // read-only
       );
       break;
+
+    case '%sf_cw_ccw':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          'cw'  : ['cw'],
+          'ccw' : ['ccw'],
+        },
+        true // read-only
+      );
+      break
 
     case '%sf_fw_dir':
       part = new InputSlotMorph(
@@ -124,8 +139,8 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         false, // numeric?
         {
           'straight' : ['straight'],
-          'left' : ['left'],
-          'right' : ['right']
+          'left'     : ['left'],
+          'right'    : ['right']
         },
         true // read-only
       );
@@ -656,9 +671,9 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       break;
 
     case '%chkbx':
-        part = new CheckboxSlotMorph();
-        part.isStatic = true;
-        break;
+      part = new CheckboxSlotMorph();
+      part.isStatic = true;
+      break;
 
     case '%buzzer_note':
       part = new InputSlotMorph(
@@ -677,6 +692,64 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
         true // read-only
       );
       break;
+
+    case '%piplus_port':
+      part = new InputSlotMorph(
+        null,  // text
+        false, // numeric?
+        {
+          'A' : 'A',
+          'B' : 'B',
+          //'Analog Port'    : 'Analog Port',
+          //'Communication Port' : 'Communication Port',
+        },
+        true   // read-only
+      );
+      break;
+
+    case '%piplus_morse_speed':
+      part = new InputSlotMorph(
+        null,  // text
+        false, // numeric?
+        {
+          'fast' : 'fast',
+          'slow' : 'slow',
+          //'Analog Port'    : 'Analog Port',
+          //'Communication Port' : 'Communication Port',
+        },
+        true   // read-only
+      );
+      break;
+
+    case '%piplus_ring_style':
+      part = new InputSlotMorph(
+        null,  // text
+        false, // numeric?
+        {
+          'ALL_BRIGHT' : 'ALL_BRIGHT',
+          'ALL_DIM' : 'ALL_DIM',
+          'ALL_OFF' : 'ALL_OFF',
+          'SINGLE'  : 'SINGLE',
+          'STAR'    : 'STAR',
+          'ARC'     : 'ARC',
+        },
+        true   // read-only
+      );
+      break;
+
+    case '%piplus_slide':
+      part = new InputSlotMorph(
+        null,  // text
+        false, // numeric?
+        {
+          'sp1' : 'sp1',
+          'sp2' : 'sp2',
+          'sp3' : 'sp3',
+        },
+        true   // read-only
+      );
+      break;
+
 
     default:
       nop();
