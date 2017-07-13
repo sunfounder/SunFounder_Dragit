@@ -27,9 +27,8 @@ try:
     pico    = TTS('pico')
 
     sps_file_path = "/opt/SunFounder_Dragit/Dragit/dictionary.sps"
-    os.system("cp %s ./"%sps_file_path)
-
-    stt     = STT('dictionary',dictionary_update=True)
+    #os.system("cp %s ./"%sps_file_path)
+    stt     = STT('dictionary', dictionary_update=True)
 
     pismart.speaker_switch(0)  # 1:on 0:off
     pismart.servo_switch(1)
