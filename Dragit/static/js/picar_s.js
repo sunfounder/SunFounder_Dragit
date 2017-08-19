@@ -245,7 +245,7 @@ SpriteMorph.prototype.picar_s_cali_right_wheel = function (offset) {
 
 SpriteMorph.prototype.picar_s_ultra_get_distance = function (channel) {
   //reportURL('192.168.0.102:8000/run/picar-s/?action=set_digital&value=' + value)
-  return requests('modules', 'ultra_distance', channel)
+  return requests('modules', 'ultrasonic_3pin', channel)
 };
 
 SpriteMorph.prototype.picar_s_light_analog_index = function (channel) {
