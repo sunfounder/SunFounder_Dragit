@@ -1,252 +1,290 @@
-# Author: Patrick Buech
-# Url: https://github.com/pl31/python-liquidcrystal_i2c
-# License: MIT
-# Ported from: http://www.dfrobot.com/image/data/DFR0154/LiquidCrystal_I2Cv1-1.rar
+class LiquidCrystal_I2C():
+    # Commands
+    LCD_CLEARDISPLAY   = 0x01
+    LCD_RETURNHOME     = 0x02
+    LCD_ENTRYMODESET   = 0x04
+    LCD_DISPLAYCONTROL = 0x08
+    LCD_CURSORSHIFT    = 0x10
+    LCD_FUNCTIONSET    = 0x20
+    LCD_SETCGRAMADDR   = 0x40
+    LCD_SETDDRAMADDR   = 0x80
 
-import smbus
-import time
+    # Flags for display entry mode
+    LCD_ENTRYRIGHT = 0x00
+    LCD_ENTRYLEFT  = 0x02
+    LCD_ENTRYSHIFTINCREMENT = 0x01
+    LCD_ENTRYSHIFTDECREMENT = 0x00
 
-class LiquidCrystal_I2C:
-    # commands
-    _LCD_CLEARDISPLAY = 0x01
-    _LCD_RETURNHOME = 0x02
-    _LCD_ENTRYMODESET = 0x04
-    _LCD_DISPLAYCONTROL = 0x08
-    _LCD_CURSORSHIFT = 0x10
-    _LCD_FUNCTIONSET = 0x20
-    _LCD_SETCGRAMADDR = 0x40
-    _LCD_SETDDRAMADDR = 0x80
+    # Flags for display on/off control
+    LCD_DISPLAYON  = 0x04
+    LCD_DISPLAYOFF = 0x00
+    LCD_CURSORON   = 0x02
+    LCD_CURSOROFF  = 0x00
+    LCD_BLINKON    = 0x01
+    LCD_BLINKOFF   = 0x00
 
-    # flags for display entry mode
-    _LCD_ENTRYRIGHT = 0x00
-    _LCD_ENTRYLEFT = 0x02
-    _LCD_ENTRYSHIFTINCREMENT = 0x01
-    _LCD_ENTRYSHIFTDECREMENT = 0x00
+    # Flags for display/cursor shift
+    LCD_DISPLAYMOVE = 0x08
+    LCD_CURSORMOVE  = 0x00
+    LCD_MOVERIGHT   = 0x04
+    LCD_MOVELEFT    = 0x00
 
-    # flags for display on/off control
-    _LCD_DISPLAYON = 0x04
-    _LCD_DISPLAYOFF = 0x00
-    _LCD_CURSORON = 0x02
-    _LCD_CURSOROFF = 0x00
-    _LCD_BLINKON = 0x01
-    _LCD_BLINKOFF = 0x00
+    # Flags for function set
+    LCD_8BITMODE = 0x10
+    LCD_4BITMODE = 0x00
+    LCD_2LINE    = 0x08
+    LCD_1LINE    = 0x00
+    LCD_5x10DOTS = 0x04
+    LCD_5x8DOTS  = 0x00
 
-    # flags for display/cursor shift
-    _LCD_DISPLAYMOVE = 0x08
-    _LCD_CURSORMOVE = 0x00
-    _LCD_MOVERIGHT = 0x04
-    _LCD_MOVELEFT = 0x00
+    # Flags for backlight control
+    LCD_BACKLIGHT   = 0x08
+    LCD_NOBACKLIGHT = 0x00
 
-    # flags for function set
-    _LCD_8BITMODE = 0x10
-    _LCD_4BITMODE = 0x00
-    _LCD_2LINE = 0x08
-    _LCD_1LINE = 0x00
-    _LCD_5x10DOTS = 0x04
-    _LCD_5x8DOTS = 0x00
+    En = 0b00000100  # Enable bit
+    Rw = 0b00000010  # Read/Write bit
+    Rs = 0b00000001  # Register select bit
 
-    # flags for backlight control
-    _LCD_BACKLIGHT = 0x08
-    _LCD_NOBACKLIGHT = 0x00
+    import smbus
+    import time
 
-    _En = 0x04  # Enable bit
-    _Rw = 0x02  # Read/Write bit
-    _Rs = 0x01  # Register select bit
+    def __init__(self, lcd_addr, lcd_cols, lcd_rows, bus_num=1):
+        self._addr = lcd_addr
+        self._cols = lcd_cols
+        self._rows = lcd_rows
+        self._bus_num = bus_num
+        self._backlightval = self.LCD_NOBACKLIGHT
 
+        self.bus = self.smbus.SMBus(self._bus_num)
+        self._displayfunction = self.LCD_4BITMODE | self.LCD_1LINE | self.LCD_5x8DOTS
+        self.begin(self._cols, self._rows)
+        print('init finished!')
 
-    def __init__(self, addr, port, numlines=2, clear=True):
-        self._addr = addr
-        self._smbus = smbus.SMBus(port)
-        self._backlightval = 0x08 # always on
+    def delay(self, ms):
+        self.time.sleep(float(ms)/1000)
 
-        self._numlines = numlines
+    def delayMicroseconds(self, us):
+        self.delay(float(us)/1000)
+
+    def begin(self, cols, lines, dotsize=0):
+        if lines > 1:
+            self._displayfunction |= self.LCD_2LINE
+        self._numlines = lines
+
+        # For some 1 line displays you can select a 10 pixel high font
+        if dotsize != 0 and lines == 1:
+            self._displayfunction |= self.LCD_5x10DOTS
 
         # SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!
         # according to datasheet, we need at least 40ms after power rises above 2.7V
         # before sending commands. Arduino can turn on way befer 4.5V so we'll wait 50
-        time.sleep(0.050)
+        self.delay(50)
 
         # Now we pull both RS and R/W low to begin commands
-        self._expanderWrite(self._backlightval); # reset expander and turn backlight off (Bit 8 =1)
-        time.sleep(1)
+        self.expanderWrite(self._backlightval)   # reset expanderand turn backlight off (Bit 8 =1)
+        self.delay(1000)
 
-        # put the LCD into 4 bit mode
+        #put the LCD into 4 bit mode
         # this is according to the hitachi HD44780 datasheet
         # figure 24, pg 46
 
-        # we start in 8bit mode, try to set 4 bit mode
-        for _delay in [0.004500, 0.004500, 0.000150]: # wait min 4.1ms twice
-            self._write4bits(0x03 << 4)
-            time.sleep(_delay)
+          # we start in 8bit mode, try to set 4 bit mode
+        self.write4bits(0x03 << 4)
+        self.delayMicroseconds(4500) # wait min 4.1ms
+
+        # second try
+        self.write4bits(0x03 << 4)
+        self.delayMicroseconds(4500) # wait min 4.1ms
+
+        # third go!
+        self.write4bits(0x03 << 4)
+        self.delayMicroseconds(150)
 
         # finally, set to 4-bit interface
-        self._write4bits(0x02 << 4)
+        self.write4bits(0x02 << 4)
+
 
         # set # lines, font size, etc.
-        _displayfunction = LiquidCrystal_I2C._LCD_4BITMODE | \
-            LiquidCrystal_I2C._LCD_2LINE | LiquidCrystal_I2C._LCD_5x8DOTS
-        self._command(LiquidCrystal_I2C._LCD_FUNCTIONSET | _displayfunction)
+        self.command(self.LCD_FUNCTIONSET | self._displayfunction)
 
         # turn the display on with no cursor or blinking default
-        self._displaycontrol = LiquidCrystal_I2C._LCD_DISPLAYON | \
-            LiquidCrystal_I2C._LCD_CURSOROFF | LiquidCrystal_I2C._LCD_BLINKOFF
-        self._command(LiquidCrystal_I2C._LCD_DISPLAYCONTROL | self._displaycontrol)
-
-        # Initialize to default text direction (for roman languages)
-        self._displaymode = LiquidCrystal_I2C._LCD_ENTRYLEFT | \
-            LiquidCrystal_I2C._LCD_ENTRYSHIFTDECREMENT;
-        # set the entry mode
-        self._command(LiquidCrystal_I2C._LCD_ENTRYMODESET | self._displaymode);
+        self._displaycontrol = self.LCD_DISPLAYON | self.LCD_CURSOROFF | self.LCD_BLINKOFF
+        self.display()
 
         # clear it off
-        if clear:
-            self.clear()
+        self.clear()
 
+        # Initialize to default text direction (for roman languages)
+        self._displaymode = self.LCD_ENTRYLEFT | self.LCD_ENTRYSHIFTDECREMENT
 
-    ### high level commands, for the user! ###
+        # set the entry mode
+        self.command(self.LCD_ENTRYMODESET | self._displaymode)
 
+        self.home()
+
+    # High level commands, for the user!
     def clear(self):
-        """clear display, set cursor position to zero"""
-        self._command(LiquidCrystal_I2C._LCD_CLEARDISPLAY)
-        time.sleep(0.2) # this command takes a long time!
+        self.command(self.LCD_CLEARDISPLAY)  # clear display, set cursor position to zero
+        self.delayMicroseconds(2000)         # this command takes a long time!
 
     def home(self):
-        """set cursor position to zero"""
-        self._command(LiquidCrystal_I2C._LCD_RETURNHOME)
-        time.sleep(2) # this command takes a long time!
+        self.command(self.LCD_RETURNHOME)   # set cursor position to zero
+        self.delayMicroseconds(2000)        # this command takes a long time!
 
     def setCursor(self, col, row):
-        """Set cursor to col, row"""
-        row_offsets = [ 0x00, 0x40, 0x14, 0x54 ]
-        if row < 0 and row >= self._numlines:
-            raise IndexError('Argument row out of range') # we count rows starting w/0
-        self._command(LiquidCrystal_I2C._LCD_SETDDRAMADDR | \
-            (col + row_offsets[row]))
+        row_offsets = [0x00, 0x40, 0x14, 0x54]
+        if row > self._numlines - 1:
+            row = self._numlines - 1    # we count rows starting w/0
+        self.command(self.LCD_SETDDRAMADDR | (col + row_offsets[row]))
 
+    # Turn the display on/off (quickly)
     def noDisplay(self):
-        """Turn off display"""
-        self._displaycontrol &= ~LiquidCrystal_I2C._LCD_DISPLAYON
-        self._command(LiquidCrystal_I2C._LCD_DISPLAYCONTROL | self._displaycontrol)
+        self._displaycontrol &= ~self.LCD_DISPLAYON
+        self.command(self.LCD_DISPLAYCONTROL | self._displaycontrol)
 
     def display(self):
-        """Turn on display"""
-        self._displaycontrol |= LiquidCrystal_I2C._LCD_DISPLAYON
-        self._command(LiquidCrystal_I2C._LCD_DISPLAYCONTROL | self._displaycontrol)
+        self._displaycontrol |= self.LCD_DISPLAYON
+        self.command(self.LCD_DISPLAYCONTROL | self._displaycontrol)
 
+    # Turns the underline cursor on/off
     def noCursor(self):
-        """Turn off underline cursor"""
-        # _displaycontrol &= ~LCD_CURSORON;
-        # command(LCD_DISPLAYCONTROL | _displaycontrol);
-        raise NotImplementedError
+        self._displaycontrol &= ~self.LCD_CURSORON
+        self.command(self.LCD_DISPLAYCONTROL | self._displaycontrol)
 
     def cursor(self):
-        """Turn on underline cursor"""
-        # _displaycontrol |= LCD_CURSORON;
-        # command(LCD_DISPLAYCONTROL | _displaycontrol);
-        raise NotImplementedError
+        self._displaycontrol |= self.LCD_CURSORON
+        self.command(self.LCD_DISPLAYCONTROL | self._displaycontrol)
 
+
+    # Turn on and off the blinking cursor
     def noBlink(self):
-        """Turn off blinking cursor"""
-        # _displaycontrol &= ~LCD_BLINKON;
-        # command(LCD_DISPLAYCONTROL | _displaycontrol);
-        raise NotImplementedError
+        self._displaycontrol &= ~self.LCD_BLINKON
+        self.command(self.LCD_DISPLAYCONTROL | self._displaycontrol)
 
     def blink(self):
-        """Turn on blinking cursor"""
-        # _displaycontrol |= LCD_BLINKON;
-        # command(LCD_DISPLAYCONTROL | _displaycontrol);
-        raise NotImplementedError
+        self._displaycontrol |= self.LCD_BLINKON
+        self.command(self.LCD_DISPLAYCONTROL | self._displaycontrol)
 
+
+    # These commands scroll the display without changing the RAM
     def scrollDisplayLeft(self):
-        """Scroll left without changing the RAM"""
-        # command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVELEFT);
-        raise NotImplementedError
+        self.command(self.LCD_CURSORSHIFT | self.LCD_DISPLAYMOVE | self.LCD_MOVELEFT)
 
     def scrollDisplayRight(self):
-        """Scroll right without changing the RAM"""
-        # command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVERIGHT);
-        raise NotImplementedError
+        self.command(self.LCD_CURSORSHIFT | self.LCD_DISPLAYMOVE | self.LCD_MOVERIGHT)
 
+    # This is for text that flows Left to Right
     def leftToRight(self):
-        """This is for text that flows Left to Right"""
-        # _displaymode |= LCD_ENTRYLEFT;
-        # command(LCD_ENTRYMODESET | _displaymode);
-        raise NotImplementedError
+        self._displaymode |= self.LCD_ENTRYLEFT
+        self.command(self.LCD_ENTRYMODESET | self._displaymode)
 
+    # This is for text that flows Right to Left
     def rightToLeft(self):
-        """This is for text that flows Right to Left"""
-        # _displaymode &= ~LCD_ENTRYLEFT;
-        # command(LCD_ENTRYMODESET | _displaymode);
-        raise NotImplementedError
+        self._displaymode &= ~self.LCD_ENTRYLEFT
+        self.command(self.LCD_ENTRYMODESET | self._displaymode)
 
+    # This will 'right justify' text from the cursor
     def autoscroll(self):
-        """This will 'right justify' text from the cursor"""
-        # _displaymode |= LCD_ENTRYSHIFTINCREMENT;
-        # command(LCD_ENTRYMODESET | _displaymode);
-        raise NotImplementedError
+        self._displaymode |= self.LCD_ENTRYSHIFTINCREMENT
+        self.command(self.LCD_ENTRYMODESET | self._displaymode)
 
+    # This will 'left justify' text from the cursor
     def noAutoscroll(self):
-        """This will 'left justify' text from the cursor"""
-        # _displaymode &= ~LCD_ENTRYSHIFTINCREMENT;
-        # command(LCD_ENTRYMODESET | _displaymode);
-        raise NotImplementedError
+        self._displaymode &= ~self.LCD_ENTRYSHIFTINCREMENT
+        self.command(self.LCD_ENTRYMODESET | self._displaymode)
 
+    # Allows us to fill the first 8 CGRAM locations
+    # with custom characters
     def createChar(self, location, charmap):
-        """Allows us to fill the first 8 CGRAM locations with custom characters"""
-        # void LiquidCrystal_I2C::createChar(uint8_t location, uint8_t charmap[]) {
-        # location &= 0x7; // we only have 8 locations 0-7
-        # command(LCD_SETCGRAMADDR | (location << 3));
-        # for (int i=0; i<8; i++) {
-        #     write(charmap[i]);
-        # }}
-        raise NotImplementedError
+        location &= 0x7 # we only have 8 locations 0-7
+        self.command(self.LCD_SETCGRAMADDR | (location << 3))
+        for i in range(8):
+            self.write(charmap[i])
 
+
+    def printStr(self, string):
+        for char in string:
+            self.write(ord(char))
+
+    def show(self, value):
+        value = str(value)
+        self.printStr(value)
+
+
+    # Turn the (optional) backlight off/on
     def noBacklight(self):
-        """Turn off the (optional) backlight"""
-        self._backlightval = LiquidCrystal_I2C._LCD_NOBACKLIGHT
-        self._expanderWrite(0);
+        self._backlightval = self.LCD_NOBACKLIGHT
+        self.expanderWrite(0);
 
     def backlight(self):
-        """Turn on the (optional) backlight"""
-        self._backlightval = LiquidCrystal_I2C._LCD_BACKLIGHT
-        self._expanderWrite(0);
+        self._backlightval = self.LCD_BACKLIGHT
+        self.expanderWrite(0);
 
-    def printstr(self, value):
-        """Print string at cursor"""
-        for c in value:
-            self._send(ord(c), 0x01)
+    # Mid level commands, for sending data/cmds
+    def command(self, value):
+        self.send(value, 0)
 
-    # print line starting at linenr #0
-    def printline(self, linenr, value):
-        self.setCursor(0, linenr)
-        self.printstr(value)
-
-    ### mid level commands, for sending data/cmds ###
-
-    def _command(self, value):
-        self._send(value, 0);
-
-
-    ### low level data pushing commands ###
+    # Low level data pushing commands
 
     # write either command or data
-    def _send(self, value, mode):
+    def write(self, value):
+        self.send(value, self.Rs)
+
+    def send(self, value, mode):
         highnib = value & 0xf0
-        lownib=(value << 4) & 0xf0
-        self._write4bits(highnib | mode)
-        self._write4bits(lownib | mode)
+        lownib = (value<<4) & 0xf0
+        self.write4bits((highnib)|mode)
+        self.write4bits((lownib)|mode)
 
-    def _write4bits(self, value):
-        self._expanderWrite(value)
-        self._pulseEnable(value)
+    def write4bits(self, value):
+        self.expanderWrite(value)
+        self.pulseEnable(value)
 
-    def _expanderWrite(self, data):
-        self._smbus.write_byte(self._addr, data | self._backlightval)
+    def expanderWrite(self, _data):
+        self.bus.write_byte(self._addr, int(_data) | self._backlightval)
 
-    def _pulseEnable(self, data):
-        self._expanderWrite(data | LiquidCrystal_I2C._En) # En high
-        time.sleep(0.000001) # enable pulse must be >450ns
+    def pulseEnable(self, _data):
+        self.expanderWrite(_data | self.En)  # self.En high
+        self.delayMicroseconds(1)       # enable pulse must be >450ns
 
-        self._expanderWrite(data | ~LiquidCrystal_I2C._En) # En low
-        time.sleep(0.000050) # commands need > 37us to settle
+        self.expanderWrite(_data & ~self.En) # self.En low
+        self.delayMicroseconds(50)      # commands need > 37us to settle
 
+
+    # Alias functions
+    def cursor_on(self):
+        self.cursor()
+
+    def cursor_off(self):
+        self.noCursor()
+
+    def blink_on(self):
+        self.blink()
+
+    def blink_off(self):
+        self.noBlink()
+
+    def load_custom_character(self, char_num, rows):
+        self.createChar(char_num, rows)
+
+    def setBacklight(self, new_val):
+        if(new_val):
+            self.backlight()        # turn backlight on
+        else:
+            self.noBacklight()      # turn backlight off
+
+def main():
+    lcd = LCD_I2C(0x27, 20, 4)
+    lcd.backlight()                    # open the backlight 
+
+    lcd.setCursor(0, 0)                # Go to the top left corner
+    lcd.show("    Hello,world!    ")  # Write this string on the top row
+    lcd.setCursor(0, 1)                # Go to the 2nd row
+    lcd.show("   IIC/I2C LCD2004  ")  # Pad string with spaces for centering
+    lcd.setCursor(0, 2)                # Go to the third row
+    lcd.show("  20 cols, 4 rows   ")  # Pad with spaces for centering
+    lcd.setCursor(0, 3)                # Go to the fourth row
+    lcd.show(" www.sunfounder.com ")
+
+if __name__ == '__main__':
+    main()
