@@ -20,6 +20,7 @@ from Dragit.libs.modules.Line_Follower import Line_Follower
 from Dragit.libs.modules.PCF8591 import PCF8591 as ADC
 from Dragit.libs.modules.ds18b20 import DS18B20 as DS18B20
 import Dragit.libs.modules.i2c_lcd as LCD1602
+from Dragit.libs.modules.liquid_crystal_i2c import LiquidCrystal_I2C as LCD_I2C
 from Dragit.libs.modules.dht11 import DHT11 as DHT11
 from Dragit.libs.modules.mpu6050 import MPU6050 as MPU6050
 from Dragit.libs.modules.rpi_time import DS1302 as DS1302
@@ -53,6 +54,7 @@ try:
     b_pin = 0
     buzzer_chn = 0
     lcd_flag = False
+    lcd2004 = False
     err_msg = ''
 
 except Exception,e:
@@ -196,6 +198,40 @@ def i2c_lcd_print(pos_col, pos_row, words):
 
 def i2c_lcd_clear():
     LCD1602.clear()
+
+def setup_i2c_lcd2004(addr=0x27):
+    global lcd2004
+    if isinstance(lcd2004, LCD_I2C):
+        pass
+    else:
+        try:
+            lcd2004 = LCD_I2C(addr, port=1, numlines=4) # init(slave address, bus_num, numlines=2)
+            lcd2004.backlight()
+        except:
+            print("Can't init lcd2004, check i2c")
+    return lcd2004
+
+def i2c_lcd2004_print(pos_col, pos_row, words):
+    global lcd2004
+    setup_i2c_lcd2004(addr=0x27)
+    pos_col = int(pos_col)
+    pos_row = int(pos_row)
+    words   = words.encode('utf8')
+    try:
+        lcd2004.setCursor(pos_col, pos_row)
+        lcd2004.printstr(words)
+    except Exception, e:
+        print e
+        lcd2004 = False
+
+def i2c_lcd2004_clear():
+    global lcd2004
+    setup_i2c_lcd2004(addr=0x27)
+    try:
+        lcd2004.clear()
+    except Exception, e:
+        print e
+        lcd2004 = False
 
 def passive_buzzer(chn, freq, on_off):
     chn = int(chn)
@@ -527,7 +563,15 @@ def get_result(request):
 
     elif action == "i2c_lcd_clear":
         result   = i2c_lcd_clear()
+    # ================ I2C LCD2004 =================
+    elif action == "i2c_lcd2004_print":
+        pos_row  = value0
+        pos_col  = value1
+        words    = value2
+        result   = i2c_lcd2004_print(pos_col, pos_row, words)
 
+    elif action == "i2c_lcd2004_clear":
+        result   = i2c_lcd2004_clear()
 
     # ================ passive buzzer =================
     elif action == "passive_buzzer":
