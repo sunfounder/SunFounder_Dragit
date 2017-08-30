@@ -526,6 +526,51 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       );
       break;
 
+    case '%col_2004':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "0"  : [0],
+          "1"  : [1],
+          "2"  : [2],
+          "3"  : [3],
+          "4"  : [4],
+          "5"  : [5],
+          "6"  : [6],
+          "6"  : [6],
+          "7"  : [7],
+          "8"  : [8],
+          "9"  : [9],
+          "10" : [10],
+          "11" : [11],
+          "12" : [12],
+          "13" : [13],
+          "14" : [14],
+          "15" : [15],
+          "16" : [16],
+          "17" : [17],
+          "18" : [18],
+          "19" : [19],
+        },
+        true // read-only
+      );
+      break;
+
+    case '%row_2004':
+      part = new InputSlotMorph(
+        null, // text
+        false, // numeric?
+        {
+          "0"  : [0],
+          "1"  : [1],
+          "2"  : [2],
+          "3"  : [3],
+        },
+        true // read-only
+      );
+      break;
+
     case '%RGBcolors':
       part = new InputSlotMorph(
         null, // text

@@ -41,8 +41,11 @@ SpriteMorph.prototype.loadModulesCategories = function(blocks, block, watcherTog
     blocks.push('=');
 
     blocks.push(block('rgb_led'));
-    blocks.push(block('i2c_lcd_clear'));
-    blocks.push(block('i2c_lcd_print'));
+    blocks.push(block('i2c_lcd1602_clear'));
+    blocks.push(block('i2c_lcd1602_print'));
+    blocks.push('-');
+    blocks.push(block('i2c_lcd2004_clear'));
+    blocks.push(block('i2c_lcd2004_print'));
     //blocks.push(block('led_matrix'));
     //blocks.push(block('led_matrix_mod'));
     blocks.push('-');
@@ -380,16 +383,29 @@ SpriteMorph.prototype.blocks.ds18b20_temper = {
     defaults: [0, 'c']
   }
 
-SpriteMorph.prototype.blocks.i2c_lcd_clear = {
+SpriteMorph.prototype.blocks.i2c_lcd1602_clear = {
     type    : 'command',
     category: 'Modules',
     spec    : 'i2c lcd1602 clear',
   }
 
-SpriteMorph.prototype.blocks.i2c_lcd_print = {
+SpriteMorph.prototype.blocks.i2c_lcd1602_print = {
     type    : 'command',
     category: 'Modules',
     spec    : 'i2c lcd1602 print %br   row %row_1602 col %col_1602 %br   words %s',
+    defaults: [0, 0, 'Hello,World!']
+  }
+
+SpriteMorph.prototype.blocks.i2c_lcd2004_clear = {
+    type    : 'command',
+    category: 'Modules',
+    spec    : 'i2c lcd2004 clear',
+  }
+
+SpriteMorph.prototype.blocks.i2c_lcd2004_print = {
+    type    : 'command',
+    category: 'Modules',
+    spec    : 'i2c lcd2004 print %br   row %row_2004 col %col_2004 %br   words %s',
     defaults: [0, 0, 'Hello,World!']
   }
 
@@ -503,8 +519,10 @@ SpriteMorph.prototype.blockAlternatives.passive_buzzer_module = ['passive_buzzer
 SpriteMorph.prototype.blockAlternatives.passive_buzzer_play_note = ['passive_buzzer_module'];
 SpriteMorph.prototype.blockAlternatives.rtc_ds1302_set = ['rtc_ds1302_get'];
 SpriteMorph.prototype.blockAlternatives.rtc_ds1302_get = ['rtc_ds1302_set'];
-SpriteMorph.prototype.blockAlternatives.i2c_lcd_print = ['i2c_lcd_clear'];
-SpriteMorph.prototype.blockAlternatives.i2c_lcd_clear = ['i2c_lcd_print'];
+SpriteMorph.prototype.blockAlternatives.i2c_lcd1602_print = ['i2c_lcd1602_clear','i2c_lcd2004_clear','i2c_lcd2004_print'];
+SpriteMorph.prototype.blockAlternatives.i2c_lcd1602_clear = ['i2c_lcd1602_print','i2c_lcd2004_print','i2c_lcd2004_clear'];
+SpriteMorph.prototype.blockAlternatives.i2c_lcd2004_print = ['i2c_lcd2004_clear','i2c_lcd1602_clear','i2c_lcd1602_print'];
+SpriteMorph.prototype.blockAlternatives.i2c_lcd2004_clear = ['i2c_lcd2004_print','i2c_lcd1602_clear','i2c_lcd1602_print'];
 /*SpriteMorph.prototype.blockAlternatives.ds18b20_temper = ['dht11_module', 'mpu6050_sensor', 'bmp280_sensor'];
 SpriteMorph.prototype.blockAlternatives.dht11_module = ['ds18b20_temper', 'mpu6050_sensor', 'bmp280_sensor'];
 SpriteMorph.prototype.blockAlternatives.mpu6050_sensor = ['dht11_module', 'ds18b20_temper', 'bmp280_sensor'];
@@ -722,12 +740,20 @@ SpriteMorph.prototype.ds18b20_temper = function (index, unit) {
   return requests('modules', 'w1', index, unit)
 };
 
-SpriteMorph.prototype.i2c_lcd_clear = function () {
-  return requests('modules', 'i2c_lcd_clear')
+SpriteMorph.prototype.i2c_lcd1602_clear = function () {
+  return requests('modules', 'i2c_lcd1602_clear')
 };
 
-SpriteMorph.prototype.i2c_lcd_print = function (pos_col, pos_row, words) {
-  return requests('modules', 'i2c_lcd_print', pos_col, pos_row, words)
+SpriteMorph.prototype.i2c_lcd1602_print = function (pos_col, pos_row, words) {
+  return requests('modules', 'i2c_lcd1602_print', pos_col, pos_row, words)
+};
+
+SpriteMorph.prototype.i2c_lcd2004_clear = function () {
+  return requests('modules', 'i2c_lcd2004_clear')
+};
+
+SpriteMorph.prototype.i2c_lcd2004_print = function (pos_col, pos_row, words) {
+  return requests('modules', 'i2c_lcd2004_print', pos_col, pos_row, words)
 };
 
 SpriteMorph.prototype.led_matrix = function (pos_col, pos_row, words) {
