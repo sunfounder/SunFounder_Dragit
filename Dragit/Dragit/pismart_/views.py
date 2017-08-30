@@ -19,7 +19,7 @@ try:
     from pismart.tts import  TTS
     from pismart.stt import  STT
 
-    D_CHANNEL = {"0":17, "1":18, "2":22, "3":27, "4":23, "5":24, "6":25, "7":4,}
+    D_CHANNEL = {"0":17, "1":18, "2":27, "3":22, "4":23, "5":24, "6":25, "7":4,}
     D_STATE   = {"HIGH":GPIO.HIGH, "LOW":GPIO.LOW}
 
     GPIO.setmode(GPIO.BCM)
