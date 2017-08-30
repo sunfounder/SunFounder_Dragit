@@ -123,9 +123,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-# Sites setting
-SITE_ID = 1
-SITE_URL = 'www.dragit.com'
+SECURE_PROXY_SSL_HEADER = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
