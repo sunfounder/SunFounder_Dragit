@@ -750,6 +750,23 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       );
       break;
 
+    case '%datetime_names':
+      part = new InputSlotMorph(
+        null,  // text
+        false, // numeric?
+        {
+          'year'         :'year',
+          'month'        :'month',
+          'day of month' :'day of month',
+          'hour'         :'hour',
+          'minute'       :'minute',
+          'second'       :'second',
+          'weekday'      :'weekday',
+          'day of year'  :'day of year'
+        },
+        true   // read-only
+      );
+      break;
 
     default:
       nop();

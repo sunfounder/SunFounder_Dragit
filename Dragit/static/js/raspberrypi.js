@@ -21,6 +21,7 @@ SpriteMorph.prototype.loadRaspberryPiCategories = function(blocks, block, watche
     blocks.push('=');
     blocks.push(block('bcm_num'));
     blocks.push(block('gpio_num'));
+    blocks.push(block('rpi_get_datetime'));
 }
 
 // PiCar-V
@@ -134,6 +135,13 @@ SpriteMorph.prototype.blocks.gpio_num = {    // Define blocks
     defaults: [0]
   }
 
+SpriteMorph.prototype.blocks.rpi_get_datetime = {    // Define blocks
+    type: 'reporter',
+    category: 'RaspberryPi',
+    spec: 'get datetime %datetime_names',
+    defaults: ['year']
+  }
+
 SpriteMorph.prototype.rpi_gpio_set = function (channel, status) { // Define process
   requests('raspberry_pi', 'gpio', 'output', channel, status)
 };
@@ -198,6 +206,10 @@ SpriteMorph.prototype.disk_used = function () { // Define process
   return requests('raspberry_pi', 'disk_used')
 };
 
+SpriteMorph.prototype.rpi_get_datetime = function (name) { // Define process
+  return requests('raspberry_pi', 'get_datetime', name)
+};
+
 SpriteMorph.prototype.bcm_num = function (num) { // Define process
   return num
 };
@@ -226,3 +238,4 @@ SpriteMorph.prototype.gpio_num = function (num) { // Define process
   result = gpio_to_bcm[num];
   return result
 };
+

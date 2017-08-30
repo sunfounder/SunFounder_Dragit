@@ -136,6 +136,25 @@ def get_i2c_address(busnum):
             address.append("0x%s" % a)
     return str(address).replace("'", '').strip('[]').replace(' ','')
 
+def get_datetime(name):
+    current_date_time = time.localtime()
+    if name == 'year':
+        return current_date_time.tm_year
+    elif name == 'month':
+        return current_date_time.tm_month
+    elif name == 'day of month':
+        return current_date_time.tm_mday
+    elif name == 'hour':
+        return current_date_time.tm_hour
+    elif name == 'minute':
+        return current_date_time.tm_min
+    elif name == 'second':
+        return current_date_time.tm_sec
+    elif name == 'weekday':
+        return current_date_time.tm_wday
+    elif name == 'day of year':
+        return current_date_time.tm_yday
+
 def run(request):
     print "Raspberry Pi run function start."
     debug = ''
@@ -211,6 +230,10 @@ def run(request):
     elif action == "i2cdetect":
         busnum = int(value0)
         result = get_i2c_address(busnum)
+
+    elif action == "get_datetime":
+        name = value0
+        result = get_datetime(name)
 
     else:
         print "action undefined"
