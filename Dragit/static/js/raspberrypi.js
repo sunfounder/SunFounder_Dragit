@@ -217,8 +217,8 @@ SpriteMorph.prototype.bcm_num = function (num) { // Define process
 var gpio_to_bcm = {
   0 : 17,
   1 : 18,
-  2 : 22,
-  3 : 27,
+  2 : 27,
+  3 : 22,
   4 : 23,
   5 : 24,
   6 : 25,
