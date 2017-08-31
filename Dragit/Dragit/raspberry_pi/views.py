@@ -141,7 +141,7 @@ def get_datetime(name):
     if name == 'year':
         return current_date_time.tm_year
     elif name == 'month':
-        return current_date_time.tm_month
+        return current_date_time.tm_mon
     elif name == 'day of month':
         return current_date_time.tm_mday
     elif name == 'hour':
