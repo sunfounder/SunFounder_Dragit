@@ -21,6 +21,17 @@ else
 fi
 
 ###################################
+# python setup.py Emo #
+###################################
+echo -e "\nInstalling django \n"
+if sudo pip install SunFounder_Emo ; then
+    echo -e "    Successfully setup SunFounder_Emo \n"
+else
+    echo -e "    Failed to setup SunFounder_Emo."
+    end
+fi
+
+###################################
 # install python-pylirc #
 ###################################
 echo -e "\nInstalling lirc"

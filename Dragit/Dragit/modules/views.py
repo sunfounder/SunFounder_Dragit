@@ -26,6 +26,7 @@ from Dragit.libs.modules.rpi_time import DS1302 as DS1302
 from Dragit.libs.modules.bmp280 import BMP280 as BMP280
 from Dragit.libs.modules.bcm_gpio import BCM_GPIO as BCM_GPIO
 from Dragit.libs.modules.rotary_encoder import RotaryEncoder as RotaryEncoder
+from SunFounder_Emo import Emo as Emo
 
 import pylirc
 import time
@@ -45,6 +46,7 @@ try:
 
     lf = Line_Follower()
     lt = Light_Follower()
+    sunfounder_emo = Emo()
 
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
@@ -243,6 +245,55 @@ def i2c_lcd2004_clear():
     except Exception, e:
         print e
         i2c_lcd2004 = False
+
+def emo_show(byte_list):
+    byte_list = byte_list.encode('utf8')
+    byte_list = byte_list.split(',')
+    for i in range(0,24):
+        byte_list[i] = (int(byte_list[i]))
+        #print("byte_list[%d] = %s"%(i, byte_list[i]))
+    sunfounder_emo.show_bytes(byte_list)
+    print(byte_list)
+
+def emo_to_byte_list(emo):
+    emo = emo.encode('utf8')
+    if emo in sunfounder_emo.emotions._emotions.keys():
+            _bits_list = sunfounder_emo.emotions.emotion(emo)
+    if emo in sunfounder_emo.emotions._emotions.keys():
+            _bits_list = sunfounder_emo.emotions.emotion(emo)
+
+    # bit to byte
+    _bytes = []
+    if len(_bits_list) != 8:
+        self._error("arguement should be list of 8 lines of strings")
+    for _bits in _bits_list:
+        _bits = _bits.replace(',', '').replace(' ', '')
+        if len(_bits) != 24:
+            self._error('every item in the list should be string with exact 24 "0" and "1" representing "off" and "on"')
+        _byte0 = _bits[:8]
+        _byte0 = int(_byte0, base=2)
+        _bytes.append(_byte0)
+        _byte1 = _bits[8:16]
+        _byte1 = int(_byte1, base=2)
+        _bytes.append(_byte1)
+        _byte2 = _bits[16:]
+        _byte2 = int(_byte2, base=2)
+        _bytes.append(_byte2)
+    # byte_list to str
+    _bytes = str(_bytes)
+    print(_bytes)
+    return _bytes
+
+def emo_make(byte_list):
+    byte_list = byte_list.encode('utf8')
+    byte_list = byte_list.split(',')
+    for i in range(0,24):
+        byte_list[i] = (int(byte_list[i]))
+        #print("byte_list[%d] = %s"%(i, byte_list[i]))
+    sunfounder_emo.show_bytes(byte_list)
+    print(byte_list)
+    return (byte_list)
+
 
 def passive_buzzer(chn, freq, on_off):
     chn = int(chn)
@@ -565,7 +616,7 @@ def get_result(request):
         e_pin   = value1
         result  = ultrasonic_4pin(t_pin, e_pin)
 
-    # ================ I2C LCD1602 & LCD2004  =================
+    # ================ I2C LCD1602 =================
     elif action == "i2c_lcd1602_print":
         pos_row  = value0
         pos_col  = value1
@@ -575,7 +626,7 @@ def get_result(request):
     elif action == "i2c_lcd1602_clear":
         result   = i2c_lcd1602_clear()
 
-    # ================ I2C LCD1602 & LCD2004  =================
+    # ================ I2C LCD2004 =================
     elif action == "i2c_lcd2004_print":
         pos_row  = value0
         pos_col  = value1
@@ -584,6 +635,19 @@ def get_result(request):
 
     elif action == "i2c_lcd2004_clear":
         result   = i2c_lcd2004_clear()
+
+    # ================ Emo led matrix =================
+    elif action == "emo_show":
+        byte_list = value0
+        result    = emo_show(byte_list)
+
+    elif action == "emo_maps":
+        emo     = value0
+        result  = emo_to_byte_list(emo)
+
+    elif action == "emo_make":
+        emo     = value0
+        result  = emo_make(emo)
 
     # ================ passive buzzer =================
     elif action == "passive_buzzer":

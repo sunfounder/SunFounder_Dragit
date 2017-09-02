@@ -813,6 +813,29 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       );
       break;
 
+    case '%emo_maps':
+      part = new InputSlotMorph(
+        null,  // text
+        false, // numeric?
+        {
+          'look1'  : 'look1',
+          'look2'  : 'look2',
+          'look3'  : 'look3',
+          'look4'  : 'look4',
+          'blink1' : 'blink1',
+          'blink2' : 'blink2',
+          'sleepy1'  : 'sleepy1',
+          'sleepy2'  : 'sleepy2',
+          'sleepy3'  : 'sleepy3',
+          'pac_man1' : 'pac_man1',
+          'pac_man2' : 'pac_man2',
+          'pac_man3' : 'pac_man3',
+        },
+        false   // read-only
+      );
+      break;
+
+
     default:
       nop();
   }
