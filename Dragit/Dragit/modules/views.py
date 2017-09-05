@@ -349,7 +349,7 @@ def dht11_read(pin,mode):
 def dht11_module(pin,mode):
     for _ in range(10):
         value = dht11_read(pin,mode)
-        if value():
+        if value:
             return value
     return "Value Error"
 
