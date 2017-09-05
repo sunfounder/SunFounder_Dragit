@@ -40,6 +40,13 @@ ultrasonic_time_out = 2
 buzz_note = {'C':262, 'D':294, 'E':330, 'F':350, 'G':393, 'A':441, 'B':495, 'C2':525}
 read_ir_key_val = None
 
+r_pin = 0
+g_pin = 0
+b_pin = 0
+buzzer_chn = 0
+i2c_lcd1602 = False
+i2c_lcd2004 = False
+
 try:
     # adc = ADC(0x48)
     #my_18b20 = DS18B20()
@@ -50,12 +57,6 @@ try:
 
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
-    r_pin = 0
-    g_pin = 0
-    b_pin = 0
-    buzzer_chn = 0
-    i2c_lcd1602 = False
-    i2c_lcd2004 = False
     err_msg = ''
 
 except Exception,e:
