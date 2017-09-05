@@ -317,7 +317,7 @@ def buzzer_play(chn, note, second):
     time.sleep(sec)
     Buzz.end()
 
-def dht11_module(pin,mode):
+def dht11_read(pin,mode):
     pin = int(pin)
     mode = mode.encode('utf8')
 
@@ -341,9 +341,17 @@ def dht11_module(pin,mode):
     else:
         value = value.error_code
         if value == 1:
-            return ("ERR_MISSING_DATA")
+            print ("ERR_MISSING_DATA")
         elif value == 2:
-            return ("ERR_CRC")
+            print ("ERR_CRC")
+        return (False)
+
+def dht11_module(pin,mode):
+    for _ in range(10):
+        value = dht11_read(pin,mode)
+        if value():
+            return value
+    return "Value Error"
 
 def bmp280_sensor(item):
     bmp = BMP280()
