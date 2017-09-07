@@ -835,7 +835,6 @@ SyntaxElementMorph.prototype.loadSunFounderSymbols = function(spec){
       );
       break;
 
-
     default:
       nop();
   }

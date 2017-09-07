@@ -255,6 +255,24 @@ def emo_show(byte_list):
     sunfounder_emo.show_bytes(byte_list)
     print(byte_list)
 
+def emo_show(byte_list):
+    byte_list = byte_list.encode('utf8')
+    byte_list = byte_list.split(',')
+    for i in range(0,24):
+        byte_list[i] = (int(byte_list[i]))
+        #print("byte_list[%d] = %s"%(i, byte_list[i]))
+    sunfounder_emo.show_bytes(byte_list)
+    print(byte_list)
+
+def emo_string(str_to_show, pos):
+    _str = str_to_show.encode('utf8')
+    _pos = int(pos)
+
+    _bytes = sunfounder_emo.string_to_bytes(str_to_show, _pos)
+    _bytes = str(_bytes)
+    print(_bytes)
+    return _bytes
+
 def emo_to_byte_list(emo):
     emo = emo.encode('utf8')
     if emo in sunfounder_emo.emotions._emotions.keys():
@@ -263,23 +281,8 @@ def emo_to_byte_list(emo):
             _bits_list = sunfounder_emo.emotions.emotion(emo)
 
     # bit to byte
-    _bytes = []
-    if len(_bits_list) != 8:
-        self._error("arguement should be list of 8 lines of strings")
-    for _bits in _bits_list:
-        _bits = _bits.replace(',', '').replace(' ', '')
-        if len(_bits) != 24:
-            self._error('every item in the list should be string with exact 24 "0" and "1" representing "off" and "on"')
-        _byte0 = _bits[:8]
-        _byte0 = int(_byte0, base=2)
-        _bytes.append(_byte0)
-        _byte1 = _bits[8:16]
-        _byte1 = int(_byte1, base=2)
-        _bytes.append(_byte1)
-        _byte2 = _bits[16:]
-        _byte2 = int(_byte2, base=2)
-        _bytes.append(_byte2)
-    # byte_list to str
+    _bytes = sunfounder_emo.string_bits_to_bytes(_bits_list)
+    # byte_list to str, request get str
     _bytes = str(_bytes)
     print(_bytes)
     return _bytes
@@ -644,6 +647,11 @@ def get_result(request):
     elif action == "emo_maps":
         emo     = value0
         result  = emo_to_byte_list(emo)
+
+    elif action == "emo_string":
+        str_to_show = value0
+        pos     = value1
+        result  = emo_string(str_to_show, pos)
 
     elif action == "emo_make":
         emo     = value0

@@ -49,6 +49,7 @@ SpriteMorph.prototype.loadModulesCategories = function(blocks, block, watcherTog
     blocks.push('-');
     blocks.push(block('emo_show'));
     blocks.push(block('emo_maps'));
+    blocks.push(block('emo_string'));
     blocks.push(block('emo_make'));
     blocks.push('-');
     blocks.push(block('rtc_ds1302_set'));
@@ -479,6 +480,13 @@ SpriteMorph.prototype.blocks.emo_maps = {
     defaults: ['look1']
   }
 
+SpriteMorph.prototype.blocks.emo_string = {
+    type    : 'reporter',
+    category: 'Modules',
+    spec    : 'emo string %s at %n',
+    defaults: ['A', 1]
+  }
+
 SpriteMorph.prototype.blocks.emo_make = {
     type    : 'reporter',
     category: 'Modules',
@@ -772,6 +780,13 @@ SpriteMorph.prototype.emo_show = function (byte_list) {
 
 SpriteMorph.prototype.emo_maps = function (emo) {
   byte_list = requests('modules', 'emo_maps', emo)
+  byte_list = byte_list.slice(1,-1).split(",")  // remove "[","]", and split by ","
+  console.log("return byte", byte_list)
+  return byte_list
+};
+
+SpriteMorph.prototype.emo_string = function (str, pos) {
+  byte_list = requests('modules', 'emo_string', str, pos)
   byte_list = byte_list.slice(1,-1).split(",")  // remove "[","]", and split by ","
   console.log("return byte", byte_list)
   return byte_list
