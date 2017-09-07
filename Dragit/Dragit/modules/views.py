@@ -40,6 +40,13 @@ ultrasonic_time_out = 2
 buzz_note = {'C':262, 'D':294, 'E':330, 'F':350, 'G':393, 'A':441, 'B':495, 'C2':525}
 read_ir_key_val = None
 
+r_pin = 0
+g_pin = 0
+b_pin = 0
+buzzer_chn = 0
+i2c_lcd1602 = False
+i2c_lcd2004 = False
+
 try:
     # adc = ADC(0x48)
     #my_18b20 = DS18B20()
@@ -50,12 +57,6 @@ try:
 
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
-    r_pin = 0
-    g_pin = 0
-    b_pin = 0
-    buzzer_chn = 0
-    i2c_lcd1602 = False
-    i2c_lcd2004 = False
     err_msg = ''
 
 except Exception,e:
@@ -320,7 +321,7 @@ def buzzer_play(chn, note, second):
     time.sleep(sec)
     Buzz.end()
 
-def dht11_module(pin,mode):
+def dht11_read(pin,mode):
     pin = int(pin)
     mode = mode.encode('utf8')
 
@@ -344,9 +345,17 @@ def dht11_module(pin,mode):
     else:
         value = value.error_code
         if value == 1:
-            return ("ERR_MISSING_DATA")
+            print ("ERR_MISSING_DATA")
         elif value == 2:
-            return ("ERR_CRC")
+            print ("ERR_CRC")
+        return (False)
+
+def dht11_module(pin,mode):
+    for _ in range(10):
+        value = dht11_read(pin,mode)
+        if value:
+            return value
+    return "Value Error"
 
 def bmp280_sensor(item):
     bmp = BMP280()
