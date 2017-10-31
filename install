@@ -65,6 +65,11 @@ if grep -q 'dtparam=i2c_arm=on' config.txt.temp; then  # whether i2c_arm in unco
 else
     echo -e '    dtparam=i2c_arm=on \n' >> /boot/config.txt
 fi
+if grep -q 'dtparam=spi=on' config.txt.temp; then  # whether spi in uncomment configrations or not
+    echo -e '    Seem spi parameter already set, skip this step \n'
+else
+    echo -e '    dtparam=spi=on \n' >> /boot/config.txt
+fi
 if grep -q 'dtoverlay=w1-gpio' config.txt.temp; then
     echo -e '    Seem w1-gpio parameter already set, skip this step \n'
 else
