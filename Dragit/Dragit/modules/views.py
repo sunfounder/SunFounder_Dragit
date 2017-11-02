@@ -26,7 +26,7 @@ from Dragit.libs.modules.rpi_time import DS1302 as DS1302
 from Dragit.libs.modules.bmp280 import BMP280 as BMP280
 from Dragit.libs.modules.bcm_gpio import BCM_GPIO as BCM_GPIO
 from Dragit.libs.modules.rotary_encoder import RotaryEncoder as RotaryEncoder
-from SunFounder_Emo import Emo as Emo
+from SunFounder_Emo import Emo as Emo # SunFounder_Emo install by pip when dragit install
 
 import pylirc
 import time
@@ -252,16 +252,7 @@ def emo_show(byte_list):
     byte_list = byte_list.split(',')
     for i in range(0,24):
         byte_list[i] = (int(byte_list[i]))
-        #print("byte_list[%d] = %s"%(i, byte_list[i]))
-    sunfounder_emo.show_bytes(byte_list)
-    print(byte_list)
-
-def emo_show(byte_list):
-    byte_list = byte_list.encode('utf8')
-    byte_list = byte_list.split(',')
-    for i in range(0,24):
-        byte_list[i] = (int(byte_list[i]))
-        #print("byte_list[%d] = %s"%(i, byte_list[i]))
+        print("byte_list[%d] = %s"%(i, byte_list[i]))
     sunfounder_emo.show_bytes(byte_list)
     print(byte_list)
 
@@ -277,9 +268,11 @@ def emo_string(str_to_show, pos):
 def emo_to_byte_list(emo):
     emo = emo.encode('utf8')
     if emo in sunfounder_emo.emotions._emotions.keys():
-            _bits_list = sunfounder_emo.emotions.emotion(emo)
-    if emo in sunfounder_emo.emotions._emotions.keys():
-            _bits_list = sunfounder_emo.emotions.emotion(emo)
+        _bits_list = sunfounder_emo.emotions.emotion(emo)
+    elif emo in sunfounder_emo.pictures._pictures.keys():
+        _bits_list = sunfounder_emo.pictures.picture(emo)
+    else:
+        return "This emo is not in Emo_maps"
 
     # bit to byte
     _bytes = sunfounder_emo.string_bits_to_bytes(_bits_list)
