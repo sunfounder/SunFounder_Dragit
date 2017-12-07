@@ -13,7 +13,7 @@ fi
 # install Django #
 ###################################
 echo -e "\nInstalling django \n"
-if sudo pip install django ; then
+if sudo pip install 'django<2.0' ; then
     echo -e "    Successfully installed django runtime \n"
 else
     echo -e "    Failed to installed django."
