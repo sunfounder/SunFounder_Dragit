@@ -60,6 +60,7 @@ try:
     err_msg = ''
 
 except Exception,e:
+    print e
     err_msg = "Modules is not avalible"
 
 def ultrasonic_3pin(channel):

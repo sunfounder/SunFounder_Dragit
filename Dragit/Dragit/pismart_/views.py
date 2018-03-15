@@ -50,6 +50,7 @@ try:
     t.start()
     print("Current Thread: %s"%threading.current_thread().name)
 except Exception,e:
+    print e
     err_msg = "PiSmart is not avalible"
 '''
 def init_pismart(pwm=1,motor=1,speaker=1):

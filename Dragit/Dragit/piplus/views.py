@@ -18,6 +18,7 @@ try:
     err_msg = ''
 
 except Exception,e:
+    print e
     err_msg = "Modules is not avalible"
 
 def buzzer_on_off(port, status):

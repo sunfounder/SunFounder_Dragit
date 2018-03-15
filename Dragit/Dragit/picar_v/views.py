@@ -41,6 +41,7 @@ try:
     blob_r = 0
     err_msg = ''
 except Exception,e:
+    print e
     err_msg = "PiCar-V is not avalible"
 
 def rw_run(motor_channel, direction, speed):

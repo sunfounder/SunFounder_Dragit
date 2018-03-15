@@ -36,6 +36,7 @@ try:
     GPIO.setmode(GPIO.BCM)
     err_msg = ''
 except Exception,e:
+    print e
     err_msg = "PiCar-S is not avalible"
 
 def rw_run(motor_channel, direction, speed):
