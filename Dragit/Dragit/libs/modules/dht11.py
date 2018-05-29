@@ -25,13 +25,14 @@ class DHT11Result:
 class DHT11:
     'DHT11 sensor reader class for Raspberry'
 
-    __pin = 0
+    PIN = 21
 
-    def __init__(self, pin):
-        self.__pin = pin
+    def __init__(self):
+        GPIO.setwarnings(False)
+        GPIO.setmode(GPIO.BCM)
 
     def read(self):
-        GPIO.setup(self.__pin, GPIO.OUT)
+        GPIO.setup(self.PIN, GPIO.OUT)
 
         # send initial high
         self.__send_and_sleep(GPIO.HIGH, 0.05)
@@ -40,7 +41,7 @@ class DHT11:
         self.__send_and_sleep(GPIO.LOW, 0.02)
 
         # change to input using pull up
-        GPIO.setup(self.__pin, GPIO.IN, GPIO.PUD_UP)
+        GPIO.setup(self.PIN, GPIO.IN, GPIO.PUD_UP)
 
         # collect data into an array
         data = self.__collect_input()
@@ -67,7 +68,7 @@ class DHT11:
         return DHT11Result(DHT11Result.ERR_NO_ERROR, the_bytes[2], the_bytes[0])
 
     def __send_and_sleep(self, output, sleep):
-        GPIO.output(self.__pin, output)
+        GPIO.output(self.PIN, output)
         time.sleep(sleep)
 
     def __collect_input(self):
@@ -80,7 +81,7 @@ class DHT11:
         last = -1
         data = []
         while True:
-            current = GPIO.input(self.__pin)
+            current = GPIO.input(self.PIN)
             data.append(current)
             if last != current:
                 unchanged_count = 0
@@ -192,17 +193,14 @@ class DHT11:
     def __calculate_checksum(self, the_bytes):
         return the_bytes[0] + the_bytes[1] + the_bytes[2] + the_bytes[3] & 255
 
+    def end(self):
+        GPIO.cleanup(self.PIN)
 
 
-def test(pin):
-    # initialize GPIO
-    GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BCM)
-
-    # read data using pin
-    instance = DHT11(pin)
+def test():
+    dht11 = DHT11()
     while True:
-        result = instance.read()
+        result = dht11.read()
 
         if result.is_valid():
             print("Temperature: %d C" % result.temperature)
@@ -211,12 +209,5 @@ def test(pin):
             print("Error: %d" % result.error_code)
         time.sleep(1)
 
-def destroy():
-    pass
-
 if __name__ == '__main__':
-    try:
-        test(17)
-    except KeyboardInterrupt:
-        destroy()
-
+    test()
