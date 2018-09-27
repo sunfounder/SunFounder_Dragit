@@ -103,7 +103,7 @@ class BMP280:
 	_DEBUG = False
 	_DEBUG_INFO = 'DEBUG "BMP280.py":'
 
-	def __init__(self, bus_number=None, address=0x77):
+	def __init__(self, bus_number=1, address=0x77):
 		self.address = address
 		if bus_number == None:
 			self.bus_number = self._get_bus_number()

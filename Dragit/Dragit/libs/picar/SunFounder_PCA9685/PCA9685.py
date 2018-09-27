@@ -101,7 +101,7 @@ class PWM(object):
         finally:
             f.close()
 
-    def __init__(self, bus_number=None, address=0x40):
+    def __init__(self, bus_number=1, address=0x40):
         self.address = address
         if bus_number == None:
             self.bus_number = self._get_bus_number()

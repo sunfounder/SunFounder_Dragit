@@ -26,7 +26,7 @@ class PCF8591(object):
 
 	AD_CHANNEL = [0x43, 0x42, 0x41, 0x40]
 
-	def __init__(self, address=0x48, bus_number=None):
+	def __init__(self, address=0x48, bus_number=1):
 		self.address = address
 		if bus_number == None:
 			self._bus_number = self._get_bus_number()
