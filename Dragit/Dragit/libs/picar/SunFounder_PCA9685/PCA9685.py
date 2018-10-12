@@ -147,9 +147,9 @@ class PWM(object):
 
     def _check_i2c(self):
         import commands
-        bus_number = self._get_bus_number()
-        print "\nYour Pi Rivision is: %s" % self._get_pi_revision()
-        print "I2C bus number is: %s" % bus_number
+        # bus_number = self._get_bus_number()
+        # print "\nYour Pi Rivision is: %s" % self._get_pi_revision()
+        # print "I2C bus number is: %s" % bus_number
         print "Checking I2C device:"
         cmd = "ls /dev/i2c-%d" % bus_number
         output = commands.getoutput(cmd)
