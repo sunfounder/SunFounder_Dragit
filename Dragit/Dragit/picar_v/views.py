@@ -21,7 +21,7 @@ try:
     config_dir = '/opt/SunFounder_Dragit/Dragit/config'
     os.system('touch %s'%config_dir)
 
-    import image_process
+    # import image_process
     adc  = ADC(0x48)
     fw   = front_wheels.Front_Wheels(db=config_dir)
     bw   = back_wheels.Back_Wheels(db=config_dir)
