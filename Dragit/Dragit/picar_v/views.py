@@ -143,8 +143,8 @@ def pwm_output(channel, value):
         value = 0
     elif value > 4095:
         value = 4095
-    pwm = PWM(channel)
-    pwm.write(value)
+    pwm = PWM()
+    pwm.write(channel,0,value)
     msg = "[PiCar-V] PWM chn: %s value: %s "%(channel, value)
     print(msg)
 
