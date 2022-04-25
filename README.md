@@ -11,7 +11,7 @@ Quick Links:
 
 <a id="about_this_software"></a>
 ### About Dragit:
-Dragit is a visul programming services base on [Snap!](http://snap.berkeley.edu/) 
+Dragit is a visual programming services base on [Snap!](http://snap.berkeley.edu/) 
 
 <a id="update"></a>
 ### Update:
